@@ -13,7 +13,7 @@
             </web-module-libraries>
             <web-module-additional-libraries/>
             <source-roots>
-                <root id="src.dir" name="Source Packages"/>
+                <root id="src.dir" name="源代码"/>
             </source-roots>
             <test-roots>
                 <root id="test.src.dir" name="Test Packages"/>
