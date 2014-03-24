@@ -1,12 +1,42 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html">
-    <h:head>
-        <title>Facelet Title</title>
-    </h:head>
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
     <h:body>
-        Hello from Facelets
+        <p:dialog widgetVar="detailDialog" header="评价详情" closable="true" resizable="false" draggable="false"
+                  modal="true" appendToBody="true">
+            <h:form>
+                <h:panelGrid columns="2" cellpadding="15">
+                    <p:graphicImage value="#{resource[employee.photoFileName]}" width="130" height="180" />
+                    <p:selectOneMenu value="#{demoBean.option}">  
+                        <f:selectItem itemLabel="非常满意" itemValue="0" />  
+                        <f:selectItem itemLabel="满意" itemValue="1" />  
+                        <f:selectItem itemLabel="基本满意" itemValue="2" />  
+                        <f:selectItem itemLabel="不满意" itemValue="3" />  
+                    </p:selectOneMenu> 
+                </h:panelGrid>
+                原因
+                <br />
+                <p:inputTextarea rows="5" cols="60" />
+                <br />
+                <p:selectOneMenu value="#{demoBean.option}" style="width: 100%">  
+                    <f:selectItem itemLabel="常用原因" itemValue="0" />  
+                    <f:selectItem itemLabel="满意" itemValue="1" />  
+                    <f:selectItem itemLabel="基本满意" itemValue="2" />  
+                    <f:selectItem itemLabel="不满意" itemValue="3" />  
+                </p:selectOneMenu> 
+                <h:panelGrid columns="2" cellpadding="5">
+                    <p:outputLabel value="评价人" />
+                    <p:inputText/>
+                    <p:outputLabel value="联系电话" />
+                    <p:inputText/>
+                </h:panelGrid>
+                <p:commandButton value="提交" />
+            </h:form>
+        </p:dialog>
     </h:body>
 </html>
 

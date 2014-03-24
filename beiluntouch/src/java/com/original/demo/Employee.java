@@ -12,6 +12,7 @@ package com.original.demo;
  */
 public class Employee {
     private String name;
+    private String postion;
     private String photoFileName;
 
     public String getName() {
@@ -20,6 +21,14 @@ public class Employee {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getPostion() {
+        return postion;
+    }
+
+    public void setPostion(String postion) {
+        this.postion = postion;
     }
 
     public String getPhotoFileName() {

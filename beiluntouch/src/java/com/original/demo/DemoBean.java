@@ -20,6 +20,7 @@ import javax.inject.Named;
 public class DemoBean implements Serializable {
 
     private List<Employee> employeeList;
+    private Integer option;
 
     public List<Employee> getEmployeeList() {
         return employeeList;
@@ -29,11 +30,20 @@ public class DemoBean implements Serializable {
         this.employeeList = employeeList;
     }
 
+    public Integer getOption() {
+        return option;
+    }
+
+    public void setOption(String Integer) {
+        this.option = option;
+    }
+
     public DemoBean() {
         employeeList = new ArrayList<>();
         for (int i = 1; i < 5; i++) {
             Employee employee = new Employee();
             employee.setName("员工" + i);
+            employee.setPostion("局长");
             employee.setPhotoFileName("images:" + employee.getName() + ".jpg");
             employeeList.add(employee);
         }
