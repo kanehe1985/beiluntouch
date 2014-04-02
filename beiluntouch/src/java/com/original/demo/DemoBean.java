@@ -5,6 +5,7 @@
  */
 package com.original.demo;
 
+import com.original.evaluate.entity.Employee;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,8 +44,8 @@ public class DemoBean implements Serializable {
         for (int i = 1; i < 5; i++) {
             Employee employee = new Employee();
             employee.setName("员工" + i);
-            employee.setPostion("局长");
-            employee.setPhotoFileName("images:" + employee.getName() + ".jpg");
+//            employee.setPostion("局长");
+//            employee.setPhotoFileName("images:" + employee.getName() + ".jpg");
             employeeList.add(employee);
         }
     }

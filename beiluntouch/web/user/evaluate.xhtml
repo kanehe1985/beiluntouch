@@ -33,14 +33,14 @@
                     </h:form>                  
 
                     <h:form id="employeeForm">
-                        <p:dataGrid value="#{demoBean.employeeList}" var="employee" emptyMessage="#{msgs.noResult}"
+                        <p:dataGrid value="#{evaluateBean.employeeList}" var="employee" emptyMessage="#{msgs.noResult}"
                                     columns="4" rows="16">
                             <p:panel style="text-align:center">
-                                <p:graphicImage value="#{resource[employee.photoFileName]}" width="210" height="260"/>
+                                <p:graphicImage value="#{resource[employee.photoUrl]}" width="210" height="260"/>
                                 <br />
-                                <p:outputLabel value="#{employee.postion}：#{employee.name}" />
+                                <p:outputLabel value="#{employee.name}" />
                                 <br />
-                                <p:commandLink value="#{msgs.evaluate}" onclick="detailDialog.show()" />
+                                <p:commandLink value="#{msgs.evaluate}" actionListener="#{evaluateBean.selectedEmployee(employee)}" oncomplete="detailDialog.show()" />
                             </p:panel>
                         </p:dataGrid>
                     </h:form>
