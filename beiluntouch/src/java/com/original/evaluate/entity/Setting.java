@@ -24,27 +24,35 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author kanehe
  */
 @Entity
-@Table(name = "messagesetting")
+@Table(name = "setting")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Messagesetting.findAll", query = "SELECT m FROM Messagesetting m"),
-    @NamedQuery(name = "Messagesetting.findById", query = "SELECT m FROM Messagesetting m WHERE m.id = :id"),
-    @NamedQuery(name = "Messagesetting.findByTelephonenumber", query = "SELECT m FROM Messagesetting m WHERE m.telephonenumber = :telephonenumber")})
-public class Messagesetting implements Serializable {
+    @NamedQuery(name = "Setting.findAll", query = "SELECT s FROM Setting s"),
+    @NamedQuery(name = "Setting.findById", query = "SELECT s FROM Setting s WHERE s.id = :id"),
+    @NamedQuery(name = "Setting.findByAdminpassword", query = "SELECT s FROM Setting s WHERE s.adminpassword = :adminpassword"),
+    @NamedQuery(name = "Setting.findByTelphoneno", query = "SELECT s FROM Setting s WHERE s.telphoneno = :telphoneno"),
+    @NamedQuery(name = "Setting.findByMessageserver", query = "SELECT s FROM Setting s WHERE s.messageserver = :messageserver")})
+public class Setting implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Size(max = 10)
-    @Column(name = "telephonenumber")
-    private String telephonenumber;
+    @Size(max = 100)
+    @Column(name = "adminpassword")
+    private String adminpassword;
+    @Size(max = 100)
+    @Column(name = "telphoneno")
+    private String telphoneno;
+    @Size(max = 100)
+    @Column(name = "messageserver")
+    private String messageserver;
 
-    public Messagesetting() {
+    public Setting() {
     }
 
-    public Messagesetting(Integer id) {
+    public Setting(Integer id) {
         this.id = id;
     }
 
@@ -56,12 +64,28 @@ public class Messagesetting implements Serializable {
         this.id = id;
     }
 
-    public String getTelephonenumber() {
-        return telephonenumber;
+    public String getAdminpassword() {
+        return adminpassword;
     }
 
-    public void setTelephonenumber(String telephonenumber) {
-        this.telephonenumber = telephonenumber;
+    public void setAdminpassword(String adminpassword) {
+        this.adminpassword = adminpassword;
+    }
+
+    public String getTelphoneno() {
+        return telphoneno;
+    }
+
+    public void setTelphoneno(String telphoneno) {
+        this.telphoneno = telphoneno;
+    }
+
+    public String getMessageserver() {
+        return messageserver;
+    }
+
+    public void setMessageserver(String messageserver) {
+        this.messageserver = messageserver;
     }
 
     @Override
@@ -74,10 +98,10 @@ public class Messagesetting implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Messagesetting)) {
+        if (!(object instanceof Setting)) {
             return false;
         }
-        Messagesetting other = (Messagesetting) object;
+        Setting other = (Setting) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -86,7 +110,7 @@ public class Messagesetting implements Serializable {
 
     @Override
     public String toString() {
-        return "com.original.evaluate.entity.Messagesetting[ id=" + id + " ]";
+        return "com.original.evaluate.entity.Setting[ id=" + id + " ]";
     }
     
 }

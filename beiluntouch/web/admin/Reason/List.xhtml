@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="../template.xhtml">
+
+        <ui:define name="center">
+            <h:form id="ReasonListForm">
+                <p:dataTable id="reasons" var="reason" value="#{reasonBean.reasons}" rowKey="#{reason.id}"
+                             selection="#{reasonBean.selectedReasons}">
+
+                    <f:facet name="header">
+                        Reason
+                    </f:facet>
+                    <p:column selectionMode="multiple" style="width:4%; text-align: center"/>
+                    <p:column headerText="ID">
+                        #{reason.id}
+                    </p:column>
+
+                    <p:column headerText="Content">
+                        #{reason.content}
+                    </p:column>
+
+                    <p:column headerText="options">
+                        <p:commandButton value="edit" icon="ui-icon-pencil" oncomplete="PF('ReasonEditDialog').show();" update=":ReasonEditForm">
+                            <f:setPropertyActionListener value="#{reason}" target="#{reasonBean.editReason}"/>
+                        </p:commandButton>
+                    </p:column>
+                    <f:facet name="footer">                        
+                        <p:commandButton id="createButton" icon="ui-icon-plus"   value="Create" actionListener="#{reasonBean.prepareCreate}" update=":ReasonCreateForm" oncomplete="PF('ReasonCreateDialog').show()"/>
+                        <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="Delete" actionListener="#{reasonBean.delete}" update=":ReasonListForm:reasons">
+                            <p:confirm header="Confirmation" message="Are you sure?" icon="ui-icon-alert" />
+                        </p:commandButton>
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/>     
+                        </p:confirmDialog>
+                    </f:facet>
+                </p:dataTable>
+            </h:form>
+                      
+            <ui:include src="Create.xhtml"/>
+            <ui:include src="Edit.xhtml"/>
+        </ui:define>
+    </ui:composition>
+
+</html>

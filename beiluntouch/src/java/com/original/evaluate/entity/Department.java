@@ -7,7 +7,6 @@
 package com.original.evaluate.entity;
 
 import java.io.Serializable;
-import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,8 +16,6 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -28,15 +25,14 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author kanehe
  */
 @Entity
-@Table(name = "user")
+@Table(name = "department")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "User.findAll", query = "SELECT u FROM User u"),
-    @NamedQuery(name = "User.findById", query = "SELECT u FROM User u WHERE u.id = :id"),
-    @NamedQuery(name = "User.findByUsername", query = "SELECT u FROM User u WHERE u.username = :username"),
-    @NamedQuery(name = "User.findByPassword", query = "SELECT u FROM User u WHERE u.password = :password"),
-    @NamedQuery(name = "User.findByCreateTime", query = "SELECT u FROM User u WHERE u.createTime = :createTime")})
-public class User implements Serializable {
+    @NamedQuery(name = "Department.findAll", query = "SELECT d FROM Department d"),
+    @NamedQuery(name = "Department.findById", query = "SELECT d FROM Department d WHERE d.id = :id"),
+    @NamedQuery(name = "Department.findByName", query = "SELECT d FROM Department d WHERE d.name = :name"),
+    @NamedQuery(name = "Department.findByTag", query = "SELECT d FROM Department d WHERE d.tag = :tag")})
+public class Department implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,29 +41,26 @@ public class User implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 16)
-    @Column(name = "username")
-    private String username;
+    @Size(min = 1, max = 45)
+    @Column(name = "name")
+    private String name;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 32)
-    @Column(name = "password")
-    private String password;
-    @Column(name = "create_time")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createTime;
+    @Size(min = 1, max = 255)
+    @Column(name = "tag")
+    private String tag;
 
-    public User() {
+    public Department() {
     }
 
-    public User(Integer id) {
+    public Department(Integer id) {
         this.id = id;
     }
 
-    public User(Integer id, String username, String password) {
+    public Department(Integer id, String name, String tag) {
         this.id = id;
-        this.username = username;
-        this.password = password;
+        this.name = name;
+        this.tag = tag;
     }
 
     public Integer getId() {
@@ -78,28 +71,20 @@ public class User implements Serializable {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getName() {
+        return name;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getPassword() {
-        return password;
+    public String getTag() {
+        return tag;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
     @Override
@@ -112,10 +97,10 @@ public class User implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof User)) {
+        if (!(object instanceof Department)) {
             return false;
         }
-        User other = (User) object;
+        Department other = (Department) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -124,7 +109,7 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "com.original.evaluate.entity.User[ id=" + id + " ]";
+        return "com.original.evaluate.entity.Department[ id=" + id + " ]";
     }
     
 }

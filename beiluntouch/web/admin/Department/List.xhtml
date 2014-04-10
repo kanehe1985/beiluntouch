@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="../template.xhtml">
+
+        <ui:define name="center">
+            <h:form id="DepartmentListForm">
+                <p:dataTable id="departments" var="department" value="#{departmentBean.departments}" rowKey="#{department.id}"
+                             selection="#{departmentBean.selectedDepartments}">
+
+                    <f:facet name="header">
+                        Department
+                    </f:facet>
+                    <p:column selectionMode="multiple" style="width:4%; text-align: center"/>
+                    <p:column headerText="ID">
+                        #{department.id}
+                    </p:column>
+
+                    <p:column headerText="Name">
+                        #{department.name}
+                    </p:column>
+                    
+                    <p:column headerText="Tag">
+                        #{department.tag}
+                    </p:column>
+
+                    <p:column headerText="options">
+                        <p:commandButton value="edit" icon="ui-icon-pencil" oncomplete="PF('DepartmentEditDialog').show();" update=":DepartmentEditForm">
+                            <f:setPropertyActionListener value="#{department}" target="#{departmentBean.editDepartment}"/>
+                        </p:commandButton>
+                    </p:column>
+                    <f:facet name="footer">                        
+                        <p:commandButton id="createButton" icon="ui-icon-plus"   value="Create" actionListener="#{departmentBean.prepareCreate}" update=":DepartmentCreateForm" oncomplete="PF('DepartmentCreateDialog').show()"/>
+                        <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="Delete" actionListener="#{departmentBean.delete}" update=":DepartmentListForm:departments">
+                            <p:confirm header="Confirmation" message="Are you sure?" icon="ui-icon-alert" />
+                        </p:commandButton>
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/>     
+                        </p:confirmDialog>
+                    </f:facet>
+                </p:dataTable>
+            </h:form>
+                      
+            <ui:include src="Create.xhtml"/>
+            <ui:include src="Edit.xhtml"/>
+        </ui:define>
+    </ui:composition>
+
+</html>
