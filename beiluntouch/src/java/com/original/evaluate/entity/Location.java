@@ -37,6 +37,18 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Location.findByLocationName", query = "SELECT l FROM Location l WHERE l.locationName = :locationName"),
     @NamedQuery(name = "Location.findByIpAddress", query = "SELECT l FROM Location l WHERE l.ipAddress = :ipAddress")})
 public class Location implements Serializable {
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 200)
+    @Column(name = "name")
+    private String name;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
+    @Column(name = "tag")
+    private String tag;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "locationId")
+    private Collection<Rom> romCollection;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -125,6 +137,31 @@ public class Location implements Serializable {
     @Override
     public String toString() {
         return "com.original.evaluate.entity.Location[ id=" + id + " ]";
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+
+    @XmlTransient
+    public Collection<Rom> getRomCollection() {
+        return romCollection;
+    }
+
+    public void setRomCollection(Collection<Rom> romCollection) {
+        this.romCollection = romCollection;
     }
     
 }

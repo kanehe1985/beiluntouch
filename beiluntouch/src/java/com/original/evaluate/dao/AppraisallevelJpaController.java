@@ -40,13 +40,16 @@ public class AppraisallevelJpaController implements Serializable {
     public void create(Appraisallevel appraisallevel) throws PreexistingEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
-            utx.begin();
+//            utx.begin();
             em = getEntityManager();
+            em.getTransaction().begin();
             em.persist(appraisallevel);
-            utx.commit();
+//            utx.commit();
+            em.getTransaction().commit();
         } catch (Exception ex) {
             try {
-                utx.rollback();
+//                utx.rollback();
+                 em.getTransaction().rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
             }
@@ -63,14 +66,14 @@ public class AppraisallevelJpaController implements Serializable {
 
     public void edit(Appraisallevel appraisallevel) throws NonexistentEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
-        try {
-            utx.begin();
+        try {          
             em = getEntityManager();
+            em.getTransaction().begin();
             appraisallevel = em.merge(appraisallevel);
-            utx.commit();
+            em.getTransaction().commit();
         } catch (Exception ex) {
             try {
-                utx.rollback();
+                em.getTransaction().rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
             }
@@ -92,8 +95,9 @@ public class AppraisallevelJpaController implements Serializable {
     public void destroy(Integer id) throws NonexistentEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
-            utx.begin();
+//            utx.begin();
             em = getEntityManager();
+            em.getTransaction().begin();
             Appraisallevel appraisallevel;
             try {
                 appraisallevel = em.getReference(Appraisallevel.class, id);
@@ -102,10 +106,12 @@ public class AppraisallevelJpaController implements Serializable {
                 throw new NonexistentEntityException("The appraisallevel with id " + id + " no longer exists.", enfe);
             }
             em.remove(appraisallevel);
-            utx.commit();
+//            utx.commit();
+            em.getTransaction().commit();
         } catch (Exception ex) {
             try {
-                utx.rollback();
+//                utx.rollback();
+                em.getTransaction().rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
             }
