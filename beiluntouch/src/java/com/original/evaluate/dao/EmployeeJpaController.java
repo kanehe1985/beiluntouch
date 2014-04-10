@@ -6,15 +6,19 @@
 
 package com.original.evaluate.dao;
 
+import com.original.evaluate.dao.exceptions.IllegalOrphanException;
 import com.original.evaluate.dao.exceptions.NonexistentEntityException;
 import com.original.evaluate.dao.exceptions.RollbackFailureException;
-import com.original.evaluate.entity.Employee;
 import java.io.Serializable;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import com.original.evaluate.entity.Location;
+import com.original.evaluate.entity.Appraisal;
+import com.original.evaluate.entity.Employee;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -22,7 +26,7 @@ import javax.transaction.UserTransaction;
 
 /**
  *
- * @author Administrator
+ * @author kanehe
  */
 public class EmployeeJpaController implements Serializable {
 
@@ -38,19 +42,37 @@ public class EmployeeJpaController implements Serializable {
     }
 
     public void create(Employee employee) throws RollbackFailureException, Exception {
+        if (employee.getAppraisalCollection() == null) {
+            employee.setAppraisalCollection(new ArrayList<Appraisal>());
+        }
         EntityManager em = null;
         try {
             utx.begin();
             em = getEntityManager();
-            Location location = employee.getLocation();
-            if (location != null) {
-                location = em.getReference(location.getClass(), location.getId());
-                employee.setLocation(location);
+            Location locationId = employee.getLocationId();
+            if (locationId != null) {
+                locationId = em.getReference(locationId.getClass(), locationId.getId());
+                employee.setLocationId(locationId);
             }
+            Collection<Appraisal> attachedAppraisalCollection = new ArrayList<Appraisal>();
+            for (Appraisal appraisalCollectionAppraisalToAttach : employee.getAppraisalCollection()) {
+                appraisalCollectionAppraisalToAttach = em.getReference(appraisalCollectionAppraisalToAttach.getClass(), appraisalCollectionAppraisalToAttach.getId());
+                attachedAppraisalCollection.add(appraisalCollectionAppraisalToAttach);
+            }
+            employee.setAppraisalCollection(attachedAppraisalCollection);
             em.persist(employee);
-            if (location != null) {
-                location.getEmployeeCollection().add(employee);
-                location = em.merge(location);
+            if (locationId != null) {
+                locationId.getEmployeeCollection().add(employee);
+                locationId = em.merge(locationId);
+            }
+            for (Appraisal appraisalCollectionAppraisal : employee.getAppraisalCollection()) {
+                Employee oldEmployeeOfAppraisalCollectionAppraisal = appraisalCollectionAppraisal.getEmployee();
+                appraisalCollectionAppraisal.setEmployee(employee);
+                appraisalCollectionAppraisal = em.merge(appraisalCollectionAppraisal);
+                if (oldEmployeeOfAppraisalCollectionAppraisal != null) {
+                    oldEmployeeOfAppraisalCollectionAppraisal.getAppraisalCollection().remove(appraisalCollectionAppraisal);
+                    oldEmployeeOfAppraisalCollectionAppraisal = em.merge(oldEmployeeOfAppraisalCollectionAppraisal);
+                }
             }
             utx.commit();
         } catch (Exception ex) {
@@ -67,26 +89,58 @@ public class EmployeeJpaController implements Serializable {
         }
     }
 
-    public void edit(Employee employee) throws NonexistentEntityException, RollbackFailureException, Exception {
+    public void edit(Employee employee) throws IllegalOrphanException, NonexistentEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
             utx.begin();
             em = getEntityManager();
             Employee persistentEmployee = em.find(Employee.class, employee.getId());
-            Location locationOld = persistentEmployee.getLocation();
-            Location locationNew = employee.getLocation();
-            if (locationNew != null) {
-                locationNew = em.getReference(locationNew.getClass(), locationNew.getId());
-                employee.setLocation(locationNew);
+            Location locationIdOld = persistentEmployee.getLocationId();
+            Location locationIdNew = employee.getLocationId();
+            Collection<Appraisal> appraisalCollectionOld = persistentEmployee.getAppraisalCollection();
+            Collection<Appraisal> appraisalCollectionNew = employee.getAppraisalCollection();
+            List<String> illegalOrphanMessages = null;
+            for (Appraisal appraisalCollectionOldAppraisal : appraisalCollectionOld) {
+                if (!appraisalCollectionNew.contains(appraisalCollectionOldAppraisal)) {
+                    if (illegalOrphanMessages == null) {
+                        illegalOrphanMessages = new ArrayList<String>();
+                    }
+                    illegalOrphanMessages.add("You must retain Appraisal " + appraisalCollectionOldAppraisal + " since its employee field is not nullable.");
+                }
             }
+            if (illegalOrphanMessages != null) {
+                throw new IllegalOrphanException(illegalOrphanMessages);
+            }
+            if (locationIdNew != null) {
+                locationIdNew = em.getReference(locationIdNew.getClass(), locationIdNew.getId());
+                employee.setLocationId(locationIdNew);
+            }
+            Collection<Appraisal> attachedAppraisalCollectionNew = new ArrayList<Appraisal>();
+            for (Appraisal appraisalCollectionNewAppraisalToAttach : appraisalCollectionNew) {
+                appraisalCollectionNewAppraisalToAttach = em.getReference(appraisalCollectionNewAppraisalToAttach.getClass(), appraisalCollectionNewAppraisalToAttach.getId());
+                attachedAppraisalCollectionNew.add(appraisalCollectionNewAppraisalToAttach);
+            }
+            appraisalCollectionNew = attachedAppraisalCollectionNew;
+            employee.setAppraisalCollection(appraisalCollectionNew);
             employee = em.merge(employee);
-            if (locationOld != null && !locationOld.equals(locationNew)) {
-                locationOld.getEmployeeCollection().remove(employee);
-                locationOld = em.merge(locationOld);
+            if (locationIdOld != null && !locationIdOld.equals(locationIdNew)) {
+                locationIdOld.getEmployeeCollection().remove(employee);
+                locationIdOld = em.merge(locationIdOld);
             }
-            if (locationNew != null && !locationNew.equals(locationOld)) {
-                locationNew.getEmployeeCollection().add(employee);
-                locationNew = em.merge(locationNew);
+            if (locationIdNew != null && !locationIdNew.equals(locationIdOld)) {
+                locationIdNew.getEmployeeCollection().add(employee);
+                locationIdNew = em.merge(locationIdNew);
+            }
+            for (Appraisal appraisalCollectionNewAppraisal : appraisalCollectionNew) {
+                if (!appraisalCollectionOld.contains(appraisalCollectionNewAppraisal)) {
+                    Employee oldEmployeeOfAppraisalCollectionNewAppraisal = appraisalCollectionNewAppraisal.getEmployee();
+                    appraisalCollectionNewAppraisal.setEmployee(employee);
+                    appraisalCollectionNewAppraisal = em.merge(appraisalCollectionNewAppraisal);
+                    if (oldEmployeeOfAppraisalCollectionNewAppraisal != null && !oldEmployeeOfAppraisalCollectionNewAppraisal.equals(employee)) {
+                        oldEmployeeOfAppraisalCollectionNewAppraisal.getAppraisalCollection().remove(appraisalCollectionNewAppraisal);
+                        oldEmployeeOfAppraisalCollectionNewAppraisal = em.merge(oldEmployeeOfAppraisalCollectionNewAppraisal);
+                    }
+                }
             }
             utx.commit();
         } catch (Exception ex) {
@@ -110,7 +164,7 @@ public class EmployeeJpaController implements Serializable {
         }
     }
 
-    public void destroy(Integer id) throws NonexistentEntityException, RollbackFailureException, Exception {
+    public void destroy(Integer id) throws IllegalOrphanException, NonexistentEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
             utx.begin();
@@ -122,10 +176,21 @@ public class EmployeeJpaController implements Serializable {
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The employee with id " + id + " no longer exists.", enfe);
             }
-            Location location = employee.getLocation();
-            if (location != null) {
-                location.getEmployeeCollection().remove(employee);
-                location = em.merge(location);
+            List<String> illegalOrphanMessages = null;
+            Collection<Appraisal> appraisalCollectionOrphanCheck = employee.getAppraisalCollection();
+            for (Appraisal appraisalCollectionOrphanCheckAppraisal : appraisalCollectionOrphanCheck) {
+                if (illegalOrphanMessages == null) {
+                    illegalOrphanMessages = new ArrayList<String>();
+                }
+                illegalOrphanMessages.add("This Employee (" + employee + ") cannot be destroyed since the Appraisal " + appraisalCollectionOrphanCheckAppraisal + " in its appraisalCollection field has a non-nullable employee field.");
+            }
+            if (illegalOrphanMessages != null) {
+                throw new IllegalOrphanException(illegalOrphanMessages);
+            }
+            Location locationId = employee.getLocationId();
+            if (locationId != null) {
+                locationId.getEmployeeCollection().remove(employee);
+                locationId = em.merge(locationId);
             }
             em.remove(employee);
             utx.commit();

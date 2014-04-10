@@ -7,7 +7,9 @@
 package com.original.evaluate.entity;
 
 import java.io.Serializable;
+import java.util.Collection;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,14 +19,16 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author Administrator
+ * @author kanehe
  */
 @Entity
 @Table(name = "employee")
@@ -34,14 +38,12 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Employee.findById", query = "SELECT e FROM Employee e WHERE e.id = :id"),
     @NamedQuery(name = "Employee.findByName", query = "SELECT e FROM Employee e WHERE e.name = :name"),
     @NamedQuery(name = "Employee.findBySex", query = "SELECT e FROM Employee e WHERE e.sex = :sex"),
-    @NamedQuery(name = "Employee.findByDuty", query = "SELECT e FROM Employee e WHERE e.duty = :duty"),
-    @NamedQuery(name = "Employee.findByManager", query = "SELECT e FROM Employee e WHERE e.manager = :manager")})
+    @NamedQuery(name = "Employee.findByIsallowappraisal", query = "SELECT e FROM Employee e WHERE e.isallowappraisal = :isallowappraisal"),
+    @NamedQuery(name = "Employee.findByRom", query = "SELECT e FROM Employee e WHERE e.rom = :rom"),
+    @NamedQuery(name = "Employee.findByGroup", query = "SELECT e FROM Employee e WHERE e.group = :group"),
+    @NamedQuery(name = "Employee.findByRomno", query = "SELECT e FROM Employee e WHERE e.romno = :romno"),
+    @NamedQuery(name = "Employee.findByGroupname", query = "SELECT e FROM Employee e WHERE e.groupname = :groupname")})
 public class Employee implements Serializable {
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 45)
-    @Column(name = "photoUrl")
-    private String photoUrl;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,18 +60,27 @@ public class Employee implements Serializable {
     @Size(min = 1, max = 45)
     @Column(name = "sex")
     private String sex;
+    @Column(name = "isallowappraisal")
+    private Boolean isallowappraisal;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 45)
-    @Column(name = "duty")
-    private String duty;
+    @Column(name = "rom")
+    private int rom;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "manager")
-    private int manager;
-    @JoinColumn(name = "location", referencedColumnName = "id")
+    @Column(name = "group")
+    private int group;
+    @Size(max = 45)
+    @Column(name = "romno")
+    private String romno;
+    @Size(max = 45)
+    @Column(name = "groupname")
+    private String groupname;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
+    private Collection<Appraisal> appraisalCollection;
+    @JoinColumn(name = "location_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Location location;
+    private Location locationId;
 
     public Employee() {
     }
@@ -78,12 +89,12 @@ public class Employee implements Serializable {
         this.id = id;
     }
 
-    public Employee(Integer id, String name, String sex, String duty, int manager) {
+    public Employee(Integer id, String name, String sex, int rom, int group) {
         this.id = id;
         this.name = name;
         this.sex = sex;
-        this.duty = duty;
-        this.manager = manager;
+        this.rom = rom;
+        this.group = group;
     }
 
     public Integer getId() {
@@ -110,28 +121,61 @@ public class Employee implements Serializable {
         this.sex = sex;
     }
 
-    public String getDuty() {
-        return duty;
+    public Boolean getIsallowappraisal() {
+        return isallowappraisal;
     }
 
-    public void setDuty(String duty) {
-        this.duty = duty;
+    public void setIsallowappraisal(Boolean isallowappraisal) {
+        this.isallowappraisal = isallowappraisal;
     }
 
-    public int getManager() {
-        return manager;
+    public int getRom() {
+        return rom;
     }
 
-    public void setManager(int manager) {
-        this.manager = manager;
+    public void setRom(int rom) {
+        this.rom = rom;
     }
 
-    public Location getLocation() {
-        return location;
+    public int getGroup() {
+        return group;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
+    public void setGroup(int group) {
+        this.group = group;
+    }
+
+    public String getRomno() {
+        return romno;
+    }
+
+    public void setRomno(String romno) {
+        this.romno = romno;
+    }
+
+    public String getGroupname() {
+        return groupname;
+    }
+
+    public void setGroupname(String groupname) {
+        this.groupname = groupname;
+    }
+
+    @XmlTransient
+    public Collection<Appraisal> getAppraisalCollection() {
+        return appraisalCollection;
+    }
+
+    public void setAppraisalCollection(Collection<Appraisal> appraisalCollection) {
+        this.appraisalCollection = appraisalCollection;
+    }
+
+    public Location getLocationId() {
+        return locationId;
+    }
+
+    public void setLocationId(Location locationId) {
+        this.locationId = locationId;
     }
 
     @Override
@@ -157,14 +201,6 @@ public class Employee implements Serializable {
     @Override
     public String toString() {
         return "com.original.evaluate.entity.Employee[ id=" + id + " ]";
-    }
-
-    public String getPhotoUrl() {
-        return photoUrl;
-    }
-
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
     }
     
 }

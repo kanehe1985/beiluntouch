@@ -7,9 +7,8 @@
 package com.original.evaluate.entity;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.Date;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,26 +16,27 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
  * @author kanehe
  */
 @Entity
-@Table(name = "location")
+@Table(name = "user")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Location.findAll", query = "SELECT l FROM Location l"),
-    @NamedQuery(name = "Location.findById", query = "SELECT l FROM Location l WHERE l.id = :id"),
-    @NamedQuery(name = "Location.findByName", query = "SELECT l FROM Location l WHERE l.name = :name"),
-    @NamedQuery(name = "Location.findByTag", query = "SELECT l FROM Location l WHERE l.tag = :tag")})
-public class Location implements Serializable {
+    @NamedQuery(name = "User.findAll", query = "SELECT u FROM User u"),
+    @NamedQuery(name = "User.findById", query = "SELECT u FROM User u WHERE u.id = :id"),
+    @NamedQuery(name = "User.findByUsername", query = "SELECT u FROM User u WHERE u.username = :username"),
+    @NamedQuery(name = "User.findByPassword", query = "SELECT u FROM User u WHERE u.password = :password"),
+    @NamedQuery(name = "User.findByCreateTime", query = "SELECT u FROM User u WHERE u.createTime = :createTime")})
+public class User implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,28 +45,29 @@ public class Location implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 200)
-    @Column(name = "name")
-    private String name;
+    @Size(min = 1, max = 16)
+    @Column(name = "username")
+    private String username;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 255)
-    @Column(name = "tag")
-    private String tag;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "locationId")
-    private Collection<Employee> employeeCollection;
+    @Size(min = 1, max = 32)
+    @Column(name = "password")
+    private String password;
+    @Column(name = "create_time")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createTime;
 
-    public Location() {
+    public User() {
     }
 
-    public Location(Integer id) {
+    public User(Integer id) {
         this.id = id;
     }
 
-    public Location(Integer id, String name, String tag) {
+    public User(Integer id, String username, String password) {
         this.id = id;
-        this.name = name;
-        this.tag = tag;
+        this.username = username;
+        this.password = password;
     }
 
     public Integer getId() {
@@ -77,29 +78,28 @@ public class Location implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public String getTag() {
-        return tag;
+    public String getPassword() {
+        return password;
     }
 
-    public void setTag(String tag) {
-        this.tag = tag;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    @XmlTransient
-    public Collection<Employee> getEmployeeCollection() {
-        return employeeCollection;
+    public Date getCreateTime() {
+        return createTime;
     }
 
-    public void setEmployeeCollection(Collection<Employee> employeeCollection) {
-        this.employeeCollection = employeeCollection;
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
     @Override
@@ -112,10 +112,10 @@ public class Location implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Location)) {
+        if (!(object instanceof User)) {
             return false;
         }
-        Location other = (Location) object;
+        User other = (User) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -124,7 +124,7 @@ public class Location implements Serializable {
 
     @Override
     public String toString() {
-        return "com.original.evaluate.entity.Location[ id=" + id + " ]";
+        return "com.original.evaluate.entity.User[ id=" + id + " ]";
     }
     
 }
