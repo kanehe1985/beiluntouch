@@ -33,8 +33,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Employee.findAll", query = "SELECT e FROM Employee e"),
     @NamedQuery(name = "Employee.findById", query = "SELECT e FROM Employee e WHERE e.id = :id"),
     @NamedQuery(name = "Employee.findByName", query = "SELECT e FROM Employee e WHERE e.name = :name"),
-    @NamedQuery(name = "Employee.findByRom", query = "SELECT e FROM Employee e WHERE e.rom = :rom"),
-    @NamedQuery(name = "Employee.findByGroup", query = "SELECT e FROM Employee e WHERE e.group = :group"),
+    @NamedQuery(name = "Employee.findByRomno", query = "SELECT e FROM Employee e WHERE e.romno = :romno"),
+    @NamedQuery(name = "Employee.findByGroupname", query = "SELECT e FROM Employee e WHERE e.groupname = :groupname"),
     @NamedQuery(name = "Employee.findByIsallowappraisal", query = "SELECT e FROM Employee e WHERE e.isallowappraisal = :isallowappraisal"),
     @NamedQuery(name = "Employee.findByPicture", query = "SELECT e FROM Employee e WHERE e.picture = :picture")})
 public class Employee implements Serializable {
@@ -50,11 +50,11 @@ public class Employee implements Serializable {
     @Column(name = "name")
     private String name;
     @Size(max = 45)
-    @Column(name = "rom")
-    private String rom;
+    @Column(name = "romno")
+    private String romno;
     @Size(max = 45)
-    @Column(name = "group")
-    private String group;
+    @Column(name = "groupname")
+    private String groupname;
     @Column(name = "isallowappraisal")
     private Boolean isallowappraisal;
     @Size(max = 255)
@@ -92,20 +92,20 @@ public class Employee implements Serializable {
         this.name = name;
     }
 
-    public String getRom() {
-        return rom;
+    public String getRomno() {
+        return romno;
     }
 
-    public void setRom(String rom) {
-        this.rom = rom;
+    public void setRomno(String romno) {
+        this.romno = romno;
     }
 
-    public String getGroup() {
-        return group;
+    public String getGroupname() {
+        return groupname;
     }
 
-    public void setGroup(String group) {
-        this.group = group;
+    public void setGroupname(String groupname) {
+        this.groupname = groupname;
     }
 
     public Boolean getIsallowappraisal() {

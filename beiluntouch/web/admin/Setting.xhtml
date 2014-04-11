@@ -9,14 +9,29 @@
     <ui:composition template="template.xhtml">
         <ui:define name="center">
             <h:form id="SettingForm">
+                <p:growl id="msgs" />
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2">
+                        <f:facet name="header">  
+                            Basic PanelGrid  
+                        </f:facet>
                         <p:outputLabel value="adminpassword" for="adminpassword" />
-                        <p:inputText id="adminpassword" value="#{settingBean.setting.adminpassword}" title="adminpassword" />
+                        <p:inplace id="inpadminpassword" editor="true"> 
+                            <p:ajax event="save" listener="#{settingBean.save}" update="msgs" />
+                            <p:inputText id="adminpassword" value="#{settingBean.setting.adminpassword}" title="adminpassword" required="true" label="adminpassword"/>
+                        </p:inplace>
+                        
                         <p:outputLabel value="messageserver" for="messageserver" />
-                        <p:inputText id="messageserver" value="#{settingBean.setting.messageserver}" title="messageserver" />
+                        <p:inplace id="inpmessageserver" editor="true">
+                            <p:ajax event="save" listener="#{settingBean.save}" update="msgs" />
+                            <p:inputText id="messageserver" value="#{settingBean.setting.messageserver}" title="messageserver" />
+                        </p:inplace>
+                        
                         <p:outputLabel value="telphoneno" for="telphoneno" />
-                        <p:inputText id="telphoneno" value="#{settingBean.setting.telphoneno}" title="telphoneno" />
+                        <p:inplace id="inptelphoneno" editor="true">
+                            <p:ajax event="save" listener="#{settingBean.save}" update="msgs" />
+                            <p:inputText id="telphoneno" value="#{settingBean.setting.telphoneno}" title="telphoneno" />
+                        </p:inplace>
                     </p:panelGrid>
                 </h:panelGroup>
             </h:form>

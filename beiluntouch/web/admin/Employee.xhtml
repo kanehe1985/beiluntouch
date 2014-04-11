@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="./template.xhtml">
+
+        <ui:define name="center">
+            <h:form id="EmployeeListForm">
+                <p:dataTable id="employees" var="employee" value="#{employeeBean.employees}" rowKey="#{employee.id}">
+
+                    <f:facet name="header">
+                        Employee
+                    </f:facet>                    
+                    <p:column headerText="ID">
+                        #{employee.id}
+                    </p:column>
+
+                    <p:column headerText="Name">
+                        #{employee.name}
+                    </p:column>
+                    
+                    <p:column headerText="department">
+                        #{employee.department.name}
+                    </p:column>
+                    
+                    <p:column headerText="rom">
+                        #{employee.romno}
+                    </p:column>
+
+                    <p:column headerText="group">
+                        #{employee.groupname}
+                    </p:column>
+                    
+                    <p:column headerText="picture">
+                        #{employee.picture}
+                    </p:column>
+                    
+                    <p:column headerText="isallowappraisal">
+                        #{employee.isallowappraisal}
+                    </p:column>                   
+                                  
+                </p:dataTable>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

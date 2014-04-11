@@ -28,6 +28,8 @@ public class SettingBO {
     private SettingJpaController settingJpaController;
     
     private Setting setting = null;
+    
+    private boolean isNew = true;
  
     public SettingBO() throws NamingException{
         if (settingJpaController == null) {
@@ -37,13 +39,24 @@ public class SettingBO {
         }
     }
     
-    public Setting getSetting(){        
+    public Setting getSetting(){
         List<Setting> settings = settingJpaController.findSettingEntities();
         if(settings.size()>0){
             setting = settings.get(0);
+            isNew = false;
         } else {
             setting = new Setting();
+            isNew = true;
         }
         return setting;
+    }
+    
+    public void save(Setting setting) throws RollbackFailureException, Exception{
+        if(true == isNew){
+            settingJpaController.create(setting);
+        } else {
+            settingJpaController.edit(setting);
+        }
+        
     }
 }

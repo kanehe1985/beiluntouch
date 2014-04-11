@@ -8,7 +8,7 @@ package com.original.evaluate.dao;
 
 import com.original.evaluate.dao.exceptions.NonexistentEntityException;
 import com.original.evaluate.dao.exceptions.RollbackFailureException;
-import com.original.evaluate.entity.Setting;
+import com.original.evaluate.entity.Employee;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -23,9 +23,9 @@ import javax.transaction.UserTransaction;
  *
  * @author kanehe
  */
-public class SettingJpaController implements Serializable {
+public class EmployeeJpaController implements Serializable {
 
-    public SettingJpaController(UserTransaction utx, EntityManagerFactory emf) {
+    public EmployeeJpaController(UserTransaction utx, EntityManagerFactory emf) {
         this.utx = utx;
         this.emf = emf;
     }
@@ -36,19 +36,16 @@ public class SettingJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(Setting setting) throws RollbackFailureException, Exception {
+    public void create(Employee employee) throws RollbackFailureException, Exception {
         EntityManager em = null;
         try {
-//            utx.begin();
+            utx.begin();
             em = getEntityManager();
-            em.getTransaction().begin();
-            em.persist(setting);
-//            utx.commit();
-            em.getTransaction().commit();
+            em.persist(employee);
+            utx.commit();
         } catch (Exception ex) {
             try {
-//                utx.rollback();
-                em.getTransaction().rollback();
+                utx.rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
             }
@@ -60,27 +57,24 @@ public class SettingJpaController implements Serializable {
         }
     }
 
-    public void edit(Setting setting) throws NonexistentEntityException, RollbackFailureException, Exception {
+    public void edit(Employee employee) throws NonexistentEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
-//            utx.begin();
+            utx.begin();
             em = getEntityManager();
-            em.getTransaction().begin();
-            setting = em.merge(setting);
-//            utx.commit();
-            em.getTransaction().commit();
+            employee = em.merge(employee);
+            utx.commit();
         } catch (Exception ex) {
             try {
-//                utx.rollback();
-                em.getTransaction().rollback();
+                utx.rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
             }
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                Integer id = setting.getId();
-                if (findSetting(id) == null) {
-                    throw new NonexistentEntityException("The setting with id " + id + " no longer exists.");
+                Integer id = employee.getId();
+                if (findEmployee(id) == null) {
+                    throw new NonexistentEntityException("The employee with id " + id + " no longer exists.");
                 }
             }
             throw ex;
@@ -94,23 +88,20 @@ public class SettingJpaController implements Serializable {
     public void destroy(Integer id) throws NonexistentEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
-//            utx.begin();
+            utx.begin();
             em = getEntityManager();
-            em.getTransaction().begin();
-            Setting setting;
+            Employee employee;
             try {
-                setting = em.getReference(Setting.class, id);
-                setting.getId();
+                employee = em.getReference(Employee.class, id);
+                employee.getId();
             } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The setting with id " + id + " no longer exists.", enfe);
+                throw new NonexistentEntityException("The employee with id " + id + " no longer exists.", enfe);
             }
-            em.remove(setting);
-//            utx.commit();
-            em.getTransaction().commit();
+            em.remove(employee);
+            utx.commit();
         } catch (Exception ex) {
             try {
-//                utx.rollback();
-                em.getTransaction().rollback();
+                utx.rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
             }
@@ -122,19 +113,19 @@ public class SettingJpaController implements Serializable {
         }
     }
 
-    public List<Setting> findSettingEntities() {
-        return findSettingEntities(true, -1, -1);
+    public List<Employee> findEmployeeEntities() {
+        return findEmployeeEntities(true, -1, -1);
     }
 
-    public List<Setting> findSettingEntities(int maxResults, int firstResult) {
-        return findSettingEntities(false, maxResults, firstResult);
+    public List<Employee> findEmployeeEntities(int maxResults, int firstResult) {
+        return findEmployeeEntities(false, maxResults, firstResult);
     }
 
-    private List<Setting> findSettingEntities(boolean all, int maxResults, int firstResult) {
+    private List<Employee> findEmployeeEntities(boolean all, int maxResults, int firstResult) {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            cq.select(cq.from(Setting.class));
+            cq.select(cq.from(Employee.class));
             Query q = em.createQuery(cq);
             if (!all) {
                 q.setMaxResults(maxResults);
@@ -146,20 +137,20 @@ public class SettingJpaController implements Serializable {
         }
     }
 
-    public Setting findSetting(Integer id) {
+    public Employee findEmployee(Integer id) {
         EntityManager em = getEntityManager();
         try {
-            return em.find(Setting.class, id);
+            return em.find(Employee.class, id);
         } finally {
             em.close();
         }
     }
 
-    public int getSettingCount() {
+    public int getEmployeeCount() {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            Root<Setting> rt = cq.from(Setting.class);
+            Root<Employee> rt = cq.from(Employee.class);
             cq.select(em.getCriteriaBuilder().count(rt));
             Query q = em.createQuery(cq);
             return ((Long) q.getSingleResult()).intValue();

@@ -38,4 +38,9 @@ public class SettingBean implements Serializable {
     public void setSetting(Setting setting) {
         this.setting = setting;   
     }
+    
+    public void save() throws Exception{
+        settingBO.save(setting);
+        setting = settingBO.getSetting();
+    }
 }
