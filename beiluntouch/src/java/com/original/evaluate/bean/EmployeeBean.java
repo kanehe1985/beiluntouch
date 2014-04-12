@@ -65,8 +65,8 @@ public class EmployeeBean implements Serializable {
         this.employees = employees;   
     }
     
-    public void update() throws Exception{
-        employeeBO.save(editEmployee);        
-        employees = employeeBO.getAllEmployeeList();
+    public void update(Employee employee) throws Exception{
+        employeeBO.save(employee);        
+//        employees = employeeBO.getAllEmployeeList();
     }
 }

@@ -6,7 +6,7 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 
-    <ui:composition template="../template.xhtml">
+    <ui:composition template="./template.xhtml">
 
         <ui:define name="center">
             <h:form id="ReasonListForm">
@@ -43,8 +43,31 @@
                 </p:dataTable>
             </h:form>
                       
-            <ui:include src="Create.xhtml"/>
-            <ui:include src="Edit.xhtml"/>
+            <p:dialog id="ReasonCreateDlg" widgetVar="ReasonCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{msgs.CreateReasonTitle}">
+                <h:form id="ReasonCreateForm">
+                    <h:panelGroup id="display">
+                        <p:panelGrid columns="2">
+                                <p:outputLabel value="content" for="content" />
+                                <p:inputText id="content" value="#{reasonBean.editReason.content}" title="content" />
+                            </p:panelGrid>
+                        <p:commandButton actionListener="#{reasonBean.create}" value="#{msgs.Save}" update=":ReasonListForm:reasons" oncomplete="PF('ReasonCreateDialog').hide();"/>
+                        <p:commandButton value="#{msgs.Cancel}" onclick="ReasonCreateDialog.hide()"/>
+                    </h:panelGroup>
+                </h:form>
+            </p:dialog>
+            
+            <p:dialog id="ReasonEditDlg" widgetVar="ReasonEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{msgs.EditReasonTitle}">
+                <h:form id="ReasonEditForm">
+                    <h:panelGroup id="display">
+                        <p:panelGrid columns="2">
+                            <p:outputLabel value="content" for="content" />
+                            <p:inputText id="content" value="#{reasonBean.editReason.content}" title="content" />
+                        </p:panelGrid>
+                        <p:commandButton actionListener="#{reasonBean.update}" value="#{msgs.Save}" update=":ReasonListForm:reasons" oncomplete="PF('ReasonEditDialog').hide();"/>
+                        <p:commandButton value="#{msgs.Cancel}" onclick="ReasonEditDialog.hide()"/>
+                    </h:panelGroup>
+                </h:form>
+            </p:dialog>
         </ui:define>
     </ui:composition>
 

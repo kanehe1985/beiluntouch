@@ -10,6 +10,7 @@ import com.original.evaluate.dao.exceptions.RollbackFailureException;
 import com.original.evaluate.entity.Appraisal;
 import com.original.util.FacesUtil;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -35,6 +36,10 @@ public class AppraisalBO {
 
     public List<Appraisal> getAllAppraisalList() throws NamingException {
         return appraisalJpaController.findAppraisalEntities();
+    }
+    
+    public List<Appraisal> getAppraisalListByDuration(Date beginDate,Date endDate){
+        return appraisalJpaController.findAppraisalEntitiesByDuration(beginDate, endDate);
     }
     
     public Appraisal getAppraisalById(Integer id) {

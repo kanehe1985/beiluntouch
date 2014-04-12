@@ -60,13 +60,16 @@ public class EmployeeJpaController implements Serializable {
     public void edit(Employee employee) throws NonexistentEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
-            utx.begin();
+//            utx.begin();
             em = getEntityManager();
+            em.getTransaction().begin();
             employee = em.merge(employee);
-            utx.commit();
+//            utx.commit();
+            em.getTransaction().commit();
         } catch (Exception ex) {
             try {
                 utx.rollback();
+                em.getTransaction().rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
             }

@@ -21,10 +21,24 @@
                         
                     </h:form>
                 </p:layoutUnit>
-
-                <p:layoutUnit position="west" size="195" style="border: 0px;">
+                <p:layoutUnit position="west" size="250" collapsible="true" style="border: 0px;">
                     <h:form>
-                        <a href="admin/List.xhtml">Appraisallevel</a>
+                        <p:menu>
+                            <p:submenu label="数据统计">
+                                <p:menuitem value="评价统计" outcome="Appraisal" />
+                            </p:submenu>
+                            <p:submenu label="人员与设备">
+                                <p:menuitem value="人员管理" outcome="Employee" />
+                                <p:menuitem value="设备绑定" outcome="Department" />
+                            </p:submenu>
+                            <p:submenu label="评价管理">
+                                <p:menuitem value="快捷回复" outcome="Reason" />
+                                <p:menuitem value="评价等级" outcome="Appraisallevel"/>
+                            </p:submenu>
+                            <p:submenu label="设置">
+                                <p:menuitem value="系统设置" outcome="Setting" />
+                            </p:submenu>
+                        </p:menu>
                     </h:form>
                 </p:layoutUnit>
 

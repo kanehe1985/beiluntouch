@@ -40,7 +40,9 @@
                     </p:column>
                     
                     <p:column headerText="isallowappraisal">
-                        #{employee.isallowappraisal}
+                        <p:selectBooleanButton value="#{employee.isallowappraisal}" onLabel="Yes" offLabel="No" onIcon="ui-icon-check" offIcon="ui-icon-close">  
+                            <p:ajax listener="#{employeeBean.update(employee)}"/>
+                        </p:selectBooleanButton>
                     </p:column>                   
                                   
                 </p:dataTable>

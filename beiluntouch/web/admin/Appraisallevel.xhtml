@@ -6,7 +6,7 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 
-    <ui:composition template="../template.xhtml">
+    <ui:composition template="./template.xhtml">
 
         <ui:define name="center">
             <h:form id="AppraisallevelListForm">
@@ -45,9 +45,36 @@
                     </f:facet>
                 </p:dataTable>
             </h:form>
-                      
-            <ui:include src="Create.xhtml"/>
-            <ui:include src="Edit.xhtml"/>
+            
+            <p:dialog id="AppraisallevelCreateDlg" widgetVar="AppraisallevelCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{msgs.CreateAppraisallevelTitle}">
+                <h:form id="AppraisallevelCreateForm">
+                    <h:panelGroup id="display">
+                        <p:panelGrid columns="2">
+                            <p:outputLabel value="#{msgs.EditAppraisallevelLabel_name}" for="name" />
+                            <p:inputText id="name" value="#{appraisallevelBean.editAppraisallevel.name}" title="#{msgs.EditAppraisallevelTitle_name}" />
+                            <p:outputLabel value="#{msgs.EditAppraisallevelLabel_isalert}" for="isalert" />
+                            <p:selectBooleanCheckbox id="isalert" value="#{appraisallevelBean.editAppraisallevel.isalert}" />
+                        </p:panelGrid>
+                        <p:commandButton actionListener="#{appraisallevelBean.create}" value="#{msgs.Save}" update=":AppraisallevelListForm:appraisallevels" oncomplete="PF('AppraisallevelCreateDialog').hide();"/>
+                        <p:commandButton value="#{msgs.Cancel}" onclick="AppraisallevelCreateDialog.hide()"/>
+                    </h:panelGroup>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog id="AppraisallevelEditDlg" widgetVar="AppraisallevelEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{msgs.EditAppraisallevelTitle}">
+                <h:form id="AppraisallevelEditForm">
+                    <h:panelGroup id="display">
+                        <p:panelGrid columns="2">
+                            <p:outputLabel value="#{msgs.EditAppraisallevelLabel_name}" for="name" />
+                            <p:inputText id="name" value="#{appraisallevelBean.editAppraisallevel.name}" title="#{msgs.EditAppraisallevelTitle_name}" />
+                            <p:outputLabel value="#{msgs.EditAppraisallevelLabel_isalert}" for="isalert" />
+                            <p:selectBooleanCheckbox id="isalert" value="#{appraisallevelBean.editAppraisallevel.isalert}" />
+                        </p:panelGrid>
+                        <p:commandButton actionListener="#{appraisallevelBean.update}" value="#{msgs.Save}" update=":AppraisallevelListForm:appraisallevels" oncomplete="PF('AppraisallevelEditDialog').hide();"/>
+                        <p:commandButton value="#{msgs.Cancel}" onclick="AppraisallevelEditDialog.hide()"/>
+                    </h:panelGroup>
+                </h:form>
+            </p:dialog>
         </ui:define>
     </ui:composition>
 

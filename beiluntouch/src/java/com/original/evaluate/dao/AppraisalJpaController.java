@@ -9,15 +9,17 @@ package com.original.evaluate.dao;
 import com.original.evaluate.dao.exceptions.NonexistentEntityException;
 import com.original.evaluate.dao.exceptions.RollbackFailureException;
 import com.original.evaluate.entity.Appraisal;
-import java.io.Serializable;
-import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import com.original.evaluate.entity.Appraisal_;
 import com.original.evaluate.entity.Appraisallevel;
+import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.transaction.UserTransaction;
 
 /**
@@ -149,8 +151,21 @@ public class AppraisalJpaController implements Serializable {
 
     public List<Appraisal> findAppraisalEntities(int maxResults, int firstResult) {
         return findAppraisalEntities(false, maxResults, firstResult);
+    }   
+            
+    public List<Appraisal> findAppraisalEntitiesByDuration(Date beginDate, Date endDate) {
+        EntityManager em = getEntityManager();
+        try {
+            CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
+            Root<Appraisal> appraisal = cq.from(Appraisal.class);
+            cq.where(appraisal.get(Appraisal_.createdate).in(beginDate,endDate));
+            Query q = em.createQuery(cq);
+            return q.getResultList();
+        } finally {
+            em.close();
+        }
     }
-
+            
     private List<Appraisal> findAppraisalEntities(boolean all, int maxResults, int firstResult) {
         EntityManager em = getEntityManager();
         try {
