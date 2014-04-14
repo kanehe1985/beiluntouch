@@ -82,6 +82,10 @@ public class DepartmentBean implements Serializable {
         departments = departmentBO.getAllDepartmentList();
     }
     
+    public void refresh() throws NamingException{
+        departments = departmentBO.getAllDepartmentList();
+    }
+    
     public void prepareCreate() {
         editDepartment = new Department();
     }

@@ -12,13 +12,17 @@ import com.original.evaluate.entity.Appraisal;
 import com.original.evaluate.entity.Appraisal_;
 import com.original.evaluate.entity.Appraisallevel;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.UserTransaction;
 
@@ -157,8 +161,26 @@ public class AppraisalJpaController implements Serializable {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
+            CriteriaBuilder cb = em.getCriteriaBuilder();
             Root<Appraisal> appraisal = cq.from(Appraisal.class);
-            cq.where(appraisal.get(Appraisal_.createdate).in(beginDate,endDate));
+            Path<Date> createdate = appraisal.get("createdate");
+            
+            List<Predicate> plist = new ArrayList<>();
+            if(beginDate != null){
+                Predicate pBeginDate = cb.greaterThanOrEqualTo(createdate, beginDate);
+                plist.add(pBeginDate);
+            }            
+            
+            if(endDate != null){
+                Predicate pEndDate = cb.lessThanOrEqualTo(createdate, endDate);
+                plist.add(pEndDate);
+            }
+            
+            Predicate[] parray = new Predicate[plist.size()];
+            plist.toArray(parray);
+            Predicate p = cb.and(parray);
+            
+            cq.where(p);
             Query q = em.createQuery(cq);
             return q.getResultList();
         } finally {

@@ -14,64 +14,62 @@
                              selection="#{appraisallevelBean.selectedAppraisallevels}">
 
                     <f:facet name="header">
-                        AppraisallevelList
+                        评价等级
                     </f:facet>
                     <p:column selectionMode="multiple" style="width:4%; text-align: center"/>
-                    <p:column headerText="ID">
-                        #{appraisallevel.id}
-                    </p:column>
 
-                    <p:column headerText="Name">
+                    <p:column headerText="等级名称">
                         #{appraisallevel.name}
                     </p:column>
 
-                    <p:column headerText="isalert" >
-                        #{appraisallevel.isalert}
+                    <p:column headerText="是否通知" >
+                        #{appraisallevel.isalert?"是":"否"}
                     </p:column>
-                    <p:column headerText="options">
-                        <p:commandButton value="edit" icon="ui-icon-pencil" oncomplete="PF('AppraisallevelEditDialog').show();" update=":AppraisallevelEditForm">
+                    <p:column headerText="操作">
+                        <p:commandButton value="编辑" icon="ui-icon-pencil" oncomplete="PF('AppraisallevelEditDialog').show();" update=":AppraisallevelEditForm">
                             <f:setPropertyActionListener value="#{appraisallevel}" target="#{appraisallevelBean.editAppraisallevel}"/>
                         </p:commandButton>
                     </p:column>
                     <f:facet name="footer">                        
-                        <p:commandButton id="createButton" icon="ui-icon-plus"   value="Create" actionListener="#{appraisallevelBean.prepareCreate}" update=":AppraisallevelCreateForm" oncomplete="PF('AppraisallevelCreateDialog').show()"/>
-                        <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="Delete" actionListener="#{appraisallevelBean.delete}" update=":AppraisallevelListForm:appraisallevels">
-                            <p:confirm header="Confirmation" message="Are you sure?" icon="ui-icon-alert" />
+                        <p:commandButton id="createButton" icon="ui-icon-plus"   value="新建" actionListener="#{appraisallevelBean.prepareCreate}" update=":AppraisallevelCreateForm" oncomplete="PF('AppraisallevelCreateDialog').show()"/>
+                        <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="删除" actionListener="#{appraisallevelBean.delete}" update=":AppraisallevelListForm:appraisallevels">
+                            <p:confirm header="提示" message="是否删除？" icon="ui-icon-alert" />
                         </p:commandButton>
                         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
-                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/>     
+                            <p:commandButton value="是" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+                            <p:commandButton value="否" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/>     
                         </p:confirmDialog>
+                        <p:commandButton id="refreshButton" icon="ui-icon-refresh" value="刷新" actionListener="#{appraisallevelBean.refresh}" update=":AppraisallevelListForm:appraisallevels"/>
                     </f:facet>
                 </p:dataTable>
             </h:form>
             
-            <p:dialog id="AppraisallevelCreateDlg" widgetVar="AppraisallevelCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{msgs.CreateAppraisallevelTitle}">
+            <p:dialog id="AppraisallevelCreateDlg" widgetVar="AppraisallevelCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="新建">
                 <h:form id="AppraisallevelCreateForm">
                     <h:panelGroup id="display">
                         <p:panelGrid columns="2">
-                            <p:outputLabel value="#{msgs.EditAppraisallevelLabel_name}" for="name" />
+                            <p:outputLabel value="等级名称" for="name" />
                             <p:inputText id="name" value="#{appraisallevelBean.editAppraisallevel.name}" title="#{msgs.EditAppraisallevelTitle_name}" />
-                            <p:outputLabel value="#{msgs.EditAppraisallevelLabel_isalert}" for="isalert" />
+                            <p:outputLabel value="是否通知" for="isalert" />
                             <p:selectBooleanCheckbox id="isalert" value="#{appraisallevelBean.editAppraisallevel.isalert}" />
                         </p:panelGrid>
-                        <p:commandButton actionListener="#{appraisallevelBean.create}" value="#{msgs.Save}" update=":AppraisallevelListForm:appraisallevels" oncomplete="PF('AppraisallevelCreateDialog').hide();"/>
-                        <p:commandButton value="#{msgs.Cancel}" onclick="AppraisallevelCreateDialog.hide()"/>
+                        <p:commandButton actionListener="#{appraisallevelBean.create}" value="保存" update=":AppraisallevelListForm:appraisallevels" oncomplete="PF('AppraisallevelCreateDialog').hide();"/>
+                        <p:commandButton value="取消" onclick="AppraisallevelCreateDialog.hide()"/>
                     </h:panelGroup>
                 </h:form>
             </p:dialog>
 
-            <p:dialog id="AppraisallevelEditDlg" widgetVar="AppraisallevelEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{msgs.EditAppraisallevelTitle}">
+            <p:dialog id="AppraisallevelEditDlg" widgetVar="AppraisallevelEditDialog" modal="true" resizable="false" appendTo="@(body)" header="编辑">
                 <h:form id="AppraisallevelEditForm">
                     <h:panelGroup id="display">
                         <p:panelGrid columns="2">
-                            <p:outputLabel value="#{msgs.EditAppraisallevelLabel_name}" for="name" />
+                            <p:outputLabel value="等级名称" for="name" />
                             <p:inputText id="name" value="#{appraisallevelBean.editAppraisallevel.name}" title="#{msgs.EditAppraisallevelTitle_name}" />
-                            <p:outputLabel value="#{msgs.EditAppraisallevelLabel_isalert}" for="isalert" />
+                            <p:outputLabel value="是否通知" for="isalert" />
                             <p:selectBooleanCheckbox id="isalert" value="#{appraisallevelBean.editAppraisallevel.isalert}" />
                         </p:panelGrid>
-                        <p:commandButton actionListener="#{appraisallevelBean.update}" value="#{msgs.Save}" update=":AppraisallevelListForm:appraisallevels" oncomplete="PF('AppraisallevelEditDialog').hide();"/>
-                        <p:commandButton value="#{msgs.Cancel}" onclick="AppraisallevelEditDialog.hide()"/>
+                        <p:commandButton actionListener="#{appraisallevelBean.update}" value="保存" update=":AppraisallevelListForm:appraisallevels" oncomplete="PF('AppraisallevelEditDialog').hide();"/>
+                        <p:commandButton value="取消" onclick="AppraisallevelEditDialog.hide()"/>
                     </h:panelGroup>
                 </h:form>
             </p:dialog>

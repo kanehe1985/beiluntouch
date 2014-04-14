@@ -7,20 +7,22 @@
 package com.original.evaluate.entity;
 
 import java.io.Serializable;
+import java.util.Collection;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -36,12 +38,13 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Employee.findByRomno", query = "SELECT e FROM Employee e WHERE e.romno = :romno"),
     @NamedQuery(name = "Employee.findByGroupname", query = "SELECT e FROM Employee e WHERE e.groupname = :groupname"),
     @NamedQuery(name = "Employee.findByIsallowappraisal", query = "SELECT e FROM Employee e WHERE e.isallowappraisal = :isallowappraisal"),
-    @NamedQuery(name = "Employee.findByPicture", query = "SELECT e FROM Employee e WHERE e.picture = :picture")})
+    @NamedQuery(name = "Employee.findByPicture", query = "SELECT e FROM Employee e WHERE e.picture = :picture"),
+    @NamedQuery(name = "Employee.findByOrderid", query = "SELECT e FROM Employee e WHERE e.orderid = :orderid")})
 public class Employee implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
+    @NotNull
     @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
@@ -60,6 +63,10 @@ public class Employee implements Serializable {
     @Size(max = 255)
     @Column(name = "picture")
     private String picture;
+    @Column(name = "orderid")
+    private Integer orderid;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
+    private Collection<Appraisal> appraisalCollection;
     @JoinColumn(name = "department", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Department department;
@@ -122,6 +129,23 @@ public class Employee implements Serializable {
 
     public void setPicture(String picture) {
         this.picture = picture;
+    }
+
+    public Integer getOrderid() {
+        return orderid;
+    }
+
+    public void setOrderid(Integer orderid) {
+        this.orderid = orderid;
+    }
+
+    @XmlTransient
+    public Collection<Appraisal> getAppraisalCollection() {
+        return appraisalCollection;
+    }
+
+    public void setAppraisalCollection(Collection<Appraisal> appraisalCollection) {
+        this.appraisalCollection = appraisalCollection;
     }
 
     public Department getDepartment() {

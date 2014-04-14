@@ -13,21 +13,21 @@
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2">
                         <f:facet name="header">  
-                            Basic PanelGrid  
+                            系统设置  
                         </f:facet>
-                        <p:outputLabel value="adminpassword" for="adminpassword" />
+                        <p:outputLabel value="管理员密码" for="adminpassword" />
                         <p:inplace id="inpadminpassword" editor="true"> 
                             <p:ajax event="save" listener="#{settingBean.save}" update="msgs" />
                             <p:inputText id="adminpassword" value="#{settingBean.setting.adminpassword}" title="adminpassword" required="true" label="adminpassword"/>
                         </p:inplace>
                         
-                        <p:outputLabel value="messageserver" for="messageserver" />
+                        <p:outputLabel value="短信服务器" for="messageserver" />
                         <p:inplace id="inpmessageserver" editor="true">
                             <p:ajax event="save" listener="#{settingBean.save}" update="msgs" />
                             <p:inputText id="messageserver" value="#{settingBean.setting.messageserver}" title="messageserver" />
                         </p:inplace>
                         
-                        <p:outputLabel value="telphoneno" for="telphoneno" />
+                        <p:outputLabel value="短信通知电话" for="telphoneno" />
                         <p:inplace id="inptelphoneno" editor="true">
                             <p:ajax event="save" listener="#{settingBean.save}" update="msgs" />
                             <p:inputText id="telphoneno" value="#{settingBean.setting.telphoneno}" title="telphoneno" />

@@ -14,57 +14,54 @@
                              selection="#{reasonBean.selectedReasons}">
 
                     <f:facet name="header">
-                        Reason
+                        快捷回复
                     </f:facet>
                     <p:column selectionMode="multiple" style="width:4%; text-align: center"/>
-                    <p:column headerText="ID">
-                        #{reason.id}
-                    </p:column>
 
-                    <p:column headerText="Content">
+                    <p:column headerText="回复内容">
                         #{reason.content}
                     </p:column>
 
-                    <p:column headerText="options">
-                        <p:commandButton value="edit" icon="ui-icon-pencil" oncomplete="PF('ReasonEditDialog').show();" update=":ReasonEditForm">
+                    <p:column headerText="操作">
+                        <p:commandButton value="编辑" icon="ui-icon-pencil" oncomplete="PF('ReasonEditDialog').show();" update=":ReasonEditForm">
                             <f:setPropertyActionListener value="#{reason}" target="#{reasonBean.editReason}"/>
                         </p:commandButton>
                     </p:column>
                     <f:facet name="footer">                        
-                        <p:commandButton id="createButton" icon="ui-icon-plus"   value="Create" actionListener="#{reasonBean.prepareCreate}" update=":ReasonCreateForm" oncomplete="PF('ReasonCreateDialog').show()"/>
-                        <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="Delete" actionListener="#{reasonBean.delete}" update=":ReasonListForm:reasons">
-                            <p:confirm header="Confirmation" message="Are you sure?" icon="ui-icon-alert" />
+                        <p:commandButton id="createButton" icon="ui-icon-plus"   value="新建" actionListener="#{reasonBean.prepareCreate}" update=":ReasonCreateForm" oncomplete="PF('ReasonCreateDialog').show()"/>
+                        <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="删除" actionListener="#{reasonBean.delete}" update=":ReasonListForm:reasons">
+                            <p:confirm header="提示" message="是否删除？" icon="ui-icon-alert" />
                         </p:commandButton>
                         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
-                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/>     
+                            <p:commandButton value="是" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+                            <p:commandButton value="否" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/>     
                         </p:confirmDialog>
                     </f:facet>
                 </p:dataTable>
             </h:form>
                       
-            <p:dialog id="ReasonCreateDlg" widgetVar="ReasonCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{msgs.CreateReasonTitle}">
+            <p:dialog id="ReasonCreateDlg" widgetVar="ReasonCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="新建">
                 <h:form id="ReasonCreateForm">
                     <h:panelGroup id="display">
                         <p:panelGrid columns="2">
-                                <p:outputLabel value="content" for="content" />
+                                <p:outputLabel value="回复内容" for="content" />
                                 <p:inputText id="content" value="#{reasonBean.editReason.content}" title="content" />
                             </p:panelGrid>
-                        <p:commandButton actionListener="#{reasonBean.create}" value="#{msgs.Save}" update=":ReasonListForm:reasons" oncomplete="PF('ReasonCreateDialog').hide();"/>
-                        <p:commandButton value="#{msgs.Cancel}" onclick="ReasonCreateDialog.hide()"/>
+                        <p:commandButton actionListener="#{reasonBean.create}" value="保存" update=":ReasonListForm:reasons" oncomplete="PF('ReasonCreateDialog').hide();"/>
+                        <p:commandButton value="取消" onclick="ReasonCreateDialog.hide()"/>
                     </h:panelGroup>
                 </h:form>
             </p:dialog>
             
-            <p:dialog id="ReasonEditDlg" widgetVar="ReasonEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{msgs.EditReasonTitle}">
+            <p:dialog id="ReasonEditDlg" widgetVar="ReasonEditDialog" modal="true" resizable="false" appendTo="@(body)" header="编辑">
                 <h:form id="ReasonEditForm">
                     <h:panelGroup id="display">
                         <p:panelGrid columns="2">
-                            <p:outputLabel value="content" for="content" />
+                            <p:outputLabel value="回复内容" for="content" />
                             <p:inputText id="content" value="#{reasonBean.editReason.content}" title="content" />
                         </p:panelGrid>
-                        <p:commandButton actionListener="#{reasonBean.update}" value="#{msgs.Save}" update=":ReasonListForm:reasons" oncomplete="PF('ReasonEditDialog').hide();"/>
-                        <p:commandButton value="#{msgs.Cancel}" onclick="ReasonEditDialog.hide()"/>
+                        <p:commandButton actionListener="#{reasonBean.update}" value="保存" update=":ReasonListForm:reasons" oncomplete="PF('ReasonEditDialog').hide();"/>
+                        <p:commandButton value="取消" onclick="ReasonEditDialog.hide()"/>
                     </h:panelGroup>
                 </h:form>
             </p:dialog>

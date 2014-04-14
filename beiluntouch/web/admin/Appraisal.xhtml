@@ -10,40 +10,62 @@
 
         <ui:define name="center">
             <h:form id="AppraisalListForm">
-                <p:dataTable id="appraisals" var="appraisal" value="#{appraisalBean.appraisals}" rowKey="#{appraisal.id}" filteredValue="#{appraisalBean.filteredAppraisals}">
+                <p:dataTable id="appraisals" var="appraisal" value="#{appraisalBean.appraisals}" 
+                             rowKey="#{appraisal.id}" 
+                             filteredValue="#{appraisalBean.filteredAppraisals}" 
+                             sortBy="createdate" 
+                             sortOrder="descending"
+                             paginator="true" rows="10"  
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                             currentPageReportTemplate="(共 {totalRecords} 条)"
+                             rowsPerPageTemplate="10,15,20"
+                             >
                     <f:facet name="header">
                         <p:outputPanel>
-                            <p:calendar value="#{appraisalBean.beginDate}" id="beginDate" />
-                            <p:calendar value="#{appraisalBean.endDate}" id="endDate" />
-                            <p:commandButton value="Search" actionListener="#{appraisalBean.search}" update=":AppraisalListForm:appraisals"/>
+                            <p:calendar value="#{appraisalBean.beginDate}" id="beginDate" pattern="yyyy-MM-dd" label="beginDate" />-
+                            <p:watermark for="beginDate" value="起始日期" />
+                            <p:calendar value="#{appraisalBean.endDate}" id="endDate" pattern="yyyy-MM-dd" label="endDate" />
+                            <p:watermark for="endDate" value="截止日期" />
+                            <p:commandButton value="设定" actionListener="#{appraisalBean.search}" update=":AppraisalListForm:appraisals"/>
                         </p:outputPanel>
-                    </f:facet>                    
-                    <p:column headerText="ID">
-                        #{appraisal.id}
+                    </f:facet>
+                    
+                    <p:column headerText="处所" filterBy="employee.department.name" filterMatchMode="contains">
+                        #{appraisal.employee.department.name}
                     </p:column>
                     
-                    <p:column headerText="name" filterBy="employee.name" filterMatchMode="contains">
+                    <p:column headerText="房号" filterBy="employee.romno" filterMatchMode="contains">
+                        #{appraisal.employee.romno}
+                    </p:column>
+                    
+                    <p:column headerText="组别" filterBy="employee.groupname" filterMatchMode="contains">
+                        #{appraisal.employee.groupname}
+                    </p:column>
+                    
+                    <p:column headerText="人员名" filterBy="employee.name" filterMatchMode="contains">
                         #{appraisal.employee.name}
                     </p:column>
                     
-                    <p:column headerText="appraisallevel" filterOptions="#{appraisalBean.appraisallevelOptions}" filterBy="appraisallevel.name" filterMatchMode="exact">
+                    <p:column headerText="评价等级" filterOptions="#{appraisalBean.appraisallevelOptions}" filterBy="appraisallevel.name" filterMatchMode="exact">
                         #{appraisal.appraisallevel.name}
                     </p:column> 
 
-                    <p:column headerText="content" filterBy="content" filterMatchMode="contains">
+                    <p:column headerText="评价内容">
                         #{appraisal.content}
                     </p:column>
                     
-                    <p:column headerText="appraiser" filterBy="appraiser" filterMatchMode="contains">
+                    <p:column headerText="评价人">
                         #{appraisal.appraiser}
                     </p:column>
                                         
-                    <p:column headerText="contact" filterBy="contact" filterMatchMode="contains">
+                    <p:column headerText="联系方式">
                         #{appraisal.contact}
                     </p:column>
                     
-                    <p:column headerText="createdate">
-                        #{appraisal.createdate}
+                    <p:column headerText="评价日期">          
+                        <h:outputText value="#{appraisal.createdate}" >
+                            <f:convertDateTime pattern="yyyy-MM-dd HH:mm" />
+                        </h:outputText>
                     </p:column>
                     
                 </p:dataTable>

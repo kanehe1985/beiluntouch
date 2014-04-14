@@ -46,6 +46,9 @@ public class SettingBO {
             isNew = false;
         } else {
             setting = new Setting();
+            setting.setAdminpassword("111111");
+            setting.setMessageserver("localhost");
+            setting.setTelphoneno("18888888888");
             isNew = true;
         }
         return setting;

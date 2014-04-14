@@ -112,7 +112,7 @@ public class AppraisalBean implements Serializable {
     private SelectItem[] createFilterOptions(List<Appraisallevel> appraisallevels)  { 
         int i = 0;
         SelectItem[] options = new SelectItem[appraisallevels.size() + 1];
-        options[0] = new SelectItem("", "Select");
+        options[0] = new SelectItem("", "请选择");
         
         for(Appraisallevel appraisallevel:appraisallevels){
             appraisallevel.getName();

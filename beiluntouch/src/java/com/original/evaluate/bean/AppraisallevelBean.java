@@ -10,6 +10,7 @@ import com.original.evaluate.bo.AppraisallevelBO;
 import com.original.evaluate.entity.Appraisallevel;
 import java.io.Serializable;
 import java.util.List;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import javax.naming.NamingException;
@@ -79,6 +80,10 @@ public class AppraisallevelBean implements Serializable {
         for(Appraisallevel appraisallevel:selectedAppraisallevels){
             appraisallevelBO.delete(appraisallevel);
         }
+        appraisallevels = appraisallevelBO.getAllAppraisallevelList();
+    }
+    
+    public void refresh() throws NamingException{
         appraisallevels = appraisallevelBO.getAllAppraisallevelList();
     }
     

@@ -69,4 +69,8 @@ public class EmployeeBean implements Serializable {
         employeeBO.save(employee);        
 //        employees = employeeBO.getAllEmployeeList();
     }
+    
+    public void refresh() throws NamingException{
+        employees = employeeBO.getAllEmployeeList();
+    }
 }

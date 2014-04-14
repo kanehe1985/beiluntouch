@@ -10,41 +10,46 @@
 
         <ui:define name="center">
             <h:form id="EmployeeListForm">
-                <p:dataTable id="employees" var="employee" value="#{employeeBean.employees}" rowKey="#{employee.id}">
+                <p:dataTable id="employees" var="employee" value="#{employeeBean.employees}" rowKey="#{employee.id}"
+                             paginator="true" rows="10"
+                             sortBy="orderid"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                             currentPageReportTemplate="(共 {totalRecords} 条)"
+                             rowsPerPageTemplate="10,15,20"
+                             >
 
                     <f:facet name="header">
-                        Employee
-                    </f:facet>                    
-                    <p:column headerText="ID">
-                        #{employee.id}
-                    </p:column>
+                        人员管理
+                    </f:facet>
 
-                    <p:column headerText="Name">
+                    <p:column headerText="名字">
                         #{employee.name}
                     </p:column>
                     
-                    <p:column headerText="department">
+                    <p:column headerText="处所">
                         #{employee.department.name}
                     </p:column>
                     
-                    <p:column headerText="rom">
+                    <p:column headerText="房号">
                         #{employee.romno}
                     </p:column>
 
-                    <p:column headerText="group">
+                    <p:column headerText="组别">
                         #{employee.groupname}
                     </p:column>
                     
-                    <p:column headerText="picture">
+                    <p:column headerText="照片">
                         #{employee.picture}
                     </p:column>
                     
-                    <p:column headerText="isallowappraisal">
-                        <p:selectBooleanButton value="#{employee.isallowappraisal}" onLabel="Yes" offLabel="No" onIcon="ui-icon-check" offIcon="ui-icon-close">  
+                    <p:column headerText="是否可被评价">
+                        <p:selectBooleanButton value="#{employee.isallowappraisal}" onLabel="是" offLabel="否" onIcon="ui-icon-check" offIcon="ui-icon-close">  
                             <p:ajax listener="#{employeeBean.update(employee)}"/>
                         </p:selectBooleanButton>
-                    </p:column>                   
-                                  
+                    </p:column>
+                    <f:facet name="footer">
+                        <p:commandButton id="refreshButton" icon="ui-icon-refresh" value="刷新" actionListener="#{employeeBean.refresh}" update=":EmployeeListForm:employees"/>
+                    </f:facet>
                 </p:dataTable>
             </h:form>
         </ui:define>

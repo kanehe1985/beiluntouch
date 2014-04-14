@@ -14,65 +14,39 @@
                              selection="#{departmentBean.selectedDepartments}">
 
                     <f:facet name="header">
-                        Department
+                        设备绑定
                     </f:facet>
-                    <p:column selectionMode="multiple" style="width:4%; text-align: center"/>
-                    <p:column headerText="ID">
-                        #{department.id}
-                    </p:column>
 
-                    <p:column headerText="Name">
+                    <p:column headerText="处所">
                         #{department.name}
                     </p:column>
                     
-                    <p:column headerText="Tag">
+                    <p:column headerText="用户标识">
                         #{department.tag}
                     </p:column>
 
-                    <p:column headerText="options">
-                        <p:commandButton value="edit" icon="ui-icon-pencil" oncomplete="PF('DepartmentEditDialog').show();" update=":DepartmentEditForm">
+                    <p:column headerText="操作">
+                        <p:commandButton value="编辑" icon="ui-icon-pencil" oncomplete="PF('DepartmentEditDialog').show();" update=":DepartmentEditForm">
                             <f:setPropertyActionListener value="#{department}" target="#{departmentBean.editDepartment}"/>
                         </p:commandButton>
                     </p:column>
-                    <f:facet name="footer">                        
-                        <p:commandButton id="createButton" icon="ui-icon-plus"   value="Create" actionListener="#{departmentBean.prepareCreate}" update=":DepartmentCreateForm" oncomplete="PF('DepartmentCreateDialog').show()"/>
-                        <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="Delete" actionListener="#{departmentBean.delete}" update=":DepartmentListForm:departments">
-                            <p:confirm header="Confirmation" message="Are you sure?" icon="ui-icon-alert" />
-                        </p:commandButton>
-                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
-                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/>     
-                        </p:confirmDialog>
+                    <f:facet name="footer">
+                        <p:commandButton id="refreshButton" icon="ui-icon-refresh" value="刷新" actionListener="#{departmentBean.refresh}" update=":DepartmentListForm:departments"/>
                     </f:facet>
                 </p:dataTable>
             </h:form>
-            
-            <p:dialog id="DepartmentCreateDlg" widgetVar="DepartmentCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{msgs.CreateDepartmentTitle}">
-                <h:form id="DepartmentCreateForm">
-                    <h:panelGroup id="display">
-                        <p:panelGrid columns="2">
-                                <p:outputLabel value="name" for="name" />
-                                <p:inputText id="name" value="#{departmentBean.editDepartment.name}" title="name" />
-                                <p:outputLabel value="tag" for="tag" />
-                                <p:inputText id="tag" value="#{departmentBean.editDepartment.tag}" title="tag" />
-                            </p:panelGrid>
-                        <p:commandButton actionListener="#{departmentBean.create}" value="#{msgs.Save}" update=":DepartmentListForm:departments" oncomplete="PF('DepartmentCreateDialog').hide();"/>
-                        <p:commandButton value="#{msgs.Cancel}" onclick="DepartmentCreateDialog.hide()"/>
-                    </h:panelGroup>
-                </h:form>
-            </p:dialog>
-            
-            <p:dialog id="DepartmentEditDlg" widgetVar="DepartmentEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{msgs.EditDepartmentTitle}">
+                       
+            <p:dialog id="DepartmentEditDlg" widgetVar="DepartmentEditDialog" modal="true" resizable="false" appendTo="@(body)" header="编辑">
                 <h:form id="DepartmentEditForm">
                     <h:panelGroup id="display">
                         <p:panelGrid columns="2">
-                            <p:outputLabel value="name" for="name" />
-                            <p:inputText id="name" value="#{departmentBean.editDepartment.name}" title="name" />
-                            <p:outputLabel value="tag" for="tag" />
-                            <p:inputText id="tag" value="#{departmentBean.editDepartment.tag}" title="tag" />
+                            <p:outputLabel value="处所" for="name" />
+                            <p:outputLabel id="name" value="#{departmentBean.editDepartment.name}" />
+                            <p:outputLabel value="用户标识" for="tag" />
+                            <p:inputText id="tag" value="#{departmentBean.editDepartment.tag}" title="用户标识" />
                         </p:panelGrid>
-                        <p:commandButton actionListener="#{departmentBean.update}" value="#{msgs.Save}" update=":DepartmentListForm:departments" oncomplete="PF('DepartmentEditDialog').hide();"/>
-                        <p:commandButton value="#{msgs.Cancel}" onclick="DepartmentEditDialog.hide()"/>
+                        <p:commandButton actionListener="#{departmentBean.update}" value="保存" update=":DepartmentListForm:departments" oncomplete="PF('DepartmentEditDialog').hide();"/>
+                        <p:commandButton value="取消" onclick="DepartmentEditDialog.hide()"/>
                     </h:panelGroup>
                 </h:form>
             </p:dialog>

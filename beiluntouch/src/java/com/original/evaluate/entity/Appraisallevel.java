@@ -36,8 +36,6 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Appraisallevel.findByName", query = "SELECT a FROM Appraisallevel a WHERE a.name = :name"),
     @NamedQuery(name = "Appraisallevel.findByIsalert", query = "SELECT a FROM Appraisallevel a WHERE a.isalert = :isalert")})
 public class Appraisallevel implements Serializable {
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "appraisallevel")
-    private Collection<Appraisal> appraisalCollection;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,6 +47,8 @@ public class Appraisallevel implements Serializable {
     private String name;
     @Column(name = "isalert")
     private Boolean isalert;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "appraisallevel")
+    private Collection<Appraisal> appraisalCollection;
 
     public Appraisallevel() {
     }
@@ -81,6 +81,15 @@ public class Appraisallevel implements Serializable {
         this.isalert = isalert;
     }
 
+    @XmlTransient
+    public Collection<Appraisal> getAppraisalCollection() {
+        return appraisalCollection;
+    }
+
+    public void setAppraisalCollection(Collection<Appraisal> appraisalCollection) {
+        this.appraisalCollection = appraisalCollection;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -104,15 +113,6 @@ public class Appraisallevel implements Serializable {
     @Override
     public String toString() {
         return "com.original.evaluate.entity.Appraisallevel[ id=" + id + " ]";
-    }
-
-    @XmlTransient
-    public Collection<Appraisal> getAppraisalCollection() {
-        return appraisalCollection;
-    }
-
-    public void setAppraisalCollection(Collection<Appraisal> appraisalCollection) {
-        this.appraisalCollection = appraisalCollection;
     }
     
 }
