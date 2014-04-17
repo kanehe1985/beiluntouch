@@ -6,55 +6,67 @@
 
 package com.original.evaluate.dao;
 
+import com.original.evaluate.dao.exceptions.IllegalOrphanException;
 import com.original.evaluate.dao.exceptions.NonexistentEntityException;
-import com.original.evaluate.dao.exceptions.PreexistingEntityException;
 import com.original.evaluate.dao.exceptions.RollbackFailureException;
-import com.original.evaluate.entity.Appraisallevel;
 import java.io.Serializable;
-import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import javax.transaction.UserTransaction;
+import com.original.evaluate.entity.Appraisal;
+import com.original.evaluate.entity.Appraisallevel;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 
 /**
  *
- * @author kanehe
+ * @author dxx
  */
 public class AppraisallevelJpaController implements Serializable {
 
-    public AppraisallevelJpaController(UserTransaction utx, EntityManagerFactory emf) {
-        this.utx = utx;
+    public AppraisallevelJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
-    private UserTransaction utx = null;
     private EntityManagerFactory emf = null;
 
     public EntityManager getEntityManager() {
         return emf.createEntityManager();
     }
 
-    public void create(Appraisallevel appraisallevel) throws PreexistingEntityException, RollbackFailureException, Exception {
+    public void create(Appraisallevel appraisallevel) throws RollbackFailureException, Exception {
+        if (appraisallevel.getAppraisalCollection() == null) {
+            appraisallevel.setAppraisalCollection(new ArrayList<>());
+        }
         EntityManager em = null;
         try {
-//            utx.begin();
             em = getEntityManager();
             em.getTransaction().begin();
+            Collection<Appraisal> attachedAppraisalCollection = new ArrayList<>();
+            for (Appraisal appraisalCollectionAppraisalToAttach : appraisallevel.getAppraisalCollection()) {
+                appraisalCollectionAppraisalToAttach = em.getReference(appraisalCollectionAppraisalToAttach.getClass(), appraisalCollectionAppraisalToAttach.getId());
+                attachedAppraisalCollection.add(appraisalCollectionAppraisalToAttach);
+            }
+            appraisallevel.setAppraisalCollection(attachedAppraisalCollection);
             em.persist(appraisallevel);
-//            utx.commit();
+            for (Appraisal appraisalCollectionAppraisal : appraisallevel.getAppraisalCollection()) {
+                Appraisallevel oldAppraisallevelOfAppraisalCollectionAppraisal = appraisalCollectionAppraisal.getAppraisallevel();
+                appraisalCollectionAppraisal.setAppraisallevel(appraisallevel);
+                appraisalCollectionAppraisal = em.merge(appraisalCollectionAppraisal);
+                if (oldAppraisallevelOfAppraisalCollectionAppraisal != null) {
+                    oldAppraisallevelOfAppraisalCollectionAppraisal.getAppraisalCollection().remove(appraisalCollectionAppraisal);
+                    oldAppraisallevelOfAppraisalCollectionAppraisal = em.merge(oldAppraisallevelOfAppraisalCollectionAppraisal);
+                }
+            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             try {
-//                utx.rollback();
-                 em.getTransaction().rollback();
+                em.getTransaction().rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
-            }
-            if (findAppraisallevel(appraisallevel.getId()) != null) {
-                throw new PreexistingEntityException("Appraisallevel " + appraisallevel + " already exists.", ex);
             }
             throw ex;
         } finally {
@@ -64,12 +76,45 @@ public class AppraisallevelJpaController implements Serializable {
         }
     }
 
-    public void edit(Appraisallevel appraisallevel) throws NonexistentEntityException, RollbackFailureException, Exception {
+    public void edit(Appraisallevel appraisallevel) throws IllegalOrphanException, NonexistentEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
-        try {          
+        try {
             em = getEntityManager();
             em.getTransaction().begin();
+            Appraisallevel persistentAppraisallevel = em.find(Appraisallevel.class, appraisallevel.getId());
+            Collection<Appraisal> appraisalCollectionOld = persistentAppraisallevel.getAppraisalCollection();
+            Collection<Appraisal> appraisalCollectionNew = appraisallevel.getAppraisalCollection();
+            List<String> illegalOrphanMessages = null;
+            for (Appraisal appraisalCollectionOldAppraisal : appraisalCollectionOld) {
+                if (!appraisalCollectionNew.contains(appraisalCollectionOldAppraisal)) {
+                    if (illegalOrphanMessages == null) {
+                        illegalOrphanMessages = new ArrayList<String>();
+                    }
+                    illegalOrphanMessages.add("You must retain Appraisal " + appraisalCollectionOldAppraisal + " since its appraisallevel field is not nullable.");
+                }
+            }
+            if (illegalOrphanMessages != null) {
+                throw new IllegalOrphanException(illegalOrphanMessages);
+            }
+            Collection<Appraisal> attachedAppraisalCollectionNew = new ArrayList<>();
+            for (Appraisal appraisalCollectionNewAppraisalToAttach : appraisalCollectionNew) {
+                appraisalCollectionNewAppraisalToAttach = em.getReference(appraisalCollectionNewAppraisalToAttach.getClass(), appraisalCollectionNewAppraisalToAttach.getId());
+                attachedAppraisalCollectionNew.add(appraisalCollectionNewAppraisalToAttach);
+            }
+            appraisalCollectionNew = attachedAppraisalCollectionNew;
+            appraisallevel.setAppraisalCollection(appraisalCollectionNew);
             appraisallevel = em.merge(appraisallevel);
+            for (Appraisal appraisalCollectionNewAppraisal : appraisalCollectionNew) {
+                if (!appraisalCollectionOld.contains(appraisalCollectionNewAppraisal)) {
+                    Appraisallevel oldAppraisallevelOfAppraisalCollectionNewAppraisal = appraisalCollectionNewAppraisal.getAppraisallevel();
+                    appraisalCollectionNewAppraisal.setAppraisallevel(appraisallevel);
+                    appraisalCollectionNewAppraisal = em.merge(appraisalCollectionNewAppraisal);
+                    if (oldAppraisallevelOfAppraisalCollectionNewAppraisal != null && !oldAppraisallevelOfAppraisalCollectionNewAppraisal.equals(appraisallevel)) {
+                        oldAppraisallevelOfAppraisalCollectionNewAppraisal.getAppraisalCollection().remove(appraisalCollectionNewAppraisal);
+                        oldAppraisallevelOfAppraisalCollectionNewAppraisal = em.merge(oldAppraisallevelOfAppraisalCollectionNewAppraisal);
+                    }
+                }
+            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             try {
@@ -92,10 +137,9 @@ public class AppraisallevelJpaController implements Serializable {
         }
     }
 
-    public void destroy(Integer id) throws NonexistentEntityException, RollbackFailureException, Exception {
+    public void destroy(Integer id) throws IllegalOrphanException, NonexistentEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
-//            utx.begin();
             em = getEntityManager();
             em.getTransaction().begin();
             Appraisallevel appraisallevel;
@@ -105,12 +149,21 @@ public class AppraisallevelJpaController implements Serializable {
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The appraisallevel with id " + id + " no longer exists.", enfe);
             }
+            List<String> illegalOrphanMessages = null;
+            Collection<Appraisal> appraisalCollectionOrphanCheck = appraisallevel.getAppraisalCollection();
+            for (Appraisal appraisalCollectionOrphanCheckAppraisal : appraisalCollectionOrphanCheck) {
+                if (illegalOrphanMessages == null) {
+                    illegalOrphanMessages = new ArrayList<>();
+                }
+                illegalOrphanMessages.add("This Appraisallevel (" + appraisallevel + ") cannot be destroyed since the Appraisal " + appraisalCollectionOrphanCheckAppraisal + " in its appraisalCollection field has a non-nullable appraisallevel field.");
+            }
+            if (illegalOrphanMessages != null) {
+                throw new IllegalOrphanException(illegalOrphanMessages);
+            }
             em.remove(appraisallevel);
-//            utx.commit();
             em.getTransaction().commit();
         } catch (Exception ex) {
             try {
-//                utx.rollback();
                 em.getTransaction().rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);

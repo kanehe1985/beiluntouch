@@ -6,27 +6,31 @@
 
 package com.original.evaluate.dao;
 
+import com.original.evaluate.dao.exceptions.IllegalOrphanException;
 import com.original.evaluate.dao.exceptions.NonexistentEntityException;
+import com.original.evaluate.dao.exceptions.PreexistingEntityException;
 import com.original.evaluate.dao.exceptions.RollbackFailureException;
 import com.original.evaluate.entity.Department;
 import java.io.Serializable;
-import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import com.original.evaluate.entity.Employee;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.transaction.UserTransaction;
 
 /**
  *
- * @author kanehe
+ * @author dxx
  */
 public class DepartmentJpaController implements Serializable {
 
-    public DepartmentJpaController(UserTransaction utx, EntityManagerFactory emf) {
-        this.utx = utx;
+    public DepartmentJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
     private UserTransaction utx = null;
@@ -36,21 +40,39 @@ public class DepartmentJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(Department department) throws RollbackFailureException, Exception {
+    public void create(Department department) throws PreexistingEntityException, RollbackFailureException, Exception {
+        if (department.getEmployeeCollection() == null) {
+            department.setEmployeeCollection(new ArrayList<Employee>());
+        }
         EntityManager em = null;
         try {
-//            utx.begin();
+            utx.begin();
             em = getEntityManager();
-            em.getTransaction().begin();
+            Collection<Employee> attachedEmployeeCollection = new ArrayList<Employee>();
+            for (Employee employeeCollectionEmployeeToAttach : department.getEmployeeCollection()) {
+                employeeCollectionEmployeeToAttach = em.getReference(employeeCollectionEmployeeToAttach.getClass(), employeeCollectionEmployeeToAttach.getId());
+                attachedEmployeeCollection.add(employeeCollectionEmployeeToAttach);
+            }
+            department.setEmployeeCollection(attachedEmployeeCollection);
             em.persist(department);
-//            utx.commit();
-            em.getTransaction().commit();
+            for (Employee employeeCollectionEmployee : department.getEmployeeCollection()) {
+                Department oldDepartmentOfEmployeeCollectionEmployee = employeeCollectionEmployee.getDepartment();
+                employeeCollectionEmployee.setDepartment(department);
+                employeeCollectionEmployee = em.merge(employeeCollectionEmployee);
+                if (oldDepartmentOfEmployeeCollectionEmployee != null) {
+                    oldDepartmentOfEmployeeCollectionEmployee.getEmployeeCollection().remove(employeeCollectionEmployee);
+                    oldDepartmentOfEmployeeCollectionEmployee = em.merge(oldDepartmentOfEmployeeCollectionEmployee);
+                }
+            }
+            utx.commit();
         } catch (Exception ex) {
             try {
-//                utx.rollback();
-                em.getTransaction().rollback();
+                utx.rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
+            }
+            if (findDepartment(department.getId()) != null) {
+                throw new PreexistingEntityException("Department " + department + " already exists.", ex);
             }
             throw ex;
         } finally {
@@ -60,19 +82,49 @@ public class DepartmentJpaController implements Serializable {
         }
     }
 
-    public void edit(Department department) throws NonexistentEntityException, RollbackFailureException, Exception {
+    public void edit(Department department) throws IllegalOrphanException, NonexistentEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
-//            utx.begin();
+            utx.begin();
             em = getEntityManager();
-            em.getTransaction().begin();
+            Department persistentDepartment = em.find(Department.class, department.getId());
+            Collection<Employee> employeeCollectionOld = persistentDepartment.getEmployeeCollection();
+            Collection<Employee> employeeCollectionNew = department.getEmployeeCollection();
+            List<String> illegalOrphanMessages = null;
+            for (Employee employeeCollectionOldEmployee : employeeCollectionOld) {
+                if (!employeeCollectionNew.contains(employeeCollectionOldEmployee)) {
+                    if (illegalOrphanMessages == null) {
+                        illegalOrphanMessages = new ArrayList<String>();
+                    }
+                    illegalOrphanMessages.add("You must retain Employee " + employeeCollectionOldEmployee + " since its department field is not nullable.");
+                }
+            }
+            if (illegalOrphanMessages != null) {
+                throw new IllegalOrphanException(illegalOrphanMessages);
+            }
+            Collection<Employee> attachedEmployeeCollectionNew = new ArrayList<Employee>();
+            for (Employee employeeCollectionNewEmployeeToAttach : employeeCollectionNew) {
+                employeeCollectionNewEmployeeToAttach = em.getReference(employeeCollectionNewEmployeeToAttach.getClass(), employeeCollectionNewEmployeeToAttach.getId());
+                attachedEmployeeCollectionNew.add(employeeCollectionNewEmployeeToAttach);
+            }
+            employeeCollectionNew = attachedEmployeeCollectionNew;
+            department.setEmployeeCollection(employeeCollectionNew);
             department = em.merge(department);
-//            utx.commit();
-            em.getTransaction().commit();
+            for (Employee employeeCollectionNewEmployee : employeeCollectionNew) {
+                if (!employeeCollectionOld.contains(employeeCollectionNewEmployee)) {
+                    Department oldDepartmentOfEmployeeCollectionNewEmployee = employeeCollectionNewEmployee.getDepartment();
+                    employeeCollectionNewEmployee.setDepartment(department);
+                    employeeCollectionNewEmployee = em.merge(employeeCollectionNewEmployee);
+                    if (oldDepartmentOfEmployeeCollectionNewEmployee != null && !oldDepartmentOfEmployeeCollectionNewEmployee.equals(department)) {
+                        oldDepartmentOfEmployeeCollectionNewEmployee.getEmployeeCollection().remove(employeeCollectionNewEmployee);
+                        oldDepartmentOfEmployeeCollectionNewEmployee = em.merge(oldDepartmentOfEmployeeCollectionNewEmployee);
+                    }
+                }
+            }
+            utx.commit();
         } catch (Exception ex) {
             try {
-//                utx.rollback();
-                em.getTransaction().rollback();
+                utx.rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
             }
@@ -91,12 +143,11 @@ public class DepartmentJpaController implements Serializable {
         }
     }
 
-    public void destroy(Integer id) throws NonexistentEntityException, RollbackFailureException, Exception {
+    public void destroy(Integer id) throws IllegalOrphanException, NonexistentEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
-//            utx.begin();
+            utx.begin();
             em = getEntityManager();
-            em.getTransaction().begin();
             Department department;
             try {
                 department = em.getReference(Department.class, id);
@@ -104,13 +155,22 @@ public class DepartmentJpaController implements Serializable {
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The department with id " + id + " no longer exists.", enfe);
             }
+            List<String> illegalOrphanMessages = null;
+            Collection<Employee> employeeCollectionOrphanCheck = department.getEmployeeCollection();
+            for (Employee employeeCollectionOrphanCheckEmployee : employeeCollectionOrphanCheck) {
+                if (illegalOrphanMessages == null) {
+                    illegalOrphanMessages = new ArrayList<String>();
+                }
+                illegalOrphanMessages.add("This Department (" + department + ") cannot be destroyed since the Employee " + employeeCollectionOrphanCheckEmployee + " in its employeeCollection field has a non-nullable department field.");
+            }
+            if (illegalOrphanMessages != null) {
+                throw new IllegalOrphanException(illegalOrphanMessages);
+            }
             em.remove(department);
-//            utx.commit();
-            em.getTransaction().commit();
+            utx.commit();
         } catch (Exception ex) {
             try {
-//                utx.rollback();
-                em.getTransaction().rollback();
+                utx.rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
             }

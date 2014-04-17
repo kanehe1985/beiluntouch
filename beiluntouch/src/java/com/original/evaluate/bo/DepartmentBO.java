@@ -30,7 +30,7 @@ public class DepartmentBO {
         if (departmentJpaController == null) {
             UserTransaction utx = FacesUtil.getUserTransaction();
             EntityManagerFactory emf = FacesUtil.getEntityManagerFactory(); 
-            departmentJpaController = new DepartmentJpaController(utx, emf);
+            departmentJpaController = new DepartmentJpaController(emf);
         }
     }
 

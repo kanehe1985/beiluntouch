@@ -29,12 +29,12 @@ public class EmployeeBO {
         if (employeeJpaController == null) {
             UserTransaction utx = FacesUtil.getUserTransaction();
             EntityManagerFactory emf = FacesUtil.getEntityManagerFactory(); 
-            employeeJpaController = new EmployeeJpaController(utx, emf);
+            employeeJpaController = new EmployeeJpaController(emf);
         }
     }
 
     public List<Employee> getAllEmployeeList() throws NamingException {
-        return employeeJpaController.findEmployeeEntities();
+        return employeeJpaController.findAllEmployeeEntities();
     }
     
     public Employee getEmployeeById(Integer id) {
@@ -44,9 +44,4 @@ public class EmployeeBO {
     public void save(Employee employee) throws RollbackFailureException, Exception{
         employeeJpaController.edit(employee);
     }
-
-    public List<Employee> getAllAppraisallevelList() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
 }

@@ -21,15 +21,13 @@ import javax.transaction.UserTransaction;
 
 /**
  *
- * @author kanehe
+ * @author dxx
  */
 public class ReasonJpaController implements Serializable {
 
-    public ReasonJpaController(UserTransaction utx, EntityManagerFactory emf) {
-        this.utx = utx;
+    public ReasonJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
-    private UserTransaction utx = null;
     private EntityManagerFactory emf = null;
 
     public EntityManager getEntityManager() {
@@ -39,15 +37,12 @@ public class ReasonJpaController implements Serializable {
     public void create(Reason reason) throws RollbackFailureException, Exception {
         EntityManager em = null;
         try {
-//            utx.begin();
             em = getEntityManager();
             em.getTransaction().begin();
             em.persist(reason);
-//            utx.commit();
             em.getTransaction().commit();
         } catch (Exception ex) {
             try {
-//                utx.rollback();
                 em.getTransaction().rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
@@ -63,15 +58,12 @@ public class ReasonJpaController implements Serializable {
     public void edit(Reason reason) throws NonexistentEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
-//            utx.begin();
             em = getEntityManager();
             em.getTransaction().begin();
             reason = em.merge(reason);
-//            utx.commit();
             em.getTransaction().commit();
         } catch (Exception ex) {
             try {
-//                utx.rollback();
                 em.getTransaction().rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
@@ -94,7 +86,6 @@ public class ReasonJpaController implements Serializable {
     public void destroy(Integer id) throws NonexistentEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
-//            utx.begin();
             em = getEntityManager();
             em.getTransaction().begin();
             Reason reason;
@@ -105,11 +96,9 @@ public class ReasonJpaController implements Serializable {
                 throw new NonexistentEntityException("The reason with id " + id + " no longer exists.", enfe);
             }
             em.remove(reason);
-//            utx.commit();
             em.getTransaction().commit();
         } catch (Exception ex) {
             try {
-//                utx.rollback();
                 em.getTransaction().rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);

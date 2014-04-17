@@ -35,7 +35,7 @@ public class SettingBO {
         if (settingJpaController == null) {
             UserTransaction utx = FacesUtil.getUserTransaction();
             EntityManagerFactory emf = FacesUtil.getEntityManagerFactory(); 
-            settingJpaController = new SettingJpaController(utx, emf);
+            settingJpaController = new SettingJpaController(emf);
         }
     }
     

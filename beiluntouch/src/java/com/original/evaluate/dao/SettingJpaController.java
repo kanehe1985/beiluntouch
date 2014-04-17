@@ -21,15 +21,13 @@ import javax.transaction.UserTransaction;
 
 /**
  *
- * @author kanehe
+ * @author dxx
  */
 public class SettingJpaController implements Serializable {
 
-    public SettingJpaController(UserTransaction utx, EntityManagerFactory emf) {
-        this.utx = utx;
+    public SettingJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
-    private UserTransaction utx = null;
     private EntityManagerFactory emf = null;
 
     public EntityManager getEntityManager() {
@@ -39,15 +37,12 @@ public class SettingJpaController implements Serializable {
     public void create(Setting setting) throws RollbackFailureException, Exception {
         EntityManager em = null;
         try {
-//            utx.begin();
             em = getEntityManager();
             em.getTransaction().begin();
             em.persist(setting);
-//            utx.commit();
             em.getTransaction().commit();
         } catch (Exception ex) {
             try {
-//                utx.rollback();
                 em.getTransaction().rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
@@ -63,15 +58,12 @@ public class SettingJpaController implements Serializable {
     public void edit(Setting setting) throws NonexistentEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
-//            utx.begin();
             em = getEntityManager();
             em.getTransaction().begin();
             setting = em.merge(setting);
-//            utx.commit();
             em.getTransaction().commit();
         } catch (Exception ex) {
             try {
-//                utx.rollback();
                 em.getTransaction().rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
@@ -94,7 +86,6 @@ public class SettingJpaController implements Serializable {
     public void destroy(Integer id) throws NonexistentEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
-//            utx.begin();
             em = getEntityManager();
             em.getTransaction().begin();
             Setting setting;
@@ -105,11 +96,9 @@ public class SettingJpaController implements Serializable {
                 throw new NonexistentEntityException("The setting with id " + id + " no longer exists.", enfe);
             }
             em.remove(setting);
-//            utx.commit();
             em.getTransaction().commit();
         } catch (Exception ex) {
             try {
-//                utx.rollback();
                 em.getTransaction().rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);

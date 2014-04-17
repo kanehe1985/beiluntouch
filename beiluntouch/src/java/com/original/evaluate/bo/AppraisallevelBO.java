@@ -29,7 +29,7 @@ public class AppraisallevelBO {
         if (appraisallevelJpaController == null) {
             UserTransaction utx = FacesUtil.getUserTransaction();
             EntityManagerFactory emf = FacesUtil.getEntityManagerFactory(); 
-            appraisallevelJpaController = new AppraisallevelJpaController(utx, emf);
+            appraisallevelJpaController = new AppraisallevelJpaController(emf);
         }
     }
 

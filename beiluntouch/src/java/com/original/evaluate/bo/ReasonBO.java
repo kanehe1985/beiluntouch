@@ -30,7 +30,7 @@ public class ReasonBO {
         if (reasonJpaController == null) {
             UserTransaction utx = FacesUtil.getUserTransaction();
             EntityManagerFactory emf = FacesUtil.getEntityManagerFactory(); 
-            reasonJpaController = new ReasonJpaController(utx, emf);
+            reasonJpaController = new ReasonJpaController(emf);
         }
     }
 

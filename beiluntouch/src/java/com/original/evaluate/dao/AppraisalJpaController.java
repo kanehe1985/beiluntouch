@@ -11,6 +11,7 @@ import com.original.evaluate.dao.exceptions.RollbackFailureException;
 import com.original.evaluate.entity.Appraisal;
 import com.original.evaluate.entity.Appraisal_;
 import com.original.evaluate.entity.Appraisallevel;
+import com.original.evaluate.entity.Employee;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,7 +33,7 @@ import javax.transaction.UserTransaction;
  */
 public class AppraisalJpaController implements Serializable {
 
-    public AppraisalJpaController(UserTransaction utx, EntityManagerFactory emf) {
+    public AppraisalJpaController(EntityManagerFactory emf) {
         this.utx = utx;
         this.emf = emf;
     }
@@ -46,22 +47,31 @@ public class AppraisalJpaController implements Serializable {
     public void create(Appraisal appraisal) throws RollbackFailureException, Exception {
         EntityManager em = null;
         try {
-            utx.begin();
             em = getEntityManager();
+            em.getTransaction().begin();
+            Employee employee = appraisal.getEmployee();
+            if (employee != null) {
+                employee = em.getReference(employee.getClass(), employee.getId());
+                appraisal.setEmployee(employee);
+            }
             Appraisallevel appraisallevel = appraisal.getAppraisallevel();
             if (appraisallevel != null) {
                 appraisallevel = em.getReference(appraisallevel.getClass(), appraisallevel.getId());
                 appraisal.setAppraisallevel(appraisallevel);
             }
             em.persist(appraisal);
+            if (employee != null) {
+                employee.getAppraisalCollection().add(appraisal);
+                employee = em.merge(employee);
+            }
             if (appraisallevel != null) {
                 appraisallevel.getAppraisalCollection().add(appraisal);
                 appraisallevel = em.merge(appraisallevel);
             }
-            utx.commit();
+            em.getTransaction().commit();
         } catch (Exception ex) {
             try {
-                utx.rollback();
+                em.getTransaction().rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
             }
@@ -76,16 +86,30 @@ public class AppraisalJpaController implements Serializable {
     public void edit(Appraisal appraisal) throws NonexistentEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
-            utx.begin();
             em = getEntityManager();
+            em.getTransaction().begin();
             Appraisal persistentAppraisal = em.find(Appraisal.class, appraisal.getId());
+            Employee employeeOld = persistentAppraisal.getEmployee();
+            Employee employeeNew = appraisal.getEmployee();
             Appraisallevel appraisallevelOld = persistentAppraisal.getAppraisallevel();
             Appraisallevel appraisallevelNew = appraisal.getAppraisallevel();
+            if (employeeNew != null) {
+                employeeNew = em.getReference(employeeNew.getClass(), employeeNew.getId());
+                appraisal.setEmployee(employeeNew);
+            }
             if (appraisallevelNew != null) {
                 appraisallevelNew = em.getReference(appraisallevelNew.getClass(), appraisallevelNew.getId());
                 appraisal.setAppraisallevel(appraisallevelNew);
             }
             appraisal = em.merge(appraisal);
+            if (employeeOld != null && !employeeOld.equals(employeeNew)) {
+                employeeOld.getAppraisalCollection().remove(appraisal);
+                employeeOld = em.merge(employeeOld);
+            }
+            if (employeeNew != null && !employeeNew.equals(employeeOld)) {
+                employeeNew.getAppraisalCollection().add(appraisal);
+                employeeNew = em.merge(employeeNew);
+            }
             if (appraisallevelOld != null && !appraisallevelOld.equals(appraisallevelNew)) {
                 appraisallevelOld.getAppraisalCollection().remove(appraisal);
                 appraisallevelOld = em.merge(appraisallevelOld);
@@ -94,10 +118,10 @@ public class AppraisalJpaController implements Serializable {
                 appraisallevelNew.getAppraisalCollection().add(appraisal);
                 appraisallevelNew = em.merge(appraisallevelNew);
             }
-            utx.commit();
+            em.getTransaction().commit();
         } catch (Exception ex) {
             try {
-                utx.rollback();
+                em.getTransaction().rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
             }
@@ -119,8 +143,8 @@ public class AppraisalJpaController implements Serializable {
     public void destroy(Integer id) throws NonexistentEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
-            utx.begin();
             em = getEntityManager();
+            em.getTransaction().begin();
             Appraisal appraisal;
             try {
                 appraisal = em.getReference(Appraisal.class, id);
@@ -128,16 +152,21 @@ public class AppraisalJpaController implements Serializable {
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The appraisal with id " + id + " no longer exists.", enfe);
             }
+            Employee employee = appraisal.getEmployee();
+            if (employee != null) {
+                employee.getAppraisalCollection().remove(appraisal);
+                employee = em.merge(employee);
+            }
             Appraisallevel appraisallevel = appraisal.getAppraisallevel();
             if (appraisallevel != null) {
                 appraisallevel.getAppraisalCollection().remove(appraisal);
                 appraisallevel = em.merge(appraisallevel);
             }
             em.remove(appraisal);
-            utx.commit();
+            em.getTransaction().commit();
         } catch (Exception ex) {
             try {
-                utx.rollback();
+                em.getTransaction().rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
             }

@@ -15,37 +15,40 @@
         <h:body>
             <p:layout fullPage="true">
                 <p:layoutUnit position="center">
-                    <h:form id="conditionForm">
-                        <p:notificationBar position="top" effect="slide" widgetVar="retrievalBar" style="height: 7em">
+                    <p:growl showDetail="true" showSummary="true" autoUpdate="true" />
+
+                    <p:notificationBar position="top" effect="slide" widgetVar="retrievalBar" style="height: 7em">
+                        <h:form id="conditionForm">
                             <h:panelGrid columns="4" style="margin-bottom: 10px">
-                                <p:outputLabel value="#{msgs.department}" />
-                                <p:inputText />
-                                <p:outputLabel value="#{msgs.location}" />
-                                <p:inputText />
-                                <p:outputLabel value="#{msgs.position}" />
-                                <p:inputText />
-                                <p:outputLabel value="#{msgs.name}" />
-                                <p:inputText /> 
+                                <p:outputLabel value="#{msgs.group}" />
+                                <p:inputText value="#{evaluateBean.groupCondition}" />
+                                <p:outputLabel value="#{msgs.room}" />
+                                <p:inputText value="#{evaluateBean.roomCondition}" />
                             </h:panelGrid>
-                            <p:commandButton value="#{msgs.search}" onclick="retrievalBar.hide()" />
-                        </p:notificationBar>
-                        <p:commandButton value="#{msgs.searchCondition}" oncomplete="retrievalBar.show()" />
-                    </h:form>                  
+                            <p:commandButton value="#{msgs.search}" actionListener="#{evaluateBean.search}" oncomplete="PF('retrievalBar').hide()"
+                                             update=":employeeForm:employeeGrid" process="@form"/>
+                        </h:form>
+                    </p:notificationBar>
 
                     <h:form id="employeeForm">
-                        <p:dataGrid value="#{evaluateBean.employeeList}" var="employee" emptyMessage="#{msgs.noResult}"
-                                    columns="4" rows="16">
+                        <p:commandButton value="#{msgs.searchCondition}" onclick="PF('retrievalBar').show()" />
+                        <p:dataGrid id="employeeGrid" value="#{evaluateBean.employeeList}" var="employee" emptyMessage="#{msgs.noResult}"
+                                    columns="4">
                             <p:panel style="text-align:center">
-                                <p:graphicImage value="#{resource[employee.photoUrl]}" width="210" height="260"/>
+                                <p:commandLink actionListener="#{evaluateBean.evaluate(employee)}"
+                                               oncomplete="PF('detail').show()" update=":detailForm">
+                                <p:graphicImage value="../resources/images/#{employee.picture}" width="198" height="255" dir="#{msgs.picture}"/>
                                 <br />
                                 <p:outputLabel value="#{employee.name}" />
                                 <br />
-                                <p:commandLink value="#{msgs.evaluate}" actionListener="#{evaluateBean.selectedEmployee(employee)}" oncomplete="detailDialog.show()" />
+                                </p:commandLink>
+                                <p:commandButton value="#{msgs.evaluate}" actionListener="#{evaluateBean.evaluate(employee)}" style="font-size: 1.2em"
+                                               oncomplete="PF('detail').show()" update=":detailForm"/>
                             </p:panel>
                         </p:dataGrid>
                     </h:form>
-                    
-                    <ui:include src="evaluatedetail.xhtml" />
+
+                    <ui:include src="evaluatedetail.xhtml"/>
 
                 </p:layoutUnit>
             </p:layout>

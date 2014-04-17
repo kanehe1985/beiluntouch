@@ -1,17 +1,33 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>#{msgs.welcome}</title>
+    </h:head>
+    <h:body>
+        <h:form>
+            <!--<div style="text-align:center;font-size: 40px;margin-top: 300px;">北仑地税管理人员评价系统</div>-->
+            <p:growl id="growl" autoUpdate="true" />
+            <div style="text-align:center;">
+                <h:panelGrid columns="2" cellpadding="5">  
+                    <h:outputLabel for="username" value="用户名" />  
+                    <p:inputText value="#{loginBean.username}"   
+                                 id="username" required="true" label="username" />  
 
-    <body>
+                    <h:outputLabel for="password" value="密码" />  
+                    <p:password value="#{loginBean.password}" required="true" />
 
-        <ui:composition template="./template.xhtml">
-
-            <ui:define name="center">
-                center
-            </ui:define>
-
-        </ui:composition>
-
-    </body>
+                    <f:facet name="footer">  
+                        <p:commandButton id="loginButton" value="登录" update="growl"   
+                                         action="#{loginBean.login}"   />  
+                    </f:facet>  
+                </h:panelGrid>  
+            </div>
+        </h:form>
+    </h:body>
 </html>
+
