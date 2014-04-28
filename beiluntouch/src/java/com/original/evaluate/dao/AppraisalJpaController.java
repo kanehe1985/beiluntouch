@@ -60,14 +60,14 @@ public class AppraisalJpaController implements Serializable {
                 appraisal.setAppraisallevel(appraisallevel);
             }
             em.persist(appraisal);
-            if (employee != null) {
-                employee.getAppraisalCollection().add(appraisal);
-                employee = em.merge(employee);
-            }
-            if (appraisallevel != null) {
-                appraisallevel.getAppraisalCollection().add(appraisal);
-                appraisallevel = em.merge(appraisallevel);
-            }
+//            if (employee != null) {
+//                employee.getAppraisalCollection().add(appraisal);
+//                employee = em.merge(employee);
+//            }
+//            if (appraisallevel != null) {
+//                appraisallevel.getAppraisalCollection().add(appraisal);
+//                appraisallevel = em.merge(appraisallevel);
+//            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             try {

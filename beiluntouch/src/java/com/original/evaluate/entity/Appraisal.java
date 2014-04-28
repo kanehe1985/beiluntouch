@@ -21,7 +21,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -49,16 +48,12 @@ public class Appraisal implements Serializable {
     @Size(max = 1000)
     @Column(name = "content")
     private String content;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 45)
+    @Size(max = 45)
     @Column(name = "appraiser")
     private String appraiser;
     @Size(max = 100)
     @Column(name = "contact")
     private String contact;
-    @Basic(optional = false)
-    @NotNull
     @Column(name = "createdate")
     @Temporal(TemporalType.DATE)
     private Date createdate;
@@ -74,12 +69,6 @@ public class Appraisal implements Serializable {
 
     public Appraisal(Integer id) {
         this.id = id;
-    }
-
-    public Appraisal(Integer id, String appraiser, Date createdate) {
-        this.id = id;
-        this.appraiser = appraiser;
-        this.createdate = createdate;
     }
 
     public Integer getId() {

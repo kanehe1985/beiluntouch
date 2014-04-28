@@ -16,15 +16,17 @@
                     <p:selectOneRadio id="grid" value="#{evaluateBean.appraisalValue}" layout="grid" columns="1">  
                         <f:selectItems value="#{evaluateBean.appraisalItems}"/>  
                     </p:selectOneRadio>
+                    <p:outputLabel value="#{evaluateBean.selectedEmployee.name}"/>
                 </h:panelGrid>
                 <br />
                 #{msgs.reason}
                 <br />
-                <p:inputTextarea maxlength="2000" rows="5" cols="60" value="#{evaluateBean.reason}" />
+                <p:inputTextarea id="reasonArea" maxlength="2000" rows="5" cols="60" value="#{evaluateBean.reason}" />
                 <h:panelGrid columns="2">
                     <p:outputLabel value="#{msgs.regularReason}" />
                     <p:selectOneMenu value="#{evaluateBean.reasonValue}">
                         <f:selectItems value="#{evaluateBean.reasonItems}" />
+                        <p:ajax listener="#{evaluateBean.onSelectReason}" update="reasonArea" />
                     </p:selectOneMenu>
                     <p:outputLabel value="#{msgs.appraiser}" />
                     <p:inputText value="#{evaluateBean.appraiser}" />
@@ -33,6 +35,8 @@
                     <!--<p:calendar pattern="yyyy年mm月dd日" value="#{evaluateBean.createDate}" />-->
                 </h:panelGrid>
                 <p:commandButton value="#{msgs.submit}" oncomplete="PF('detail').hide();" actionListener="#{evaluateBean.save}" />
+                <p:commandButton value="取消" onclick="PF('detail').hide();"/>
+                <p:commandButton value="手写输入"/>
             </h:form>
         </p:dialog>
     </ui:composition>

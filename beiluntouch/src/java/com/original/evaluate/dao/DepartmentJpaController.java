@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.original.evaluate.dao;
 
 import com.original.evaluate.dao.exceptions.IllegalOrphanException;
@@ -11,17 +10,19 @@ import com.original.evaluate.dao.exceptions.NonexistentEntityException;
 import com.original.evaluate.dao.exceptions.PreexistingEntityException;
 import com.original.evaluate.dao.exceptions.RollbackFailureException;
 import com.original.evaluate.entity.Department;
-import java.io.Serializable;
-import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import com.original.evaluate.entity.Employee;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.transaction.UserTransaction;
 
 /**
@@ -227,5 +228,22 @@ public class DepartmentJpaController implements Serializable {
             em.close();
         }
     }
-    
+
+    public List<Department> getDeparmentListByTag(String tag) {
+        EntityManager em = getEntityManager();
+        try {
+            CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
+            Root<Department> rt = cq.from(Department.class);
+
+            Path<String> pTag = rt.get("tag");
+            Predicate p = em.getCriteriaBuilder().equal(pTag, tag);
+            
+            cq.where(p);
+            Query q = em.createQuery(cq);
+            return q.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
 }

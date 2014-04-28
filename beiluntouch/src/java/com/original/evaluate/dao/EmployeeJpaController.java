@@ -225,8 +225,6 @@ public class EmployeeJpaController implements Serializable {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
             cq.select(cq.from(Employee.class));
             Query q = em.createQuery(cq);
-            q.setMaxResults(-1);
-            q.setFirstResult(-1);
             return q.getResultList();
         } finally {
             em.close();
@@ -240,7 +238,7 @@ public class EmployeeJpaController implements Serializable {
             Root<Employee> root = cq.from(Employee.class);
             Path<Boolean> pAllow = root.get("isallowappraisal");
             
-            cq.where(pAllow);
+            cq.where(em.getCriteriaBuilder().equal(pAllow, true)).orderBy(em.getCriteriaBuilder().asc(root.get("orderid")));
             Query q = em.createQuery(cq);
             if (!all) {
                 q.setMaxResults(maxResults);
@@ -297,7 +295,7 @@ public class EmployeeJpaController implements Serializable {
             Predicate[] pArray = new Predicate[pAll.size()];
             pArray = pAll.toArray(pArray);
             
-            cq.where(pArray);
+            cq.where(pArray).orderBy(em.getCriteriaBuilder().asc(root.get("orderid")));
             Query q = em.createQuery(cq);
             return q.getResultList();
         } finally {

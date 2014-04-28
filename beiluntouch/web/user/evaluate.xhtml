@@ -16,34 +16,27 @@
             <p:layout fullPage="true">
                 <p:layoutUnit position="center">
                     <p:growl showDetail="true" showSummary="true" autoUpdate="true" />
-
-                    <p:notificationBar position="top" effect="slide" widgetVar="retrievalBar" style="height: 7em">
-                        <h:form id="conditionForm">
-                            <h:panelGrid columns="4" style="margin-bottom: 10px">
-                                <p:outputLabel value="#{msgs.group}" />
-                                <p:inputText value="#{evaluateBean.groupCondition}" />
-                                <p:outputLabel value="#{msgs.room}" />
-                                <p:inputText value="#{evaluateBean.roomCondition}" />
-                            </h:panelGrid>
-                            <p:commandButton value="#{msgs.search}" actionListener="#{evaluateBean.search}" oncomplete="PF('retrievalBar').hide()"
-                                             update=":employeeForm:employeeGrid" process="@form"/>
-                        </h:form>
-                    </p:notificationBar>
-
+                     <h:form id="conditionForm">
+                        <p:outputLabel value="#{msgs.group}" />
+                        <p:inputText value="#{evaluateBean.groupCondition}" />
+                        <p:outputLabel value="#{msgs.room}" />
+                        <p:inputText value="#{evaluateBean.roomCondition}" />                            
+                        <p:commandButton value="#{msgs.search}" actionListener="#{evaluateBean.search}" update=":employeeForm:employeeGrid" process="@form"/>
+                    </h:form>
                     <h:form id="employeeForm">
-                        <p:commandButton value="#{msgs.searchCondition}" onclick="PF('retrievalBar').show()" />
                         <p:dataGrid id="employeeGrid" value="#{evaluateBean.employeeList}" var="employee" emptyMessage="#{msgs.noResult}"
                                     columns="4">
                             <p:panel style="text-align:center">
-                                <p:commandLink actionListener="#{evaluateBean.evaluate(employee)}"
-                                               oncomplete="PF('detail').show()" update=":detailForm">
-                                <p:graphicImage value="../resources/images/#{employee.picture}" width="198" height="255" dir="#{msgs.picture}"/>
-                                <br />
-                                <p:outputLabel value="#{employee.name}" />
+                                <p:commandLink oncomplete="PF('detail').show()" update=":detailForm">
+                                    <f:setPropertyActionListener value="#{employee}" target="#{evaluateBean.selectedEmployee}"/>
+                                    <p:graphicImage name="/images/#{employee.picture}" width="198" height="255" dir="#{msgs.picture}"/>
                                 <br />
                                 </p:commandLink>
-                                <p:commandButton value="#{msgs.evaluate}" actionListener="#{evaluateBean.evaluate(employee)}" style="font-size: 1.2em"
-                                               oncomplete="PF('detail').show()" update=":detailForm"/>
+                                <p:outputLabel value="#{employee.name}" />
+                                <p:commandButton value="#{msgs.evaluate}" style="font-size: 1.2em"
+                                                 oncomplete="PF('detail').show()" update=":detailForm">
+                                    <f:setPropertyActionListener value="#{employee}" target="#{evaluateBean.selectedEmployee}"/>
+                                </p:commandButton>
                             </p:panel>
                         </p:dataGrid>
                     </h:form>

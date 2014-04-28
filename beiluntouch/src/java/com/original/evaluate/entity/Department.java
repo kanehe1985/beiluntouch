@@ -41,14 +41,10 @@ public class Department implements Serializable {
     @NotNull
     @Column(name = "id")
     private Integer id;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 45)
+    @Size(max = 45)
     @Column(name = "name")
     private String name;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 255)
+    @Size(max = 255)
     @Column(name = "tag")
     private String tag;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "department")
@@ -59,12 +55,6 @@ public class Department implements Serializable {
 
     public Department(Integer id) {
         this.id = id;
-    }
-
-    public Department(Integer id, String name, String tag) {
-        this.id = id;
-        this.name = name;
-        this.tag = tag;
     }
 
     public Integer getId() {
