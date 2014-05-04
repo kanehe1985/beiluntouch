@@ -36,10 +36,10 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Employee.findById", query = "SELECT e FROM Employee e WHERE e.id = :id"),
     @NamedQuery(name = "Employee.findByName", query = "SELECT e FROM Employee e WHERE e.name = :name"),
     @NamedQuery(name = "Employee.findByRomno", query = "SELECT e FROM Employee e WHERE e.romno = :romno"),
-    @NamedQuery(name = "Employee.findByGroupname", query = "SELECT e FROM Employee e WHERE e.groupname = :groupname"),
     @NamedQuery(name = "Employee.findByIsallowappraisal", query = "SELECT e FROM Employee e WHERE e.isallowappraisal = :isallowappraisal"),
     @NamedQuery(name = "Employee.findByPicture", query = "SELECT e FROM Employee e WHERE e.picture = :picture"),
-    @NamedQuery(name = "Employee.findByOrderid", query = "SELECT e FROM Employee e WHERE e.orderid = :orderid")})
+    @NamedQuery(name = "Employee.findByOrderid", query = "SELECT e FROM Employee e WHERE e.orderid = :orderid"),
+    @NamedQuery(name = "Employee.findByTelephone", query = "SELECT e FROM Employee e WHERE e.telephone = :telephone")})
 public class Employee implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -55,9 +55,6 @@ public class Employee implements Serializable {
     @Size(max = 45)
     @Column(name = "romno")
     private String romno;
-    @Size(max = 45)
-    @Column(name = "groupname")
-    private String groupname;
     @Column(name = "isallowappraisal")
     private Boolean isallowappraisal;
     @Size(max = 255)
@@ -65,11 +62,19 @@ public class Employee implements Serializable {
     private String picture;
     @Column(name = "orderid")
     private Integer orderid;
+    @Size(max = 45)
+    @Column(name = "telephone")
+    private String telephone;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
     private Collection<Appraisal> appraisalCollection;
+    @JoinColumn(name = "category", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Category category;
     @JoinColumn(name = "department", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Department department;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
+    private Collection<Notice> noticeCollection;
 
     public Employee() {
     }
@@ -107,14 +112,6 @@ public class Employee implements Serializable {
         this.romno = romno;
     }
 
-    public String getGroupname() {
-        return groupname;
-    }
-
-    public void setGroupname(String groupname) {
-        this.groupname = groupname;
-    }
-
     public Boolean getIsallowappraisal() {
         return isallowappraisal;
     }
@@ -139,6 +136,14 @@ public class Employee implements Serializable {
         this.orderid = orderid;
     }
 
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
     @XmlTransient
     public Collection<Appraisal> getAppraisalCollection() {
         return appraisalCollection;
@@ -148,12 +153,29 @@ public class Employee implements Serializable {
         this.appraisalCollection = appraisalCollection;
     }
 
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
     public Department getDepartment() {
         return department;
     }
 
     public void setDepartment(Department department) {
         this.department = department;
+    }
+
+    @XmlTransient
+    public Collection<Notice> getNoticeCollection() {
+        return noticeCollection;
+    }
+
+    public void setNoticeCollection(Collection<Notice> noticeCollection) {
+        this.noticeCollection = noticeCollection;
     }
 
     @Override

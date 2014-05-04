@@ -18,31 +18,30 @@
                     <p:growl showDetail="true" showSummary="true" autoUpdate="true" />
                      <h:form id="conditionForm">
                         <p:outputLabel value="#{msgs.group}" />
-                        <p:inputText value="#{evaluateBean.groupCondition}" />
+                        <p:selectOneMenu value="#{evaluateBean.categoryCondition}">
+                            <f:selectItem itemLabel="请选择" itemValue="" />
+                            <f:selectItems value="#{evaluateBean.categoryItems}" />
+                        </p:selectOneMenu>
                         <p:outputLabel value="#{msgs.room}" />
                         <p:inputText value="#{evaluateBean.roomCondition}" />                            
                         <p:commandButton value="#{msgs.search}" actionListener="#{evaluateBean.search}" update=":employeeForm:employeeGrid" process="@form"/>
                     </h:form>
                     <h:form id="employeeForm">
                         <p:dataGrid id="employeeGrid" value="#{evaluateBean.employeeList}" var="employee" emptyMessage="#{msgs.noResult}"
-                                    columns="4">
-                            <p:panel style="text-align:center">
-                                <p:commandLink oncomplete="PF('detail').show()" update=":detailForm">
-                                    <f:setPropertyActionListener value="#{employee}" target="#{evaluateBean.selectedEmployee}"/>
+                                    columns="4" >
+                            <p:panel style="text-align:center;">
+                                <p:commandLink oncomplete="PF('detail').show();" update=":detailForm">                                    
                                     <p:graphicImage name="/images/#{employee.picture}" width="198" height="255" dir="#{msgs.picture}"/>
-                                <br />
-                                </p:commandLink>
-                                <p:outputLabel value="#{employee.name}" />
-                                <p:commandButton value="#{msgs.evaluate}" style="font-size: 1.2em"
-                                                 oncomplete="PF('detail').show()" update=":detailForm">
                                     <f:setPropertyActionListener value="#{employee}" target="#{evaluateBean.selectedEmployee}"/>
+                                </p:commandLink><br/>
+                                <p:outputLabel value="#{employee.name}" /><br/>
+                                <p:commandButton value="#{msgs.evaluate}" style="font-size: 1.2em" oncomplete="PF('detail').show();" update=":detailForm">
+                                    <f:setPropertyActionListener value="#{employee}" target="#{evaluateBean.selectedEmployee}" />
                                 </p:commandButton>
                             </p:panel>
-                        </p:dataGrid>
+                        </p:dataGrid>                        
                     </h:form>
-
                     <ui:include src="evaluatedetail.xhtml"/>
-
                 </p:layoutUnit>
             </p:layout>
         </h:body>

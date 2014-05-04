@@ -3,38 +3,42 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.original.evaluate.dao;
 
 import com.original.evaluate.dao.exceptions.IllegalOrphanException;
 import com.original.evaluate.dao.exceptions.NonexistentEntityException;
 import com.original.evaluate.dao.exceptions.PreexistingEntityException;
 import com.original.evaluate.dao.exceptions.RollbackFailureException;
-import java.io.Serializable;
-import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import com.original.evaluate.entity.Department;
 import com.original.evaluate.entity.Appraisal;
+import com.original.evaluate.entity.Category;
+import com.original.evaluate.entity.Department;
 import com.original.evaluate.entity.Employee;
+import com.original.evaluate.entity.Notice;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.transaction.UserTransaction;
 
 /**
  *
- * @author dxx
+ * @author kanehe
  */
 public class EmployeeJpaController implements Serializable {
 
     public EmployeeJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
+    private UserTransaction utx = null;
     private EntityManagerFactory emf = null;
 
     public EntityManager getEntityManager() {
@@ -45,10 +49,18 @@ public class EmployeeJpaController implements Serializable {
         if (employee.getAppraisalCollection() == null) {
             employee.setAppraisalCollection(new ArrayList<Appraisal>());
         }
+        if (employee.getNoticeCollection() == null) {
+            employee.setNoticeCollection(new ArrayList<Notice>());
+        }
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            Category category = employee.getCategory();
+            if (category != null) {
+                category = em.getReference(category.getClass(), category.getId());
+                employee.setCategory(category);
+            }
             Department department = employee.getDepartment();
             if (department != null) {
                 department = em.getReference(department.getClass(), department.getId());
@@ -60,7 +72,17 @@ public class EmployeeJpaController implements Serializable {
                 attachedAppraisalCollection.add(appraisalCollectionAppraisalToAttach);
             }
             employee.setAppraisalCollection(attachedAppraisalCollection);
+            Collection<Notice> attachedNoticeCollection = new ArrayList<Notice>();
+            for (Notice noticeCollectionNoticeToAttach : employee.getNoticeCollection()) {
+                noticeCollectionNoticeToAttach = em.getReference(noticeCollectionNoticeToAttach.getClass(), noticeCollectionNoticeToAttach.getId());
+                attachedNoticeCollection.add(noticeCollectionNoticeToAttach);
+            }
+            employee.setNoticeCollection(attachedNoticeCollection);
             em.persist(employee);
+            if (category != null) {
+                category.getEmployeeCollection().add(employee);
+                category = em.merge(category);
+            }
             if (department != null) {
                 department.getEmployeeCollection().add(employee);
                 department = em.merge(department);
@@ -72,6 +94,15 @@ public class EmployeeJpaController implements Serializable {
                 if (oldEmployeeOfAppraisalCollectionAppraisal != null) {
                     oldEmployeeOfAppraisalCollectionAppraisal.getAppraisalCollection().remove(appraisalCollectionAppraisal);
                     oldEmployeeOfAppraisalCollectionAppraisal = em.merge(oldEmployeeOfAppraisalCollectionAppraisal);
+                }
+            }
+            for (Notice noticeCollectionNotice : employee.getNoticeCollection()) {
+                Employee oldEmployeeOfNoticeCollectionNotice = noticeCollectionNotice.getEmployee();
+                noticeCollectionNotice.setEmployee(employee);
+                noticeCollectionNotice = em.merge(noticeCollectionNotice);
+                if (oldEmployeeOfNoticeCollectionNotice != null) {
+                    oldEmployeeOfNoticeCollectionNotice.getNoticeCollection().remove(noticeCollectionNotice);
+                    oldEmployeeOfNoticeCollectionNotice = em.merge(oldEmployeeOfNoticeCollectionNotice);
                 }
             }
             em.getTransaction().commit();
@@ -98,10 +129,14 @@ public class EmployeeJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             Employee persistentEmployee = em.find(Employee.class, employee.getId());
+            Category categoryOld = persistentEmployee.getCategory();
+            Category categoryNew = employee.getCategory();
             Department departmentOld = persistentEmployee.getDepartment();
             Department departmentNew = employee.getDepartment();
             Collection<Appraisal> appraisalCollectionOld = persistentEmployee.getAppraisalCollection();
             Collection<Appraisal> appraisalCollectionNew = employee.getAppraisalCollection();
+            Collection<Notice> noticeCollectionOld = persistentEmployee.getNoticeCollection();
+            Collection<Notice> noticeCollectionNew = employee.getNoticeCollection();
             List<String> illegalOrphanMessages = null;
             for (Appraisal appraisalCollectionOldAppraisal : appraisalCollectionOld) {
                 if (!appraisalCollectionNew.contains(appraisalCollectionOldAppraisal)) {
@@ -111,8 +146,20 @@ public class EmployeeJpaController implements Serializable {
                     illegalOrphanMessages.add("You must retain Appraisal " + appraisalCollectionOldAppraisal + " since its employee field is not nullable.");
                 }
             }
+            for (Notice noticeCollectionOldNotice : noticeCollectionOld) {
+                if (!noticeCollectionNew.contains(noticeCollectionOldNotice)) {
+                    if (illegalOrphanMessages == null) {
+                        illegalOrphanMessages = new ArrayList<String>();
+                    }
+                    illegalOrphanMessages.add("You must retain Notice " + noticeCollectionOldNotice + " since its employee field is not nullable.");
+                }
+            }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
+            }
+            if (categoryNew != null) {
+                categoryNew = em.getReference(categoryNew.getClass(), categoryNew.getId());
+                employee.setCategory(categoryNew);
             }
             if (departmentNew != null) {
                 departmentNew = em.getReference(departmentNew.getClass(), departmentNew.getId());
@@ -125,7 +172,22 @@ public class EmployeeJpaController implements Serializable {
             }
             appraisalCollectionNew = attachedAppraisalCollectionNew;
             employee.setAppraisalCollection(appraisalCollectionNew);
+            Collection<Notice> attachedNoticeCollectionNew = new ArrayList<Notice>();
+            for (Notice noticeCollectionNewNoticeToAttach : noticeCollectionNew) {
+                noticeCollectionNewNoticeToAttach = em.getReference(noticeCollectionNewNoticeToAttach.getClass(), noticeCollectionNewNoticeToAttach.getId());
+                attachedNoticeCollectionNew.add(noticeCollectionNewNoticeToAttach);
+            }
+            noticeCollectionNew = attachedNoticeCollectionNew;
+            employee.setNoticeCollection(noticeCollectionNew);
             employee = em.merge(employee);
+            if (categoryOld != null && !categoryOld.equals(categoryNew)) {
+                categoryOld.getEmployeeCollection().remove(employee);
+                categoryOld = em.merge(categoryOld);
+            }
+            if (categoryNew != null && !categoryNew.equals(categoryOld)) {
+                categoryNew.getEmployeeCollection().add(employee);
+                categoryNew = em.merge(categoryNew);
+            }
             if (departmentOld != null && !departmentOld.equals(departmentNew)) {
                 departmentOld.getEmployeeCollection().remove(employee);
                 departmentOld = em.merge(departmentOld);
@@ -142,6 +204,17 @@ public class EmployeeJpaController implements Serializable {
                     if (oldEmployeeOfAppraisalCollectionNewAppraisal != null && !oldEmployeeOfAppraisalCollectionNewAppraisal.equals(employee)) {
                         oldEmployeeOfAppraisalCollectionNewAppraisal.getAppraisalCollection().remove(appraisalCollectionNewAppraisal);
                         oldEmployeeOfAppraisalCollectionNewAppraisal = em.merge(oldEmployeeOfAppraisalCollectionNewAppraisal);
+                    }
+                }
+            }
+            for (Notice noticeCollectionNewNotice : noticeCollectionNew) {
+                if (!noticeCollectionOld.contains(noticeCollectionNewNotice)) {
+                    Employee oldEmployeeOfNoticeCollectionNewNotice = noticeCollectionNewNotice.getEmployee();
+                    noticeCollectionNewNotice.setEmployee(employee);
+                    noticeCollectionNewNotice = em.merge(noticeCollectionNewNotice);
+                    if (oldEmployeeOfNoticeCollectionNewNotice != null && !oldEmployeeOfNoticeCollectionNewNotice.equals(employee)) {
+                        oldEmployeeOfNoticeCollectionNewNotice.getNoticeCollection().remove(noticeCollectionNewNotice);
+                        oldEmployeeOfNoticeCollectionNewNotice = em.merge(oldEmployeeOfNoticeCollectionNewNotice);
                     }
                 }
             }
@@ -187,8 +260,20 @@ public class EmployeeJpaController implements Serializable {
                 }
                 illegalOrphanMessages.add("This Employee (" + employee + ") cannot be destroyed since the Appraisal " + appraisalCollectionOrphanCheckAppraisal + " in its appraisalCollection field has a non-nullable employee field.");
             }
+            Collection<Notice> noticeCollectionOrphanCheck = employee.getNoticeCollection();
+            for (Notice noticeCollectionOrphanCheckNotice : noticeCollectionOrphanCheck) {
+                if (illegalOrphanMessages == null) {
+                    illegalOrphanMessages = new ArrayList<String>();
+                }
+                illegalOrphanMessages.add("This Employee (" + employee + ") cannot be destroyed since the Notice " + noticeCollectionOrphanCheckNotice + " in its noticeCollection field has a non-nullable employee field.");
+            }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
+            }
+            Category category = employee.getCategory();
+            if (category != null) {
+                category.getEmployeeCollection().remove(employee);
+                category = em.merge(category);
             }
             Department department = employee.getDepartment();
             if (department != null) {
@@ -271,23 +356,37 @@ public class EmployeeJpaController implements Serializable {
             em.close();
         }
     }
+    
+    public List<Employee> findEmployeeEntities(String group, String room) {
+        return findEmployeeEntities("",group,room);
+    }
 
-    public List<Employee> getEmployeeListByCondition(String group, String room) {
+    public List<Employee> findEmployeeEntities(String departmentID, String categoryID, String room) {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
             Root<Employee> root = cq.from(Employee.class);
             
-            Path<String> pGroup = root.get("groupname");
+            Path<Department> pdepID = root.get("department");
+//            Path<Department> pdepID = root.get(Employee_.department);
+            Path<Category> pCategoryID = root.get("category");
             Path<String> pRoom = root.get("romno");
             Path<Boolean> pAllow = root.get("isallowappraisal");
             
             List<Predicate> pAll = new ArrayList<>();
             pAll.add(em.getCriteriaBuilder().equal(pAllow, true));
-            
-            if (group != null && !group.isEmpty()) {
-                pAll.add(em.getCriteriaBuilder().like(pGroup, group));
-            }  
+            if(departmentID.length()>0){
+                Department department = em.getReference(Department.class, Integer.parseInt(departmentID));
+                pAll.add(em.getCriteriaBuilder().equal(pdepID, department));
+            }
+                      
+            if(categoryID != null && !categoryID.isEmpty()){
+                Category category = em.getReference(Category.class, Integer.parseInt(categoryID));
+                pAll.add(em.getCriteriaBuilder().equal(pCategoryID, category));
+            }
+//            if (group != null && !group.isEmpty()) {
+//                pAll.add(em.getCriteriaBuilder().like(pGroup, group));
+//            }  
             if (room != null && !room.isEmpty()) {
                 pAll.add(em.getCriteriaBuilder().like(pRoom, room));
             }
@@ -301,6 +400,5 @@ public class EmployeeJpaController implements Serializable {
         } finally {
             em.close();
         }
-    }
-
+    }    
 }

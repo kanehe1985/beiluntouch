@@ -7,11 +7,13 @@ package com.original.evaluate.bean;
 
 import com.original.evaluate.dao.AppraisalJpaController;
 import com.original.evaluate.dao.AppraisallevelJpaController;
+import com.original.evaluate.dao.CategoryJpaController;
 import com.original.evaluate.dao.DepartmentJpaController;
 import com.original.evaluate.dao.EmployeeJpaController;
 import com.original.evaluate.dao.ReasonJpaController;
 import com.original.evaluate.entity.Appraisal;
 import com.original.evaluate.entity.Appraisallevel;
+import com.original.evaluate.entity.Category;
 import com.original.evaluate.entity.Department;
 import com.original.evaluate.entity.Employee;
 import com.original.evaluate.entity.Reason;
@@ -41,13 +43,15 @@ public class EvaluateBean implements Serializable {
     private AppraisalJpaController appraisalJpaController;
     private ReasonJpaController reasonJpaController;
     private DepartmentJpaController departmentJpaController;
+    private CategoryJpaController categoryJpaController;
     private LinkedHashMap<String, Integer> appraisalItems;
     private LinkedHashMap<String, Integer> reasonItems;
     private LinkedHashMap<String, Integer> departmentItems;
+    private LinkedHashMap<String, Integer> categoryItems;
     private List<Department> departments;
-    private List<Employee> employeeList = null;
+    private List<Employee> employeeList;    
     private Employee selectedEmployee;
-    private String groupCondition;
+    private String categoryCondition;
     private String roomCondition;
     private Integer appraisalValue;
     private Integer reasonValue;
@@ -55,22 +59,33 @@ public class EvaluateBean implements Serializable {
     private String appraiser;
     private String reason;
     private String contact;
+    private String depID;
     private Date createDate;
+    
 
     public EvaluateBean() {
 
     }
 
-    public List<Employee> getEmployeeList() {
-        List<Employee> tempList = getEmployeeJpaController().findEmployeeEntities();
-        int depID = Integer.parseInt(this.getRequestParameter("depid"));
-        employeeList = new ArrayList<>();
-        for (Employee employee : tempList) {
-            if (employee.getDepartment().getId().equals(depID)) {
-                employeeList.add(employee);
-            }
-        }
-        return employeeList;
+//    public List<Employee> getEmployeeList() {
+//        List<Employee> tempList = getEmployeeJpaController().findEmployeeEntities();
+//        int depID = Integer.parseInt(this.getRequestParameter("depid"));
+//        employeeList = new ArrayList<>();
+//        for (Employee employee : tempList) {
+//            if (employee.getDepartment().getId().equals(depID)) {
+//                employeeList.add(employee);
+//            }
+//        }
+//        return employeeList;
+//        return tempList;
+//    }
+    
+    public List<Employee> getEmployeeList(){
+//        int depID = Integer.parseInt(this.getRequestParameter("depid"));
+//        this.employeeList = getEmployeeJpaController().findEmployeeEntities(17,groupCondition,roomCondition);
+        search();
+//        this.employeeList = getEmployeeJpaController().findEmployeeEntities();
+        return this.employeeList;
     }
     
     private EmployeeJpaController getEmployeeJpaController() {
@@ -107,6 +122,13 @@ public class EvaluateBean implements Serializable {
         }
         return departmentJpaController;
     }
+    
+    private CategoryJpaController getCategoryJpaController() {
+        if (categoryJpaController == null) {
+            categoryJpaController = new CategoryJpaController(FacesUtil.getEntityManagerFactory());
+        }
+        return categoryJpaController;
+    }
 
     public LinkedHashMap<String, Integer> getAppraisalItems() {
         if (appraisalItems == null) {
@@ -140,6 +162,17 @@ public class EvaluateBean implements Serializable {
         }
         return departmentItems;
     }
+    
+    public LinkedHashMap<String, Integer> getCategoryItems() {
+        if (categoryItems == null) {
+            categoryItems = new LinkedHashMap<>();
+            List<Category> categoryList = getCategoryJpaController().findCategoryEntities();
+            for (Category category : categoryList) {
+                categoryItems.put(category.getName(), category.getId());
+            }
+        }
+        return categoryItems;
+    }
 
     public List<Department> getDepartments() {
         String tag = this.getRequestParameter("tag");
@@ -156,16 +189,16 @@ public class EvaluateBean implements Serializable {
         return selectedEmployee;
     }
 
-    public void setSelectedEmployee(Employee selectedEmployee) {
-        this.selectedEmployee = selectedEmployee;
+    public void setSelectedEmployee(Employee employee) {
+        this.selectedEmployee = employee;
     }
 
-    public String getGroupCondition() {
-        return groupCondition;
+    public String getCategoryCondition() {
+        return categoryCondition;
     }
 
-    public void setGroupCondition(String groupCondition) {
-        this.groupCondition = groupCondition;
+    public void setCategoryCondition(String categoryCondition) {
+        this.categoryCondition = categoryCondition;
     }
 
     public String getRoomCondition() {
@@ -233,7 +266,12 @@ public class EvaluateBean implements Serializable {
     }
 
     public void search() {
-        employeeList = employeeJpaController.getEmployeeListByCondition(groupCondition, roomCondition);
+//        this.employeeList = getEmployeeJpaController().findEmployeeEntities();
+        
+        if(getRequestParameter("depid")!=null){
+            depID = getRequestParameter("depid");
+        }   
+        this.employeeList = getEmployeeJpaController().findEmployeeEntities(depID,categoryCondition,roomCondition);
     }
 
     public void save() {

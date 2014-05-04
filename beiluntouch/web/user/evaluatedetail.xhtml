@@ -11,7 +11,7 @@
                   header="#{msgs.evaluateStaff}">
             <h:form id="detailForm">
                 <h:panelGrid columns="2" cellpadding="10">
-                    <p:graphicImage value="../resources/images/#{evaluateBean.selectedEmployee.picture}" 
+                    <p:graphicImage name="/images/#{evaluateBean.selectedEmployee.picture}" 
                                     width="198" height="255" /> 
                     <p:selectOneRadio id="grid" value="#{evaluateBean.appraisalValue}" layout="grid" columns="1">  
                         <f:selectItems value="#{evaluateBean.appraisalItems}"/>  

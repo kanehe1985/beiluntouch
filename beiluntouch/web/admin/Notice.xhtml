@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="./template.xhtml">
+
+        <ui:define name="center">
+            <h:form id="NoticeListForm">
+                <p:dataTable id="notices" var="notice" value="#{noticeBean.notices}" rowKey="#{notice.id}"
+                             selection="#{noticeBean.selectedNotices}">
+
+                    <f:facet name="header">
+                        评价等级
+                    </f:facet>
+                    <p:column selectionMode="multiple" style="width:4%; text-align: center"/>
+
+                    <p:column headerText="部门名称">
+                        #{notice.department.name}
+                    </p:column>
+                    <p:column headerText="组别">
+                        #{notice.category.name}
+                    </p:column>
+                    <p:column headerText="通知人">
+                        #{notice.employee.name}
+                    </p:column>
+                    
+                    <p:column headerText="操作">
+                        <p:commandButton value="编辑" icon="ui-icon-pencil" oncomplete="PF('NoticeEditDialog').show();" update=":NoticeEditForm">
+                            <f:setPropertyActionListener value="#{notice}" target="#{noticeBean.editNotice}"/>
+                        </p:commandButton>
+                    </p:column>
+                    <f:facet name="footer">                        
+                        <p:commandButton id="createButton" icon="ui-icon-plus"   value="新建" actionListener="#{noticeBean.prepareCreate}" update=":NoticeCreateForm" oncomplete="PF('NoticeCreateDialog').show()"/>
+                        <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="删除" actionListener="#{noticeBean.delete}" update=":NoticeListForm:notices">
+                            <p:confirm header="提示" message="是否删除？" icon="ui-icon-alert" />
+                        </p:commandButton>
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="是" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+                            <p:commandButton value="否" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/>     
+                        </p:confirmDialog>
+                        <p:commandButton id="refreshButton" icon="ui-icon-refresh" value="刷新" actionListener="#{noticeBean.refresh}" update=":NoticeListForm:notices"/>
+                    </f:facet>
+                </p:dataTable>
+            </h:form>
+            
+            <p:dialog id="NoticeCreateDlg" widgetVar="NoticeCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="新建">
+                <h:form id="NoticeCreateForm">
+                    <h:panelGroup id="display">
+                        <p:panelGrid columns="2">
+                            <p:outputLabel value="部门名称" for="departmentName" />
+                            <p:inputText id="departmentName" value="#{noticeBean.editNotice.department.name}" title="#{msgs.EditNoticeTitle_name}" />
+                            <p:outputLabel value="组别" for="categoryName" />
+                            <p:inputText id="categoryName" value="#{noticeBean.editNotice.category.name}" title="#{msgs.EditNoticeTitle_name}" />
+                            <p:outputLabel value="通知人" for="employeeName" />
+                            <p:inputText id="employeeName" value="#{noticeBean.editNotice.employee.name}" title="#{msgs.EditNoticeTitle_name}" />
+                        </p:panelGrid>
+                        <p:commandButton actionListener="#{noticeBean.create}" value="保存" update=":NoticeListForm:notices" oncomplete="PF('NoticeCreateDialog').hide();"/>
+                        <p:commandButton value="取消" onclick="NoticeCreateDialog.hide()"/>
+                    </h:panelGroup>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog id="NoticeEditDlg" widgetVar="NoticeEditDialog" modal="true" resizable="false" appendTo="@(body)" header="编辑">
+                <h:form id="NoticeEditForm">
+                    <h:panelGroup id="display">
+                        <p:panelGrid columns="2">
+                            <p:outputLabel value="部门名称" for="departmentName" />
+                            <p:inputText id="departmentName" value="#{noticeBean.editNotice.department.name}" title="#{msgs.EditNoticeTitle_name}" />
+                            <p:outputLabel value="组别" for="categoryName" />
+                            <p:inputText id="categoryName" value="#{noticeBean.editNotice.category.name}" title="#{msgs.EditNoticeTitle_name}" />
+                            <p:outputLabel value="通知人" for="employeeName" />
+                            <p:inputText id="employeeName" value="#{noticeBean.editNotice.employee.name}" title="#{msgs.EditNoticeTitle_name}" />
+                        </p:panelGrid>
+                        <p:commandButton actionListener="#{noticeBean.update}" value="保存" update=":NoticeListForm:notices" oncomplete="PF('NoticeEditDialog').hide();"/>
+                        <p:commandButton value="取消" onclick="NoticeEditDialog.hide()"/>
+                    </h:panelGroup>
+                </h:form>
+            </p:dialog>
+        </ui:define>
+    </ui:composition>
+
+</html>

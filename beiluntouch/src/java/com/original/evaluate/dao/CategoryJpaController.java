@@ -10,30 +10,28 @@ import com.original.evaluate.dao.exceptions.IllegalOrphanException;
 import com.original.evaluate.dao.exceptions.NonexistentEntityException;
 import com.original.evaluate.dao.exceptions.PreexistingEntityException;
 import com.original.evaluate.dao.exceptions.RollbackFailureException;
-import com.original.evaluate.entity.Department;
-import com.original.evaluate.entity.Employee;
-import com.original.evaluate.entity.Notice;
+import com.original.evaluate.entity.Category;
 import java.io.Serializable;
+import javax.persistence.Query;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import com.original.evaluate.entity.Employee;
 import java.util.ArrayList;
 import java.util.Collection;
+import com.original.evaluate.entity.Notice;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import javax.transaction.UserTransaction;
 
 /**
  *
  * @author kanehe
  */
-public class DepartmentJpaController implements Serializable {
+public class CategoryJpaController implements Serializable {
 
-    public DepartmentJpaController(EntityManagerFactory emf) {
+    public CategoryJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
     private UserTransaction utx = null;
@@ -43,46 +41,46 @@ public class DepartmentJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(Department department) throws PreexistingEntityException, RollbackFailureException, Exception {
-        if (department.getEmployeeCollection() == null) {
-            department.setEmployeeCollection(new ArrayList<Employee>());
+    public void create(Category category) throws PreexistingEntityException, RollbackFailureException, Exception {
+        if (category.getEmployeeCollection() == null) {
+            category.setEmployeeCollection(new ArrayList<Employee>());
         }
-        if (department.getNoticeCollection() == null) {
-            department.setNoticeCollection(new ArrayList<Notice>());
+        if (category.getNoticeCollection() == null) {
+            category.setNoticeCollection(new ArrayList<Notice>());
         }
         EntityManager em = null;
         try {
             utx.begin();
             em = getEntityManager();
             Collection<Employee> attachedEmployeeCollection = new ArrayList<Employee>();
-            for (Employee employeeCollectionEmployeeToAttach : department.getEmployeeCollection()) {
+            for (Employee employeeCollectionEmployeeToAttach : category.getEmployeeCollection()) {
                 employeeCollectionEmployeeToAttach = em.getReference(employeeCollectionEmployeeToAttach.getClass(), employeeCollectionEmployeeToAttach.getId());
                 attachedEmployeeCollection.add(employeeCollectionEmployeeToAttach);
             }
-            department.setEmployeeCollection(attachedEmployeeCollection);
+            category.setEmployeeCollection(attachedEmployeeCollection);
             Collection<Notice> attachedNoticeCollection = new ArrayList<Notice>();
-            for (Notice noticeCollectionNoticeToAttach : department.getNoticeCollection()) {
+            for (Notice noticeCollectionNoticeToAttach : category.getNoticeCollection()) {
                 noticeCollectionNoticeToAttach = em.getReference(noticeCollectionNoticeToAttach.getClass(), noticeCollectionNoticeToAttach.getId());
                 attachedNoticeCollection.add(noticeCollectionNoticeToAttach);
             }
-            department.setNoticeCollection(attachedNoticeCollection);
-            em.persist(department);
-            for (Employee employeeCollectionEmployee : department.getEmployeeCollection()) {
-                Department oldDepartmentOfEmployeeCollectionEmployee = employeeCollectionEmployee.getDepartment();
-                employeeCollectionEmployee.setDepartment(department);
+            category.setNoticeCollection(attachedNoticeCollection);
+            em.persist(category);
+            for (Employee employeeCollectionEmployee : category.getEmployeeCollection()) {
+                Category oldCategoryOfEmployeeCollectionEmployee = employeeCollectionEmployee.getCategory();
+                employeeCollectionEmployee.setCategory(category);
                 employeeCollectionEmployee = em.merge(employeeCollectionEmployee);
-                if (oldDepartmentOfEmployeeCollectionEmployee != null) {
-                    oldDepartmentOfEmployeeCollectionEmployee.getEmployeeCollection().remove(employeeCollectionEmployee);
-                    oldDepartmentOfEmployeeCollectionEmployee = em.merge(oldDepartmentOfEmployeeCollectionEmployee);
+                if (oldCategoryOfEmployeeCollectionEmployee != null) {
+                    oldCategoryOfEmployeeCollectionEmployee.getEmployeeCollection().remove(employeeCollectionEmployee);
+                    oldCategoryOfEmployeeCollectionEmployee = em.merge(oldCategoryOfEmployeeCollectionEmployee);
                 }
             }
-            for (Notice noticeCollectionNotice : department.getNoticeCollection()) {
-                Department oldDepartmentOfNoticeCollectionNotice = noticeCollectionNotice.getDepartment();
-                noticeCollectionNotice.setDepartment(department);
+            for (Notice noticeCollectionNotice : category.getNoticeCollection()) {
+                Category oldCategoryOfNoticeCollectionNotice = noticeCollectionNotice.getCategory();
+                noticeCollectionNotice.setCategory(category);
                 noticeCollectionNotice = em.merge(noticeCollectionNotice);
-                if (oldDepartmentOfNoticeCollectionNotice != null) {
-                    oldDepartmentOfNoticeCollectionNotice.getNoticeCollection().remove(noticeCollectionNotice);
-                    oldDepartmentOfNoticeCollectionNotice = em.merge(oldDepartmentOfNoticeCollectionNotice);
+                if (oldCategoryOfNoticeCollectionNotice != null) {
+                    oldCategoryOfNoticeCollectionNotice.getNoticeCollection().remove(noticeCollectionNotice);
+                    oldCategoryOfNoticeCollectionNotice = em.merge(oldCategoryOfNoticeCollectionNotice);
                 }
             }
             utx.commit();
@@ -92,8 +90,8 @@ public class DepartmentJpaController implements Serializable {
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
             }
-            if (findDepartment(department.getId()) != null) {
-                throw new PreexistingEntityException("Department " + department + " already exists.", ex);
+            if (findCategory(category.getId()) != null) {
+                throw new PreexistingEntityException("Category " + category + " already exists.", ex);
             }
             throw ex;
         } finally {
@@ -103,23 +101,23 @@ public class DepartmentJpaController implements Serializable {
         }
     }
 
-    public void edit(Department department) throws IllegalOrphanException, NonexistentEntityException, RollbackFailureException, Exception {
+    public void edit(Category category) throws IllegalOrphanException, NonexistentEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
             utx.begin();
             em = getEntityManager();
-            Department persistentDepartment = em.find(Department.class, department.getId());
-            Collection<Employee> employeeCollectionOld = persistentDepartment.getEmployeeCollection();
-            Collection<Employee> employeeCollectionNew = department.getEmployeeCollection();
-            Collection<Notice> noticeCollectionOld = persistentDepartment.getNoticeCollection();
-            Collection<Notice> noticeCollectionNew = department.getNoticeCollection();
+            Category persistentCategory = em.find(Category.class, category.getId());
+            Collection<Employee> employeeCollectionOld = persistentCategory.getEmployeeCollection();
+            Collection<Employee> employeeCollectionNew = category.getEmployeeCollection();
+            Collection<Notice> noticeCollectionOld = persistentCategory.getNoticeCollection();
+            Collection<Notice> noticeCollectionNew = category.getNoticeCollection();
             List<String> illegalOrphanMessages = null;
             for (Employee employeeCollectionOldEmployee : employeeCollectionOld) {
                 if (!employeeCollectionNew.contains(employeeCollectionOldEmployee)) {
                     if (illegalOrphanMessages == null) {
                         illegalOrphanMessages = new ArrayList<String>();
                     }
-                    illegalOrphanMessages.add("You must retain Employee " + employeeCollectionOldEmployee + " since its department field is not nullable.");
+                    illegalOrphanMessages.add("You must retain Employee " + employeeCollectionOldEmployee + " since its category field is not nullable.");
                 }
             }
             for (Notice noticeCollectionOldNotice : noticeCollectionOld) {
@@ -127,7 +125,7 @@ public class DepartmentJpaController implements Serializable {
                     if (illegalOrphanMessages == null) {
                         illegalOrphanMessages = new ArrayList<String>();
                     }
-                    illegalOrphanMessages.add("You must retain Notice " + noticeCollectionOldNotice + " since its department field is not nullable.");
+                    illegalOrphanMessages.add("You must retain Notice " + noticeCollectionOldNotice + " since its category field is not nullable.");
                 }
             }
             if (illegalOrphanMessages != null) {
@@ -139,34 +137,34 @@ public class DepartmentJpaController implements Serializable {
                 attachedEmployeeCollectionNew.add(employeeCollectionNewEmployeeToAttach);
             }
             employeeCollectionNew = attachedEmployeeCollectionNew;
-            department.setEmployeeCollection(employeeCollectionNew);
+            category.setEmployeeCollection(employeeCollectionNew);
             Collection<Notice> attachedNoticeCollectionNew = new ArrayList<Notice>();
             for (Notice noticeCollectionNewNoticeToAttach : noticeCollectionNew) {
                 noticeCollectionNewNoticeToAttach = em.getReference(noticeCollectionNewNoticeToAttach.getClass(), noticeCollectionNewNoticeToAttach.getId());
                 attachedNoticeCollectionNew.add(noticeCollectionNewNoticeToAttach);
             }
             noticeCollectionNew = attachedNoticeCollectionNew;
-            department.setNoticeCollection(noticeCollectionNew);
-            department = em.merge(department);
+            category.setNoticeCollection(noticeCollectionNew);
+            category = em.merge(category);
             for (Employee employeeCollectionNewEmployee : employeeCollectionNew) {
                 if (!employeeCollectionOld.contains(employeeCollectionNewEmployee)) {
-                    Department oldDepartmentOfEmployeeCollectionNewEmployee = employeeCollectionNewEmployee.getDepartment();
-                    employeeCollectionNewEmployee.setDepartment(department);
+                    Category oldCategoryOfEmployeeCollectionNewEmployee = employeeCollectionNewEmployee.getCategory();
+                    employeeCollectionNewEmployee.setCategory(category);
                     employeeCollectionNewEmployee = em.merge(employeeCollectionNewEmployee);
-                    if (oldDepartmentOfEmployeeCollectionNewEmployee != null && !oldDepartmentOfEmployeeCollectionNewEmployee.equals(department)) {
-                        oldDepartmentOfEmployeeCollectionNewEmployee.getEmployeeCollection().remove(employeeCollectionNewEmployee);
-                        oldDepartmentOfEmployeeCollectionNewEmployee = em.merge(oldDepartmentOfEmployeeCollectionNewEmployee);
+                    if (oldCategoryOfEmployeeCollectionNewEmployee != null && !oldCategoryOfEmployeeCollectionNewEmployee.equals(category)) {
+                        oldCategoryOfEmployeeCollectionNewEmployee.getEmployeeCollection().remove(employeeCollectionNewEmployee);
+                        oldCategoryOfEmployeeCollectionNewEmployee = em.merge(oldCategoryOfEmployeeCollectionNewEmployee);
                     }
                 }
             }
             for (Notice noticeCollectionNewNotice : noticeCollectionNew) {
                 if (!noticeCollectionOld.contains(noticeCollectionNewNotice)) {
-                    Department oldDepartmentOfNoticeCollectionNewNotice = noticeCollectionNewNotice.getDepartment();
-                    noticeCollectionNewNotice.setDepartment(department);
+                    Category oldCategoryOfNoticeCollectionNewNotice = noticeCollectionNewNotice.getCategory();
+                    noticeCollectionNewNotice.setCategory(category);
                     noticeCollectionNewNotice = em.merge(noticeCollectionNewNotice);
-                    if (oldDepartmentOfNoticeCollectionNewNotice != null && !oldDepartmentOfNoticeCollectionNewNotice.equals(department)) {
-                        oldDepartmentOfNoticeCollectionNewNotice.getNoticeCollection().remove(noticeCollectionNewNotice);
-                        oldDepartmentOfNoticeCollectionNewNotice = em.merge(oldDepartmentOfNoticeCollectionNewNotice);
+                    if (oldCategoryOfNoticeCollectionNewNotice != null && !oldCategoryOfNoticeCollectionNewNotice.equals(category)) {
+                        oldCategoryOfNoticeCollectionNewNotice.getNoticeCollection().remove(noticeCollectionNewNotice);
+                        oldCategoryOfNoticeCollectionNewNotice = em.merge(oldCategoryOfNoticeCollectionNewNotice);
                     }
                 }
             }
@@ -179,9 +177,9 @@ public class DepartmentJpaController implements Serializable {
             }
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                Integer id = department.getId();
-                if (findDepartment(id) == null) {
-                    throw new NonexistentEntityException("The department with id " + id + " no longer exists.");
+                Integer id = category.getId();
+                if (findCategory(id) == null) {
+                    throw new NonexistentEntityException("The category with id " + id + " no longer exists.");
                 }
             }
             throw ex;
@@ -197,32 +195,32 @@ public class DepartmentJpaController implements Serializable {
         try {
             utx.begin();
             em = getEntityManager();
-            Department department;
+            Category category;
             try {
-                department = em.getReference(Department.class, id);
-                department.getId();
+                category = em.getReference(Category.class, id);
+                category.getId();
             } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The department with id " + id + " no longer exists.", enfe);
+                throw new NonexistentEntityException("The category with id " + id + " no longer exists.", enfe);
             }
             List<String> illegalOrphanMessages = null;
-            Collection<Employee> employeeCollectionOrphanCheck = department.getEmployeeCollection();
+            Collection<Employee> employeeCollectionOrphanCheck = category.getEmployeeCollection();
             for (Employee employeeCollectionOrphanCheckEmployee : employeeCollectionOrphanCheck) {
                 if (illegalOrphanMessages == null) {
                     illegalOrphanMessages = new ArrayList<String>();
                 }
-                illegalOrphanMessages.add("This Department (" + department + ") cannot be destroyed since the Employee " + employeeCollectionOrphanCheckEmployee + " in its employeeCollection field has a non-nullable department field.");
+                illegalOrphanMessages.add("This Category (" + category + ") cannot be destroyed since the Employee " + employeeCollectionOrphanCheckEmployee + " in its employeeCollection field has a non-nullable category field.");
             }
-            Collection<Notice> noticeCollectionOrphanCheck = department.getNoticeCollection();
+            Collection<Notice> noticeCollectionOrphanCheck = category.getNoticeCollection();
             for (Notice noticeCollectionOrphanCheckNotice : noticeCollectionOrphanCheck) {
                 if (illegalOrphanMessages == null) {
                     illegalOrphanMessages = new ArrayList<String>();
                 }
-                illegalOrphanMessages.add("This Department (" + department + ") cannot be destroyed since the Notice " + noticeCollectionOrphanCheckNotice + " in its noticeCollection field has a non-nullable department field.");
+                illegalOrphanMessages.add("This Category (" + category + ") cannot be destroyed since the Notice " + noticeCollectionOrphanCheckNotice + " in its noticeCollection field has a non-nullable category field.");
             }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
             }
-            em.remove(department);
+            em.remove(category);
             utx.commit();
         } catch (Exception ex) {
             try {
@@ -238,19 +236,19 @@ public class DepartmentJpaController implements Serializable {
         }
     }
 
-    public List<Department> findDepartmentEntities() {
-        return findDepartmentEntities(true, -1, -1);
+    public List<Category> findCategoryEntities() {
+        return findCategoryEntities(true, -1, -1);
     }
 
-    public List<Department> findDepartmentEntities(int maxResults, int firstResult) {
-        return findDepartmentEntities(false, maxResults, firstResult);
+    public List<Category> findCategoryEntities(int maxResults, int firstResult) {
+        return findCategoryEntities(false, maxResults, firstResult);
     }
 
-    private List<Department> findDepartmentEntities(boolean all, int maxResults, int firstResult) {
+    private List<Category> findCategoryEntities(boolean all, int maxResults, int firstResult) {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            cq.select(cq.from(Department.class));
+            cq.select(cq.from(Category.class));
             Query q = em.createQuery(cq);
             if (!all) {
                 q.setMaxResults(maxResults);
@@ -262,20 +260,20 @@ public class DepartmentJpaController implements Serializable {
         }
     }
 
-    public Department findDepartment(Integer id) {
+    public Category findCategory(Integer id) {
         EntityManager em = getEntityManager();
         try {
-            return em.find(Department.class, id);
+            return em.find(Category.class, id);
         } finally {
             em.close();
         }
     }
 
-    public int getDepartmentCount() {
+    public int getCategoryCount() {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            Root<Department> rt = cq.from(Department.class);
+            Root<Category> rt = cq.from(Category.class);
             cq.select(em.getCriteriaBuilder().count(rt));
             Query q = em.createQuery(cq);
             return ((Long) q.getSingleResult()).intValue();
@@ -284,20 +282,4 @@ public class DepartmentJpaController implements Serializable {
         }
     }
     
-    public List<Department> getDeparmentListByTag(String tag) {
-        EntityManager em = getEntityManager();
-        try {
-            CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            Root<Department> rt = cq.from(Department.class);
-
-            Path<String> pTag = rt.get("tag");
-            Predicate p = em.getCriteriaBuilder().equal(pTag, tag);
-            
-            cq.where(p);
-            Query q = em.createQuery(cq);
-            return q.getResultList();
-        } finally {
-            em.close();
-        }
-    }
 }

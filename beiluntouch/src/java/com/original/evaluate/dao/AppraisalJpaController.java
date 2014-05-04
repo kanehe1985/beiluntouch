@@ -102,22 +102,22 @@ public class AppraisalJpaController implements Serializable {
                 appraisal.setAppraisallevel(appraisallevelNew);
             }
             appraisal = em.merge(appraisal);
-            if (employeeOld != null && !employeeOld.equals(employeeNew)) {
-                employeeOld.getAppraisalCollection().remove(appraisal);
-                employeeOld = em.merge(employeeOld);
-            }
-            if (employeeNew != null && !employeeNew.equals(employeeOld)) {
-                employeeNew.getAppraisalCollection().add(appraisal);
-                employeeNew = em.merge(employeeNew);
-            }
-            if (appraisallevelOld != null && !appraisallevelOld.equals(appraisallevelNew)) {
-                appraisallevelOld.getAppraisalCollection().remove(appraisal);
-                appraisallevelOld = em.merge(appraisallevelOld);
-            }
-            if (appraisallevelNew != null && !appraisallevelNew.equals(appraisallevelOld)) {
-                appraisallevelNew.getAppraisalCollection().add(appraisal);
-                appraisallevelNew = em.merge(appraisallevelNew);
-            }
+//            if (employeeOld != null && !employeeOld.equals(employeeNew)) {
+//                employeeOld.getAppraisalCollection().remove(appraisal);
+//                employeeOld = em.merge(employeeOld);
+//            }
+//            if (employeeNew != null && !employeeNew.equals(employeeOld)) {
+//                employeeNew.getAppraisalCollection().add(appraisal);
+//                employeeNew = em.merge(employeeNew);
+//            }
+//            if (appraisallevelOld != null && !appraisallevelOld.equals(appraisallevelNew)) {
+//                appraisallevelOld.getAppraisalCollection().remove(appraisal);
+//                appraisallevelOld = em.merge(appraisallevelOld);
+//            }
+//            if (appraisallevelNew != null && !appraisallevelNew.equals(appraisallevelOld)) {
+//                appraisallevelNew.getAppraisalCollection().add(appraisal);
+//                appraisallevelNew = em.merge(appraisallevelNew);
+//            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             try {
@@ -152,16 +152,16 @@ public class AppraisalJpaController implements Serializable {
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The appraisal with id " + id + " no longer exists.", enfe);
             }
-            Employee employee = appraisal.getEmployee();
-            if (employee != null) {
-                employee.getAppraisalCollection().remove(appraisal);
-                employee = em.merge(employee);
-            }
-            Appraisallevel appraisallevel = appraisal.getAppraisallevel();
-            if (appraisallevel != null) {
-                appraisallevel.getAppraisalCollection().remove(appraisal);
-                appraisallevel = em.merge(appraisallevel);
-            }
+//            Employee employee = appraisal.getEmployee();
+//            if (employee != null) {
+//                employee.getAppraisalCollection().remove(appraisal);
+//                employee = em.merge(employee);
+//            }
+//            Appraisallevel appraisallevel = appraisal.getAppraisallevel();
+//            if (appraisallevel != null) {
+//                appraisallevel.getAppraisalCollection().remove(appraisal);
+//                appraisallevel = em.merge(appraisallevel);
+//            }
             em.remove(appraisal);
             em.getTransaction().commit();
         } catch (Exception ex) {
