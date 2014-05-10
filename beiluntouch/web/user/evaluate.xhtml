@@ -11,20 +11,24 @@
                 <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
                 <title>#{msgs.evaluateStaff}</title>
             </f:facet>
+            <h:outputScript library="js" name="handinput.js"/>
         </h:head>
         <h:body>
             <p:layout fullPage="true">
                 <p:layoutUnit position="center">
                     <p:growl showDetail="true" showSummary="true" autoUpdate="true" />
                      <h:form id="conditionForm">
-                        <p:outputLabel value="#{msgs.group}" />
-                        <p:selectOneMenu value="#{evaluateBean.categoryCondition}">
-                            <f:selectItem itemLabel="请选择" itemValue="" />
-                            <f:selectItems value="#{evaluateBean.categoryItems}" />
-                        </p:selectOneMenu>
-                        <p:outputLabel value="#{msgs.room}" />
-                        <p:inputText value="#{evaluateBean.roomCondition}" />                            
-                        <p:commandButton value="#{msgs.search}" actionListener="#{evaluateBean.search}" update=":employeeForm:employeeGrid" process="@form"/>
+                         <h:panelGrid columns="6">
+                            <p:outputLabel value="#{msgs.group}" />
+                            <p:selectOneMenu value="#{evaluateBean.categoryCondition}">
+                                <f:selectItem itemLabel="所有组别" itemValue="" />
+                                <f:selectItems value="#{evaluateBean.categoryItems}" />
+                            </p:selectOneMenu>
+                            <p:outputLabel value="#{msgs.room}" />
+                            <p:inputText value="#{evaluateBean.roomCondition}" />                            
+                            <p:commandButton value="#{msgs.search}" actionListener="#{evaluateBean.search}" update=":employeeForm:employeeGrid" process="@form"/>
+                            <p:button value="手写输入" onclick="openHandInput();return false;"/>
+                        </h:panelGrid>
                     </h:form>
                     <h:form id="employeeForm">
                         <p:dataGrid id="employeeGrid" value="#{evaluateBean.employeeList}" var="employee" emptyMessage="#{msgs.noResult}"
@@ -39,7 +43,8 @@
                                     <f:setPropertyActionListener value="#{employee}" target="#{evaluateBean.selectedEmployee}" />
                                 </p:commandButton>
                             </p:panel>
-                        </p:dataGrid>                        
+                        </p:dataGrid>
+                        <p:media value="/resources/evaluate.mp3" width="200" height="20" player="windows" style="display: none"></p:media>
                     </h:form>
                     <ui:include src="evaluatedetail.xhtml"/>
                 </p:layoutUnit>

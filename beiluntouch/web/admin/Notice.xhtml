@@ -14,7 +14,7 @@
                              selection="#{noticeBean.selectedNotices}">
 
                     <f:facet name="header">
-                        评价等级
+                        短信通知
                     </f:facet>
                     <p:column selectionMode="multiple" style="width:4%; text-align: center"/>
 
@@ -31,6 +31,9 @@
                     <p:column headerText="操作">
                         <p:commandButton value="编辑" icon="ui-icon-pencil" oncomplete="PF('NoticeEditDialog').show();" update=":NoticeEditForm">
                             <f:setPropertyActionListener value="#{notice}" target="#{noticeBean.editNotice}"/>
+                            <f:setPropertyActionListener value="#{notice.department.id}" target="#{noticeBean.editDepartmentID}"/>
+                            <f:setPropertyActionListener value="#{notice.category.id}" target="#{noticeBean.editCategoryID}"/>
+                            <f:setPropertyActionListener value="#{notice.employee.id}" target="#{noticeBean.editEmployeeID}"/>
                         </p:commandButton>
                     </p:column>
                     <f:facet name="footer">                        
@@ -51,14 +54,23 @@
                 <h:form id="NoticeCreateForm">
                     <h:panelGroup id="display">
                         <p:panelGrid columns="2">
-                            <p:outputLabel value="部门名称" for="departmentName" />
-                            <p:inputText id="departmentName" value="#{noticeBean.editNotice.department.name}" title="#{msgs.EditNoticeTitle_name}" />
-                            <p:outputLabel value="组别" for="categoryName" />
-                            <p:inputText id="categoryName" value="#{noticeBean.editNotice.category.name}" title="#{msgs.EditNoticeTitle_name}" />
-                            <p:outputLabel value="通知人" for="employeeName" />
-                            <p:inputText id="employeeName" value="#{noticeBean.editNotice.employee.name}" title="#{msgs.EditNoticeTitle_name}" />
+                            <p:outputLabel value="部门名称" />                            
+                            <p:selectOneMenu value="#{noticeBean.editDepartmentID}">
+                                <f:selectItem itemLabel="Select One" itemValue="" />
+                                <f:selectItems value="#{noticeBean.departments}" var="department" itemLabel="#{department.name}" itemValue="#{department.id}" />
+                            </p:selectOneMenu>
+                            <p:outputLabel value="组别" />
+                            <p:selectOneMenu value="#{noticeBean.editCategoryID}">
+                                <f:selectItem itemLabel="Select One" itemValue="" />
+                                <f:selectItems value="#{noticeBean.categorys}" var="category" itemLabel="#{category.name}" itemValue="#{category.id}" />
+                            </p:selectOneMenu>
+                            <p:outputLabel value="通知人" />
+                            <p:selectOneMenu value="#{noticeBean.editEmployeeID}">
+                                <f:selectItem itemLabel="Select One" itemValue="" />
+                                <f:selectItems value="#{noticeBean.employees}" var="employee" itemLabel="#{employee.name}" itemValue="#{employee.id}" />
+                            </p:selectOneMenu>
                         </p:panelGrid>
-                        <p:commandButton actionListener="#{noticeBean.create}" value="保存" update=":NoticeListForm:notices" oncomplete="PF('NoticeCreateDialog').hide();"/>
+                        <p:commandButton actionListener="#{noticeBean.create}" value="保存" update=":NoticeListForm:notices" oncomplete="PF('NoticeCreateDialog').hide();" />
                         <p:commandButton value="取消" onclick="NoticeCreateDialog.hide()"/>
                     </h:panelGroup>
                 </h:form>
@@ -68,12 +80,18 @@
                 <h:form id="NoticeEditForm">
                     <h:panelGroup id="display">
                         <p:panelGrid columns="2">
-                            <p:outputLabel value="部门名称" for="departmentName" />
-                            <p:inputText id="departmentName" value="#{noticeBean.editNotice.department.name}" title="#{msgs.EditNoticeTitle_name}" />
-                            <p:outputLabel value="组别" for="categoryName" />
-                            <p:inputText id="categoryName" value="#{noticeBean.editNotice.category.name}" title="#{msgs.EditNoticeTitle_name}" />
-                            <p:outputLabel value="通知人" for="employeeName" />
-                            <p:inputText id="employeeName" value="#{noticeBean.editNotice.employee.name}" title="#{msgs.EditNoticeTitle_name}" />
+                            <p:outputLabel value="部门名称" />                            
+                            <p:selectOneMenu value="#{noticeBean.editDepartmentID}">
+                                <f:selectItems value="#{noticeBean.departments}" var="department" itemLabel="#{department.name}" itemValue="#{department.id}" />
+                            </p:selectOneMenu>
+                            <p:outputLabel value="组别" />
+                            <p:selectOneMenu value="#{noticeBean.editCategoryID}">
+                                <f:selectItems value="#{noticeBean.categorys}" var="category" itemLabel="#{category.name}" itemValue="#{category.id}" />
+                            </p:selectOneMenu>
+                            <p:outputLabel value="通知人" />
+                            <p:selectOneMenu value="#{noticeBean.editEmployeeID}">
+                                <f:selectItems value="#{noticeBean.employees}" var="employee" itemLabel="#{employee.name}" itemValue="#{employee.id}" />
+                            </p:selectOneMenu>
                         </p:panelGrid>
                         <p:commandButton actionListener="#{noticeBean.update}" value="保存" update=":NoticeListForm:notices" oncomplete="PF('NoticeEditDialog').hide();"/>
                         <p:commandButton value="取消" onclick="NoticeEditDialog.hide()"/>

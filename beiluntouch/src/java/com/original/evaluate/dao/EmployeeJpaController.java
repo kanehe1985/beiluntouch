@@ -13,7 +13,9 @@ import com.original.evaluate.dao.exceptions.RollbackFailureException;
 import com.original.evaluate.entity.Appraisal;
 import com.original.evaluate.entity.Category;
 import com.original.evaluate.entity.Department;
+import com.original.evaluate.entity.Department_;
 import com.original.evaluate.entity.Employee;
+import com.original.evaluate.entity.Employee_;
 import com.original.evaluate.entity.Notice;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -368,7 +371,6 @@ public class EmployeeJpaController implements Serializable {
             Root<Employee> root = cq.from(Employee.class);
             
             Path<Department> pdepID = root.get("department");
-//            Path<Department> pdepID = root.get(Employee_.department);
             Path<Category> pCategoryID = root.get("category");
             Path<String> pRoom = root.get("romno");
             Path<Boolean> pAllow = root.get("isallowappraisal");
@@ -388,7 +390,7 @@ public class EmployeeJpaController implements Serializable {
 //                pAll.add(em.getCriteriaBuilder().like(pGroup, group));
 //            }  
             if (room != null && !room.isEmpty()) {
-                pAll.add(em.getCriteriaBuilder().like(pRoom, room));
+                pAll.add(em.getCriteriaBuilder().equal(pRoom, room));
             }
             
             Predicate[] pArray = new Predicate[pAll.size()];
@@ -400,5 +402,51 @@ public class EmployeeJpaController implements Serializable {
         } finally {
             em.close();
         }
-    }    
+    }  
+    
+    public List<Employee> findEmployeeEntitiesByTag(String tag, String categoryID, String room) {
+        EntityManager em = getEntityManager();
+        try {
+            CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
+            Root<Employee> employeeRoot = cq.from(Employee.class);
+            Join<Employee,Department> departmentJoin = employeeRoot.join(Employee_.department);
+            
+            
+//            Root<Department> depRoot = cq.from(Department.class);
+//            Join<Department,Employee> employeeJoin = depRoot.join(Department_.employeeCollection);
+            
+            Path<String> pDepartmentTag = departmentJoin.get("tag");
+            Path<Category> pCategoryID = employeeRoot.get("category");
+            Path<String> pRoom = employeeRoot.get("romno");
+            Path<Boolean> pAllow = employeeRoot.get("isallowappraisal");
+            
+            List<Predicate> pAll = new ArrayList<>();
+            pAll.add(em.getCriteriaBuilder().equal(pAllow, true));
+            
+            if(tag != null && ! tag.isEmpty()){
+//                pAll.add(em.getCriteriaBuilder().equal(employeeJoin.get(Employee_.department).get(Department_.tag), tag));
+                pAll.add(em.getCriteriaBuilder().equal(pDepartmentTag, tag));
+            }
+                                  
+            if(categoryID != null && !categoryID.isEmpty()){
+                Category category = em.getReference(Category.class, Integer.parseInt(categoryID));
+                pAll.add(em.getCriteriaBuilder().equal(pCategoryID, category));
+            }
+//            if (group != null && !group.isEmpty()) {
+//                pAll.add(em.getCriteriaBuilder().like(pGroup, group));
+//            }  
+            if (room != null && !room.isEmpty()) {
+                pAll.add(em.getCriteriaBuilder().equal(pRoom, room));
+            }
+            
+            Predicate[] pArray = new Predicate[pAll.size()];
+            pArray = pAll.toArray(pArray);
+            
+            cq.where(pArray).orderBy(em.getCriteriaBuilder().asc(employeeRoot.get("orderid")));
+            Query q = em.createQuery(cq);
+            return q.getResultList();
+        } finally {
+            em.close();
+        }
+    }
 }

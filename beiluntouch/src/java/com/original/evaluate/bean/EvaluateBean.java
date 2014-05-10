@@ -5,20 +5,27 @@
  */
 package com.original.evaluate.bean;
 
+import com.original.evaluate.bo.SettingBO;
 import com.original.evaluate.dao.AppraisalJpaController;
 import com.original.evaluate.dao.AppraisallevelJpaController;
 import com.original.evaluate.dao.CategoryJpaController;
 import com.original.evaluate.dao.DepartmentJpaController;
 import com.original.evaluate.dao.EmployeeJpaController;
+import com.original.evaluate.dao.NoticeJpaController;
 import com.original.evaluate.dao.ReasonJpaController;
 import com.original.evaluate.entity.Appraisal;
 import com.original.evaluate.entity.Appraisallevel;
 import com.original.evaluate.entity.Category;
 import com.original.evaluate.entity.Department;
 import com.original.evaluate.entity.Employee;
+import com.original.evaluate.entity.Notice;
 import com.original.evaluate.entity.Reason;
+import com.original.evaluate.entity.Setting;
 import com.original.util.FacesUtil;
+import com.original.util.MessageUtil;
+import java.io.IOException;
 import java.io.Serializable;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -29,6 +36,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Named;
+import javax.naming.NamingException;
 
 /**
  *
@@ -44,6 +52,7 @@ public class EvaluateBean implements Serializable {
     private ReasonJpaController reasonJpaController;
     private DepartmentJpaController departmentJpaController;
     private CategoryJpaController categoryJpaController;
+    private NoticeJpaController noticeJpaController;
     private LinkedHashMap<String, Integer> appraisalItems;
     private LinkedHashMap<String, Integer> reasonItems;
     private LinkedHashMap<String, Integer> departmentItems;
@@ -61,8 +70,19 @@ public class EvaluateBean implements Serializable {
     private String contact;
     private String depID;
     private Date createDate;
-    
+    private Boolean merge;
+    private String tag;
 
+    public String getBackUrl(){
+        String param="index.xhtml";
+        if(tag !=null){
+            param+="?tag="+tag;            
+        }
+        if(merge==true)
+            param+="&m=true";
+        return param;
+    }
+    
     public EvaluateBean() {
 
     }
@@ -86,6 +106,20 @@ public class EvaluateBean implements Serializable {
         search();
 //        this.employeeList = getEmployeeJpaController().findEmployeeEntities();
         return this.employeeList;
+    }
+
+    public String getTag() {
+        String t = this.getRequestParameter("tag");
+        if(t!=null){
+            tag = t;
+        }
+        return tag;
+    }
+
+    public Boolean getMerge() {
+        String m = this.getRequestParameter("m");
+        merge = m!=null && "true".equals(m);        
+        return merge;
     }
     
     private EmployeeJpaController getEmployeeJpaController() {
@@ -128,6 +162,13 @@ public class EvaluateBean implements Serializable {
             categoryJpaController = new CategoryJpaController(FacesUtil.getEntityManagerFactory());
         }
         return categoryJpaController;
+    }
+
+    private NoticeJpaController getNoticeJpaController() {
+        if (noticeJpaController == null) {
+            noticeJpaController = new NoticeJpaController(FacesUtil.getEntityManagerFactory());
+        }
+        return noticeJpaController;
     }
 
     public LinkedHashMap<String, Integer> getAppraisalItems() {
@@ -175,21 +216,23 @@ public class EvaluateBean implements Serializable {
     }
 
     public List<Department> getDepartments() {
-        String tag = this.getRequestParameter("tag");
-        return getDepartmentJpaController().getDeparmentListByTag(tag);
+        return getDepartmentJpaController().getDeparmentListByTag(this.getRequestParameter("tag"));
     }
 
     public void setDepartments(List<Department> departments) {
         this.departments = departments;
     }
-    
-    
 
     public Employee getSelectedEmployee() {
         return selectedEmployee;
     }
 
     public void setSelectedEmployee(Employee employee) {
+        appraisalValue=null;
+        reason=null;
+        reasonValue=null;
+        appraiser=null;
+        contact=null;
         this.selectedEmployee = employee;
     }
 
@@ -270,16 +313,24 @@ public class EvaluateBean implements Serializable {
         
         if(getRequestParameter("depid")!=null){
             depID = getRequestParameter("depid");
-        }   
-        this.employeeList = getEmployeeJpaController().findEmployeeEntities(depID,categoryCondition,roomCondition);
+            
+        }else if(getRequestParameter("tag")!=null){
+            tag = getRequestParameter("tag");
+        }
+        if(depID != null){
+            this.employeeList = getEmployeeJpaController().findEmployeeEntities(depID,categoryCondition,roomCondition);
+        } else if(tag != null){
+            this.employeeList = getEmployeeJpaController().findEmployeeEntitiesByTag(tag, categoryCondition, roomCondition);            
+        }        
     }
 
-    public void save() {
+    public void save() throws IOException {
         try {
             Appraisal appraisal = new Appraisal();
-            Appraisallevel level = new Appraisallevel();
-
-            level.setId(appraisalValue);
+//            Appraisallevel level = new Appraisallevel();            
+//            level.setId(appraisalValue);
+            
+            Appraisallevel level = getAppraisallevelJpaController().findAppraisallevel(appraisalValue);
             appraisal.setAppraisallevel(level);
             appraisal.setAppraiser(appraiser);
             appraisal.setCreatedate(new Date());
@@ -287,9 +338,32 @@ public class EvaluateBean implements Serializable {
             appraisal.setContact(contact);
             appraisal.setEmployee(selectedEmployee);
             getAppraisalJpaController().create(appraisal);
+            
+            if(level.getIsalert()){
+                List<Notice> findNoticeEntities = getNoticeJpaController().findNoticeEntities();
+                Employee leader;
+                for(Notice notice : findNoticeEntities){
+                    if(notice.getDepartment().getId()==selectedEmployee.getDepartment().getId() && notice.getCategory().getId() == selectedEmployee.getCategory().getId()){
+                        String messageText;
+                        messageText = selectedEmployee.getName()+"于"+
+                                DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM).format(appraisal.getCreatedate())+"被评价为"+
+                                level.getName()+","+
+                                appraisal.getContent();
+                        leader = notice.getEmployee();
+                        notifyLeader(leader.getTelephone(),messageText);
+                    }
+                }
+            }
+            FacesContext.getCurrentInstance().getExternalContext().redirect("thanks.xhtml");
         } catch (Exception ex) {
             Logger.getLogger(EvaluateBean.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    private void notifyLeader(String telephone,String messageText) throws NamingException{
+        SettingBO settingBO = new SettingBO();
+        Setting setting = settingBO.getSetting();
+        MessageUtil.Send(setting.getMessageserver(), setting.getMessageappid(),setting.getMessagepwd(),telephone, messageText);
     }
 
     public void evaluate(Employee employee) {

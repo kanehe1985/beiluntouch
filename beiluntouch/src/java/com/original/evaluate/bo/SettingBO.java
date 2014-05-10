@@ -47,8 +47,10 @@ public class SettingBO {
         } else {
             setting = new Setting();
             setting.setAdminpassword("111111");
-            setting.setMessageserver("localhost");
             setting.setTelphoneno("18888888888");
+            setting.setMessageserver("localhost");            
+            setting.setMessageappid("localhost");
+            setting.setMessagepwd("222222");
             isNew = true;
         }
         return setting;

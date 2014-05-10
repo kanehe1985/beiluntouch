@@ -33,6 +33,12 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Setting.findByTelphoneno", query = "SELECT s FROM Setting s WHERE s.telphoneno = :telphoneno"),
     @NamedQuery(name = "Setting.findByMessageserver", query = "SELECT s FROM Setting s WHERE s.messageserver = :messageserver")})
 public class Setting implements Serializable {
+    @Size(max = 45)
+    @Column(name = "messageappid")
+    private String messageappid;
+    @Size(max = 45)
+    @Column(name = "messagepwd")
+    private String messagepwd;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -111,6 +117,22 @@ public class Setting implements Serializable {
     @Override
     public String toString() {
         return "com.original.evaluate.entity.Setting[ id=" + id + " ]";
+    }
+
+    public String getMessageappid() {
+        return messageappid;
+    }
+
+    public void setMessageappid(String messageappid) {
+        this.messageappid = messageappid;
+    }
+
+    public String getMessagepwd() {
+        return messagepwd;
+    }
+
+    public void setMessagepwd(String messagepwd) {
+        this.messagepwd = messagepwd;
     }
     
 }

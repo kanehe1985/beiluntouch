@@ -106,8 +106,8 @@ public class DepartmentJpaController implements Serializable {
     public void edit(Department department) throws IllegalOrphanException, NonexistentEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
-            utx.begin();
             em = getEntityManager();
+            em.getTransaction().begin();
             Department persistentDepartment = em.find(Department.class, department.getId());
             Collection<Employee> employeeCollectionOld = persistentDepartment.getEmployeeCollection();
             Collection<Employee> employeeCollectionNew = department.getEmployeeCollection();
@@ -170,10 +170,10 @@ public class DepartmentJpaController implements Serializable {
                     }
                 }
             }
-            utx.commit();
+            em.getTransaction().commit();
         } catch (Exception ex) {
             try {
-                utx.rollback();
+                em.getTransaction().rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
             }

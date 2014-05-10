@@ -11,6 +11,7 @@
         <ui:define name="center">
             <h:form id="EmployeeListForm">
                 <p:dataTable id="employees" var="employee" value="#{employeeBean.employees}" rowKey="#{employee.id}"
+                             filteredValue="#{employeeBean.filteredEmployees}"
                              paginator="true" rows="10"
                              sortBy="orderid"
                              paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
@@ -22,19 +23,19 @@
                         人员管理
                     </f:facet>
 
-                    <p:column headerText="名字">
+                    <p:column headerText="名字" filterBy="name" filterMatchMode="contains">
                         #{employee.name}
                     </p:column>
                     
-                    <p:column headerText="处所">
+                    <p:column headerText="处所" filterBy="department.name" filterMatchMode="contains">
                         #{employee.department.name}
                     </p:column>
                     
-                    <p:column headerText="房号">
+                    <p:column headerText="房号" filterBy="romno" filterMatchMode="contains">
                         #{employee.romno}
                     </p:column>
 
-                    <p:column headerText="组别">
+                    <p:column headerText="组别" filterBy="category.name" filterMatchMode="contains">
                         #{employee.category.name}
                     </p:column>
                     

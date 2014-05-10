@@ -27,10 +27,16 @@
                             <p:inputText id="messageserver" value="#{settingBean.setting.messageserver}" title="messageserver" />
                         </p:inplace>
                         
-                        <p:outputLabel value="短信通知电话" for="telphoneno" />
-                        <p:inplace id="inptelphoneno" editor="true">
+                        <p:outputLabel value="短信服务ID" for="messageappid" />
+                        <p:inplace id="inpmessageappid" editor="true">
                             <p:ajax event="save" listener="#{settingBean.save}" update="msgs" />
-                            <p:inputText id="telphoneno" value="#{settingBean.setting.telphoneno}" title="telphoneno" />
+                            <p:inputText id="messageappid" value="#{settingBean.setting.messageappid}" title="messageappid" />
+                        </p:inplace>
+                        
+                        <p:outputLabel value="短信服务密码" for="messagepwd" />
+                        <p:inplace id="inpmessagepwd" editor="true">
+                            <p:ajax event="save" listener="#{settingBean.save}" update="msgs" />
+                            <p:inputText id="messagepwd" value="#{settingBean.setting.messagepwd}" title="messagepwd" />
                         </p:inplace>
                     </p:panelGrid>
                 </h:panelGroup>

@@ -16,27 +16,27 @@
                     <p:selectOneRadio id="grid" value="#{evaluateBean.appraisalValue}" layout="grid" columns="1">  
                         <f:selectItems value="#{evaluateBean.appraisalItems}"/>  
                     </p:selectOneRadio>
-                    <p:outputLabel value="#{evaluateBean.selectedEmployee.name}"/>
+                    <p:outputLabel value="#{evaluateBean.selectedEmployee.name}" style="margin-left: 70px"/>
                 </h:panelGrid>
                 <br />
                 #{msgs.reason}
                 <br />
-                <p:inputTextarea id="reasonArea" maxlength="2000" rows="5" cols="60" value="#{evaluateBean.reason}" />
-                <h:panelGrid columns="2">
-                    <p:outputLabel value="#{msgs.regularReason}" />
-                    <p:selectOneMenu value="#{evaluateBean.reasonValue}">
+                <p:selectOneMenu value="#{evaluateBean.reasonValue}">
+                        <f:selectItem itemLabel="请选择常用原因" itemValue=""/>
                         <f:selectItems value="#{evaluateBean.reasonItems}" />
                         <p:ajax listener="#{evaluateBean.onSelectReason}" update="reasonArea" />
                     </p:selectOneMenu>
+                <br />
+                <p:inputTextarea id="reasonArea" maxlength="2000" rows="5" cols="64" value="#{evaluateBean.reason}" />
+                <h:panelGrid columns="2">                    
                     <p:outputLabel value="#{msgs.appraiser}" />
                     <p:inputText value="#{evaluateBean.appraiser}" />
                     <p:outputLabel value="#{msgs.contact}" />
                     <p:inputText value="#{evaluateBean.contact}" />
-                    <!--<p:calendar pattern="yyyy年mm月dd日" value="#{evaluateBean.createDate}" />-->
                 </h:panelGrid>
                 <p:commandButton value="#{msgs.submit}" oncomplete="PF('detail').hide();" actionListener="#{evaluateBean.save}" />
                 <p:commandButton value="取消" onclick="PF('detail').hide();"/>
-                <p:commandButton value="手写输入"/>
+                <p:button value="手写输入" onclick="openHandInput();return false;"/>
             </h:form>
         </p:dialog>
     </ui:composition>

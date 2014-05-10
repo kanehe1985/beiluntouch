@@ -7,6 +7,7 @@
 package com.original.evaluate.bean;
 
 import com.original.evaluate.bo.EmployeeBO;
+import com.original.evaluate.entity.Appraisal;
 import com.original.evaluate.entity.Employee;
 import java.io.Serializable;
 import java.util.List;
@@ -27,7 +28,16 @@ public class EmployeeBean implements Serializable {
     private List<Employee> employees;
     private List<Employee> selectedEmployees = null;
     private Employee editEmployee;
+    private List<Employee> filteredEmployees;
 
+    public List<Employee> getFilteredEmployees() {
+        return filteredEmployees;
+    }
+
+    public void setFilteredEmployees(List<Employee> filteredEmployees) {
+        this.filteredEmployees = filteredEmployees;
+    }
+    
     public List<Employee> getSelectedEmployees() {
         return selectedEmployees;
     }
