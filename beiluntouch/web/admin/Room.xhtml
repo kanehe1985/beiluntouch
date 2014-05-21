@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="./template.xhtml">
+
+        <ui:define name="center">
+            <h:form id="RoomListForm">
+                <p:dataTable id="rooms" var="room" value="#{roomBean.rooms}" rowKey="#{room.id}"
+                             selection="#{roomBean.selectedRooms}">
+
+                    <f:facet name="header">
+                        房间管理
+                    </f:facet>
+                    <p:column selectionMode="multiple" style="width:4%; text-align: center"/>
+
+                    <p:column headerText="部门名称">
+                        #{room.department.name}
+                    </p:column>
+                    <p:column headerText="组别">
+                        #{room.category.name}
+                    </p:column>
+                    <p:column headerText="房间号">
+                        #{room.no}
+                    </p:column>
+                    
+                    <p:column headerText="操作">
+                        <p:commandButton value="编辑" icon="ui-icon-pencil" oncomplete="PF('RoomEditDialog').show();" update=":RoomEditForm">
+                            <f:setPropertyActionListener value="#{room}" target="#{roomBean.editRoom}"/>
+                            <f:setPropertyActionListener value="#{room.department.id}" target="#{roomBean.editDepartmentID}"/>
+                            <f:setPropertyActionListener value="#{room.category.id}" target="#{roomBean.editCategoryID}"/>
+                            <f:setPropertyActionListener value="#{room.no}" target="#{roomBean.editno}"/>
+                        </p:commandButton>
+                    </p:column>
+                    <f:facet name="footer">                        
+                        <p:commandButton id="createButton" icon="ui-icon-plus"   value="新建" actionListener="#{roomBean.prepareCreate}" update=":RoomCreateForm" oncomplete="PF('RoomCreateDialog').show()"/>
+                        <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="删除" actionListener="#{roomBean.delete}" update=":RoomListForm:rooms">
+                            <p:confirm header="提示" message="是否删除？" icon="ui-icon-alert" />
+                        </p:commandButton>
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="是" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+                            <p:commandButton value="否" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/>     
+                        </p:confirmDialog>
+                        <p:commandButton id="refreshButton" icon="ui-icon-refresh" value="刷新" actionListener="#{roomBean.refresh}" update=":RoomListForm:rooms"/>
+                    </f:facet>
+                </p:dataTable>
+            </h:form>
+            
+            <p:dialog id="RoomCreateDlg" widgetVar="RoomCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="新建">
+                <h:form id="RoomCreateForm">
+                    <h:panelGroup id="display">
+                        <p:panelGrid columns="2">
+                            <p:outputLabel value="部门名称" />                            
+                            <p:selectOneMenu value="#{roomBean.editDepartmentID}">
+                                <f:selectItem itemLabel="Select One" itemValue="" />
+                                <f:selectItems value="#{roomBean.departments}" var="department" itemLabel="#{department.name}" itemValue="#{department.id}" />
+                            </p:selectOneMenu>
+                            <p:outputLabel value="组别" />
+                            <p:selectOneMenu value="#{roomBean.editCategoryID}">
+                                <f:selectItem itemLabel="Select One" itemValue="" />
+                                <f:selectItems value="#{roomBean.categorys}" var="category" itemLabel="#{category.name}" itemValue="#{category.id}" />
+                            </p:selectOneMenu>
+                            <p:outputLabel value="房间号" />
+                            <p:inputText value="#{roomBean.editno}"/>
+                        </p:panelGrid>
+                        <p:commandButton actionListener="#{roomBean.create}" value="保存" update=":RoomListForm:rooms" oncomplete="PF('RoomCreateDialog').hide();" />
+                        <p:commandButton value="取消" onclick="RoomCreateDialog.hide()"/>
+                    </h:panelGroup>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog id="RoomEditDlg" widgetVar="RoomEditDialog" modal="true" resizable="false" appendTo="@(body)" header="编辑">
+                <h:form id="RoomEditForm">
+                    <h:panelGroup id="display">
+                        <p:panelGrid columns="2">
+                            <p:outputLabel value="部门名称" />                            
+                            <p:selectOneMenu value="#{roomBean.editDepartmentID}">
+                                <f:selectItems value="#{roomBean.departments}" var="department" itemLabel="#{department.name}" itemValue="#{department.id}" />
+                            </p:selectOneMenu>
+                            <p:outputLabel value="组别" />
+                            <p:selectOneMenu value="#{roomBean.editCategoryID}">
+                                <f:selectItems value="#{roomBean.categorys}" var="category" itemLabel="#{category.name}" itemValue="#{category.id}" />
+                            </p:selectOneMenu>
+                            <p:outputLabel value="房间号" />
+                            <p:inputText value="#{roomBean.editno}"/>
+                        </p:panelGrid>
+                        <p:commandButton actionListener="#{roomBean.update}" value="保存" update=":RoomListForm:rooms" oncomplete="PF('RoomEditDialog').hide();"/>
+                        <p:commandButton value="取消" onclick="RoomEditDialog.hide()"/>
+                    </h:panelGroup>
+                </h:form>
+            </p:dialog>
+        </ui:define>
+    </ui:composition>
+
+</html>

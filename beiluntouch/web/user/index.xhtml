@@ -21,6 +21,7 @@
                 <ui:repeat value="#{evaluateBean.departments}" var="department" rendered="#{!evaluateBean.merge}">
                     <p:button  style="width:300px;height: 160px;font-size: 30px" outcome="evaluate" value="#{department.name}">
                         <f:param name="depid" value="#{department.id}"/>
+                        <f:param name="tag" value="#{evaluateBean.tag}"/>
                     </p:button>
                 </ui:repeat>
             </div>            

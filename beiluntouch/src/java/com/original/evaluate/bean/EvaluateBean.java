@@ -13,6 +13,7 @@ import com.original.evaluate.dao.DepartmentJpaController;
 import com.original.evaluate.dao.EmployeeJpaController;
 import com.original.evaluate.dao.NoticeJpaController;
 import com.original.evaluate.dao.ReasonJpaController;
+import com.original.evaluate.dao.RoomJpaController;
 import com.original.evaluate.entity.Appraisal;
 import com.original.evaluate.entity.Appraisallevel;
 import com.original.evaluate.entity.Category;
@@ -20,6 +21,7 @@ import com.original.evaluate.entity.Department;
 import com.original.evaluate.entity.Employee;
 import com.original.evaluate.entity.Notice;
 import com.original.evaluate.entity.Reason;
+import com.original.evaluate.entity.Room;
 import com.original.evaluate.entity.Setting;
 import com.original.util.FacesUtil;
 import com.original.util.MessageUtil;
@@ -53,10 +55,12 @@ public class EvaluateBean implements Serializable {
     private DepartmentJpaController departmentJpaController;
     private CategoryJpaController categoryJpaController;
     private NoticeJpaController noticeJpaController;
+    private RoomJpaController roomJpaController;
     private LinkedHashMap<String, Integer> appraisalItems;
     private LinkedHashMap<String, Integer> reasonItems;
     private LinkedHashMap<String, Integer> departmentItems;
     private LinkedHashMap<String, Integer> categoryItems;
+    private LinkedHashMap<String, String> roomItems;
     private List<Department> departments;
     private List<Employee> employeeList;    
     private Employee selectedEmployee;
@@ -72,11 +76,13 @@ public class EvaluateBean implements Serializable {
     private Date createDate;
     private Boolean merge;
     private String tag;
+    private Boolean reasonRequired=false;
+    
 
     public String getBackUrl(){
         String param="index.xhtml";
         if(tag !=null){
-            param+="?tag="+tag;            
+            param+="?tag="+tag;
         }
         if(merge==true)
             param+="&m=true";
@@ -84,7 +90,7 @@ public class EvaluateBean implements Serializable {
     }
     
     public EvaluateBean() {
-
+        
     }
 
 //    public List<Employee> getEmployeeList() {
@@ -163,6 +169,13 @@ public class EvaluateBean implements Serializable {
         }
         return categoryJpaController;
     }
+    
+    private RoomJpaController getRoomJpaController() {
+         if (roomJpaController == null) {
+            roomJpaController = new RoomJpaController(FacesUtil.getEntityManagerFactory());
+        }
+        return roomJpaController;
+    }
 
     private NoticeJpaController getNoticeJpaController() {
         if (noticeJpaController == null) {
@@ -213,6 +226,27 @@ public class EvaluateBean implements Serializable {
             }
         }
         return categoryItems;
+    }
+
+    public LinkedHashMap<String, String> getRoomItems() {
+        roomItems = new LinkedHashMap<>();
+        List<Room> roomList = getRoomJpaController().findRoomEntities();
+        for (Room room : roomList) {
+            if(merge==true){
+                if(room.getDepartment().getTag().equals(tag)){
+                    if(categoryCondition == null || categoryCondition.isEmpty() || room.getCategory().getId().toString().equals(this.categoryCondition)){
+                        roomItems.put(room.getNo(), room.getNo());
+                    }                        
+                }
+            }else{
+                if(room.getDepartment().getId().toString().equals(depID)){
+                    if(categoryCondition == null || categoryCondition.isEmpty() || room.getCategory().getId().toString().equals(this.categoryCondition)){
+                        roomItems.put(room.getNo(), room.getNo());
+                    }                        
+                }
+            }
+        }
+        return roomItems;
     }
 
     public List<Department> getDepartments() {
@@ -266,6 +300,14 @@ public class EvaluateBean implements Serializable {
 
     public void setReasonValue(Integer reasonValue) {
         this.reasonValue = reasonValue;
+    }
+
+    public Boolean getReasonRequired() {
+        return reasonRequired;
+    }
+
+    public void setReasonRequired(Boolean reasonRequired) {
+        this.reasonRequired = reasonRequired;
     }
 
     public Integer getDepartmentValue() {
@@ -377,6 +419,10 @@ public class EvaluateBean implements Serializable {
     public void onSelectReason(AjaxBehaviorEvent e) {
         reason = getReasonJpaController().findReason(reasonValue).getContent();
     }
+    
+    public void onSelectLevel(AjaxBehaviorEvent e){
+        reasonRequired = this.getAppraisallevelJpaController().findAppraisallevel(appraisalValue).getIsalert();
+    }
 
     private String getRequestParameter(String key) {
         return FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(key);
@@ -384,5 +430,5 @@ public class EvaluateBean implements Serializable {
 
     public String start() {
         return "evaluate.xhtml?faces-redirect=true&tag=" + getRequestParameter("tag");
-    }
+    }    
 }

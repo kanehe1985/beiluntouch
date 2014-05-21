@@ -23,11 +23,14 @@
                             <p:selectOneMenu value="#{evaluateBean.categoryCondition}">
                                 <f:selectItem itemLabel="所有组别" itemValue="" />
                                 <f:selectItems value="#{evaluateBean.categoryItems}" />
+                                <p:ajax update="rooms" />
                             </p:selectOneMenu>
                             <p:outputLabel value="#{msgs.room}" />
-                            <p:inputText value="#{evaluateBean.roomCondition}" />                            
+                            <p:selectOneMenu value="#{evaluateBean.roomCondition}" id="rooms">
+                                <f:selectItem itemLabel="所有房号" itemValue="" />
+                                <f:selectItems value="#{evaluateBean.roomItems}" />
+                            </p:selectOneMenu>                        
                             <p:commandButton value="#{msgs.search}" actionListener="#{evaluateBean.search}" update=":employeeForm:employeeGrid" process="@form"/>
-                            <p:button value="手写输入" onclick="openHandInput();return false;"/>
                         </h:panelGrid>
                     </h:form>
                     <h:form id="employeeForm">

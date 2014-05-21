@@ -34,6 +34,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Category.findById", query = "SELECT c FROM Category c WHERE c.id = :id"),
     @NamedQuery(name = "Category.findByName", query = "SELECT c FROM Category c WHERE c.name = :name")})
 public class Category implements Serializable {
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
+    private Collection<Room> roomCollection;
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -112,6 +114,15 @@ public class Category implements Serializable {
     @Override
     public String toString() {
         return "com.original.evaluate.entity.Category[ id=" + id + " ]";
+    }
+
+    @XmlTransient
+    public Collection<Room> getRoomCollection() {
+        return roomCollection;
+    }
+
+    public void setRoomCollection(Collection<Room> roomCollection) {
+        this.roomCollection = roomCollection;
     }
     
 }

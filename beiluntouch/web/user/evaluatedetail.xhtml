@@ -14,7 +14,8 @@
                     <p:graphicImage name="/images/#{evaluateBean.selectedEmployee.picture}" 
                                     width="198" height="255" /> 
                     <p:selectOneRadio id="grid" value="#{evaluateBean.appraisalValue}" layout="grid" columns="1">  
-                        <f:selectItems value="#{evaluateBean.appraisalItems}"/>  
+                        <f:selectItems value="#{evaluateBean.appraisalItems}"/>
+                        <p:ajax listener="#{evaluateBean.onSelectLevel}" update="reasonArea"/>
                     </p:selectOneRadio>
                     <p:outputLabel value="#{evaluateBean.selectedEmployee.name}" style="margin-left: 70px"/>
                 </h:panelGrid>
@@ -27,14 +28,14 @@
                         <p:ajax listener="#{evaluateBean.onSelectReason}" update="reasonArea" />
                     </p:selectOneMenu>
                 <br />
-                <p:inputTextarea id="reasonArea" maxlength="2000" rows="5" cols="64" value="#{evaluateBean.reason}" />
+                <p:inputTextarea requiredMessage="此评价等级必须输入原因！" required="#{evaluateBean.reasonRequired}" id="reasonArea" maxlength="2000" rows="5" cols="64" value="#{evaluateBean.reason}" />
                 <h:panelGrid columns="2">                    
                     <p:outputLabel value="#{msgs.appraiser}" />
                     <p:inputText value="#{evaluateBean.appraiser}" />
                     <p:outputLabel value="#{msgs.contact}" />
                     <p:inputText value="#{evaluateBean.contact}" />
                 </h:panelGrid>
-                <p:commandButton value="#{msgs.submit}" oncomplete="PF('detail').hide();" actionListener="#{evaluateBean.save}" />
+                <p:commandButton value="#{msgs.submit}" actionListener="#{evaluateBean.save}" />
                 <p:commandButton value="取消" onclick="PF('detail').hide();"/>
                 <p:button value="手写输入" onclick="openHandInput();return false;"/>
             </h:form>

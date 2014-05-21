@@ -20,6 +20,7 @@ import com.original.evaluate.entity.Employee;
 import java.util.ArrayList;
 import java.util.Collection;
 import com.original.evaluate.entity.Notice;
+import com.original.evaluate.entity.Room;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -48,6 +49,9 @@ public class CategoryJpaController implements Serializable {
         if (category.getNoticeCollection() == null) {
             category.setNoticeCollection(new ArrayList<Notice>());
         }
+        if (category.getRoomCollection() == null) {
+            category.setRoomCollection(new ArrayList<Room>());
+        }
         EntityManager em = null;
         try {
             utx.begin();
@@ -64,6 +68,12 @@ public class CategoryJpaController implements Serializable {
                 attachedNoticeCollection.add(noticeCollectionNoticeToAttach);
             }
             category.setNoticeCollection(attachedNoticeCollection);
+            Collection<Room> attachedRoomCollection = new ArrayList<Room>();
+            for (Room roomCollectionRoomToAttach : category.getRoomCollection()) {
+                roomCollectionRoomToAttach = em.getReference(roomCollectionRoomToAttach.getClass(), roomCollectionRoomToAttach.getId());
+                attachedRoomCollection.add(roomCollectionRoomToAttach);
+            }
+            category.setRoomCollection(attachedRoomCollection);
             em.persist(category);
             for (Employee employeeCollectionEmployee : category.getEmployeeCollection()) {
                 Category oldCategoryOfEmployeeCollectionEmployee = employeeCollectionEmployee.getCategory();
@@ -81,6 +91,15 @@ public class CategoryJpaController implements Serializable {
                 if (oldCategoryOfNoticeCollectionNotice != null) {
                     oldCategoryOfNoticeCollectionNotice.getNoticeCollection().remove(noticeCollectionNotice);
                     oldCategoryOfNoticeCollectionNotice = em.merge(oldCategoryOfNoticeCollectionNotice);
+                }
+            }
+            for (Room roomCollectionRoom : category.getRoomCollection()) {
+                Category oldCategoryOfRoomCollectionRoom = roomCollectionRoom.getCategory();
+                roomCollectionRoom.setCategory(category);
+                roomCollectionRoom = em.merge(roomCollectionRoom);
+                if (oldCategoryOfRoomCollectionRoom != null) {
+                    oldCategoryOfRoomCollectionRoom.getRoomCollection().remove(roomCollectionRoom);
+                    oldCategoryOfRoomCollectionRoom = em.merge(oldCategoryOfRoomCollectionRoom);
                 }
             }
             utx.commit();
@@ -111,6 +130,8 @@ public class CategoryJpaController implements Serializable {
             Collection<Employee> employeeCollectionNew = category.getEmployeeCollection();
             Collection<Notice> noticeCollectionOld = persistentCategory.getNoticeCollection();
             Collection<Notice> noticeCollectionNew = category.getNoticeCollection();
+            Collection<Room> roomCollectionOld = persistentCategory.getRoomCollection();
+            Collection<Room> roomCollectionNew = category.getRoomCollection();
             List<String> illegalOrphanMessages = null;
             for (Employee employeeCollectionOldEmployee : employeeCollectionOld) {
                 if (!employeeCollectionNew.contains(employeeCollectionOldEmployee)) {
@@ -126,6 +147,14 @@ public class CategoryJpaController implements Serializable {
                         illegalOrphanMessages = new ArrayList<String>();
                     }
                     illegalOrphanMessages.add("You must retain Notice " + noticeCollectionOldNotice + " since its category field is not nullable.");
+                }
+            }
+            for (Room roomCollectionOldRoom : roomCollectionOld) {
+                if (!roomCollectionNew.contains(roomCollectionOldRoom)) {
+                    if (illegalOrphanMessages == null) {
+                        illegalOrphanMessages = new ArrayList<String>();
+                    }
+                    illegalOrphanMessages.add("You must retain Room " + roomCollectionOldRoom + " since its category field is not nullable.");
                 }
             }
             if (illegalOrphanMessages != null) {
@@ -145,6 +174,13 @@ public class CategoryJpaController implements Serializable {
             }
             noticeCollectionNew = attachedNoticeCollectionNew;
             category.setNoticeCollection(noticeCollectionNew);
+            Collection<Room> attachedRoomCollectionNew = new ArrayList<Room>();
+            for (Room roomCollectionNewRoomToAttach : roomCollectionNew) {
+                roomCollectionNewRoomToAttach = em.getReference(roomCollectionNewRoomToAttach.getClass(), roomCollectionNewRoomToAttach.getId());
+                attachedRoomCollectionNew.add(roomCollectionNewRoomToAttach);
+            }
+            roomCollectionNew = attachedRoomCollectionNew;
+            category.setRoomCollection(roomCollectionNew);
             category = em.merge(category);
             for (Employee employeeCollectionNewEmployee : employeeCollectionNew) {
                 if (!employeeCollectionOld.contains(employeeCollectionNewEmployee)) {
@@ -165,6 +201,17 @@ public class CategoryJpaController implements Serializable {
                     if (oldCategoryOfNoticeCollectionNewNotice != null && !oldCategoryOfNoticeCollectionNewNotice.equals(category)) {
                         oldCategoryOfNoticeCollectionNewNotice.getNoticeCollection().remove(noticeCollectionNewNotice);
                         oldCategoryOfNoticeCollectionNewNotice = em.merge(oldCategoryOfNoticeCollectionNewNotice);
+                    }
+                }
+            }
+            for (Room roomCollectionNewRoom : roomCollectionNew) {
+                if (!roomCollectionOld.contains(roomCollectionNewRoom)) {
+                    Category oldCategoryOfRoomCollectionNewRoom = roomCollectionNewRoom.getCategory();
+                    roomCollectionNewRoom.setCategory(category);
+                    roomCollectionNewRoom = em.merge(roomCollectionNewRoom);
+                    if (oldCategoryOfRoomCollectionNewRoom != null && !oldCategoryOfRoomCollectionNewRoom.equals(category)) {
+                        oldCategoryOfRoomCollectionNewRoom.getRoomCollection().remove(roomCollectionNewRoom);
+                        oldCategoryOfRoomCollectionNewRoom = em.merge(oldCategoryOfRoomCollectionNewRoom);
                     }
                 }
             }
@@ -216,6 +263,13 @@ public class CategoryJpaController implements Serializable {
                     illegalOrphanMessages = new ArrayList<String>();
                 }
                 illegalOrphanMessages.add("This Category (" + category + ") cannot be destroyed since the Notice " + noticeCollectionOrphanCheckNotice + " in its noticeCollection field has a non-nullable category field.");
+            }
+            Collection<Room> roomCollectionOrphanCheck = category.getRoomCollection();
+            for (Room roomCollectionOrphanCheckRoom : roomCollectionOrphanCheck) {
+                if (illegalOrphanMessages == null) {
+                    illegalOrphanMessages = new ArrayList<String>();
+                }
+                illegalOrphanMessages.add("This Category (" + category + ") cannot be destroyed since the Room " + roomCollectionOrphanCheckRoom + " in its roomCollection field has a non-nullable category field.");
             }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
