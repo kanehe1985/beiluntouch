@@ -31,6 +31,7 @@
                                 <f:selectItems value="#{evaluateBean.roomItems}" />
                             </p:selectOneMenu>                        
                             <p:commandButton value="#{msgs.search}" actionListener="#{evaluateBean.search}" update=":employeeForm:employeeGrid" process="@form"/>
+                            <p:button value="返回" onclick="window.history.go(-1);return false;"/>
                         </h:panelGrid>
                     </h:form>
                     <h:form id="employeeForm">
