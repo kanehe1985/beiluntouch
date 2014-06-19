@@ -395,10 +395,11 @@ public class EvaluateBean implements Serializable {
                         notifyLeader(leader.getTelephone(),messageText);
                     }
                 }
-            }
-            FacesContext.getCurrentInstance().getExternalContext().redirect("thanks.xhtml");
+            }            
         } catch (Exception ex) {
             Logger.getLogger(EvaluateBean.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            FacesContext.getCurrentInstance().getExternalContext().redirect("thanks.xhtml");
         }
     }
     

@@ -43,6 +43,8 @@ public class NoticeBean implements Serializable {
     private int editDepartmentID;
     private int editCategoryID;
     private int editEmployeeID;
+    
+    private Employee editEmployee;
 
     public List<Notice> getSelectedNotices() {
         return selectedNotices;
@@ -70,6 +72,14 @@ public class NoticeBean implements Serializable {
 
     public void setEditEmployeeID(int editEmployeeID) {
         this.editEmployeeID = editEmployeeID;
+    }
+
+    public Employee getEditEmployee() {
+        return editEmployee;
+    }
+
+    public void setEditEmployee(Employee editEmployee) {
+        this.editEmployee = editEmployee;
     }
     
     public void setSelectedNotices(List<Notice> selectedNotices) {

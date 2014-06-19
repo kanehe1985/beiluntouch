@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <f:view contentType="text/html">
+        <h:head>
+            <f:facet name="first">
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <title>#{msgs.evaluateStaff}</title>
+            </f:facet>
+            <h:outputScript name="js/vk/vk_loader.js?vk_skin=flat_gray"/>
+        </h:head>
+        <h:body>
+            <p:inputTextarea id="text" maxlength="2000" rows="5" cols="64" onfocus="VirtualKeyboard.attachInput(this)" />
+            <p:button id="btnInput" value="手写输入" onclick="VirtualKeyboard.toggle('text','softkey'); return false;"/>
+            <textarea id="text1" rows="6" wrap="soft" onfocus="VirtualKeyboard.attachInput(this)"></textarea>
+          <button onclick="VirtualKeyboard.toggle('text1','softkey'); return false;">toggle</button>
+          <div id="softkey"></div>
+        </h:body>
+    </f:view>
+</html>
+

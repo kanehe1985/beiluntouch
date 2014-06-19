@@ -8,8 +8,9 @@
 
     <ui:composition>
         <p:dialog id="detailDlg" widgetVar="detail" modal="true" resizable="false" appendTo="@(body)"
-                  header="#{msgs.evaluateStaff}">
+                  header="#{msgs.evaluateStaff}" onShow="VirtualKeyboard.toggle('detailForm:reasonArea','softkey');" onHide="VirtualKeyboard.toggle('detailForm:reasonArea','softkey');">
             <h:form id="detailForm">
+                <!--<p:growl showDetail="true" showSummary="true" autoUpdate="true" />-->
                 <h:panelGrid columns="2" cellpadding="10">
                     <p:graphicImage name="/images/#{evaluateBean.selectedEmployee.picture}" 
                                     width="198" height="255" /> 
@@ -28,16 +29,18 @@
                         <p:ajax listener="#{evaluateBean.onSelectReason}" update="reasonArea" />
                     </p:selectOneMenu>
                 <br />
-                <p:inputTextarea requiredMessage="此评价等级必须输入原因！" required="#{evaluateBean.reasonRequired}" id="reasonArea" maxlength="2000" rows="5" cols="64" value="#{evaluateBean.reason}" />
+                <p:inputTextarea requiredMessage="此评价等级必须输入原因！" required="#{evaluateBean.reasonRequired}" id="reasonArea" maxlength="2000" rows="5" cols="64" value="#{evaluateBean.reason}"  widgetVar="txtReason" onfocus="VirtualKeyboard.attachInput(this)"/>
+                <p:message for="reasonArea" />
                 <h:panelGrid columns="2">                    
                     <p:outputLabel value="#{msgs.appraiser}" />
-                    <p:inputText value="#{evaluateBean.appraiser}" />
+                    <p:inputText value="#{evaluateBean.appraiser}" widgetVar="txtAppraiser" onfocus="VirtualKeyboard.attachInput(this)" />
                     <p:outputLabel value="#{msgs.contact}" />
-                    <p:inputText value="#{evaluateBean.contact}" />
+                    <p:inputText value="#{evaluateBean.contact}" widgetVar="txtContact" onfocus="VirtualKeyboard.attachInput(this)" />
                 </h:panelGrid>
                 <p:commandButton value="#{msgs.submit}" actionListener="#{evaluateBean.save}" />
-                <p:commandButton value="取消" onclick="PF('detail').hide();"/>
-                <p:button value="手写输入" onclick="openHandInput();return false;"/>
+                <p:button value="取消" onclick="PF('detail').hide();return false;"/>
+                <p:button style="float: right" id="btnInput" widgetVar="btnInput" value="中英切换" onclick="if($('#kb_langselector').val()=='CN Chinese Simpl. Pinyin'){VirtualKeyboard.switchLayout('US US');}else{VirtualKeyboard.switchLayout('CN Chinese Simpl. Pinyin');}return false;"/>
+                <div id="softkey"></div>
             </h:form>
         </p:dialog>
     </ui:composition>

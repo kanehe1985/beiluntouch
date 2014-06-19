@@ -9,7 +9,6 @@ package com.original.evaluate.dao;
 import com.original.evaluate.dao.exceptions.NonexistentEntityException;
 import com.original.evaluate.dao.exceptions.RollbackFailureException;
 import com.original.evaluate.entity.Appraisal;
-import com.original.evaluate.entity.Appraisal_;
 import com.original.evaluate.entity.Appraisallevel;
 import com.original.evaluate.entity.Employee;
 import java.io.Serializable;

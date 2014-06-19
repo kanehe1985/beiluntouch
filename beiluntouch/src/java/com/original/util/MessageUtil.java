@@ -29,7 +29,7 @@ public class MessageUtil {
                         Sms sms = new Sms(serverUrl);
                         String[] destinationAddresses = new String[]{telno};
                         String message=messageText;
-                        String extendCode = "0101"; //自定义扩展代码（模块）
+                        String extendCode = "12366"; //自定义扩展代码（模块）
                         String ApplicationID= applicationID;
                         String Password = password;
                         //发送短信
@@ -40,5 +40,9 @@ public class MessageUtil {
                       Logger.getLogger(MessageUtil.class.getName()).log(Level.SEVERE, null, ex);
                   }
           }
+    
+    public static void sendByDB(String connectString,String userid,String password ,String telno,String messageText){
+        
+    }
 
 }

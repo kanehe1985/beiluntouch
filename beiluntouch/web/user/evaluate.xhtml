@@ -12,11 +12,13 @@
                 <title>#{msgs.evaluateStaff}</title>
             </f:facet>
             <h:outputScript library="js" name="handinput.js"/>
+            <h:outputScript name="js/vk/vk_loader.js?vk_skin=flat_gray"/>
+            
         </h:head>
         <h:body>
             <p:layout fullPage="true">
                 <p:layoutUnit position="center">
-                    <p:growl showDetail="true" showSummary="true" autoUpdate="true" />
+                    <p:growl showDetail="true" showSummary="true" autoUpdate="true"/>
                      <h:form id="conditionForm">
                          <h:panelGrid columns="6">
                             <p:outputLabel value="#{msgs.group}" />
@@ -53,6 +55,7 @@
                     <ui:include src="evaluatedetail.xhtml"/>
                 </p:layoutUnit>
             </p:layout>
+            <h:outputStylesheet name="style.css"/>
         </h:body>
     </f:view>
 </html>
