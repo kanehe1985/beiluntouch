@@ -54,6 +54,10 @@
                         #{appraisal.content}
                     </p:column>
                     
+                     <p:column headerText="评价录音">
+                         <p:button value="播放" disabled="#{appraisal.record.length() lt 1}" onclick="playRecord('#{appraisal.record}');return false;"/>
+                    </p:column>
+                    
                     <p:column headerText="评价人">
                         #{appraisal.appraiser}
                     </p:column>
@@ -69,6 +73,7 @@
                     </p:column>
                     
                 </p:dataTable>
+                <audio style="display: none;" id="audioPlayer" controls="true" src=""/>
             </h:form>
         </ui:define>
     </ui:composition>

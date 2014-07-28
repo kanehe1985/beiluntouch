@@ -12,8 +12,9 @@
                 <title>#{msgs.evaluateStaff}</title>
             </f:facet>
             <h:outputScript library="js" name="handinput.js"/>
+            <h:outputScript library="js" name="recorder.js"/>
+            <h:outputScript library="js" name="common.js"/>
             <h:outputScript name="js/vk/vk_loader.js?vk_skin=flat_gray"/>
-            
         </h:head>
         <h:body>
             <p:layout fullPage="true">
@@ -21,19 +22,19 @@
                     <p:growl showDetail="true" showSummary="true" autoUpdate="true"/>
                      <h:form id="conditionForm">
                          <h:panelGrid columns="6">
-                            <p:outputLabel value="#{msgs.group}" />
-                            <p:selectOneMenu value="#{evaluateBean.categoryCondition}">
+                            <p:outputLabel value="#{msgs.group}" style="font-size: 20px;" />
+                            <p:selectOneMenu value="#{evaluateBean.categoryCondition}" style="font-size: 25px;" id="categorys">
                                 <f:selectItem itemLabel="所有组别" itemValue="" />
                                 <f:selectItems value="#{evaluateBean.categoryItems}" />
                                 <p:ajax update="rooms" />
                             </p:selectOneMenu>
-                            <p:outputLabel value="#{msgs.room}" />
-                            <p:selectOneMenu value="#{evaluateBean.roomCondition}" id="rooms">
+                            <p:outputLabel value="#{msgs.room}" style="font-size: 20px;"/>
+                            <p:selectOneMenu value="#{evaluateBean.roomCondition}" id="rooms" style="font-size: 25px;">
                                 <f:selectItem itemLabel="所有房号" itemValue="" />
                                 <f:selectItems value="#{evaluateBean.roomItems}" />
                             </p:selectOneMenu>                        
-                            <p:commandButton value="#{msgs.search}" actionListener="#{evaluateBean.search}" update=":employeeForm:employeeGrid" process="@form"/>
-                            <p:button value="返回" onclick="window.history.go(-1);return false;"/>
+                            <p:commandButton style="font-size: 20px;" value="#{msgs.search}" actionListener="#{evaluateBean.search}" update=":employeeForm:employeeGrid" process="@form"/>
+                            <p:button style="font-size: 20px;" value="返回" onclick="window.history.go(-1);return false;"/>
                         </h:panelGrid>
                     </h:form>
                     <h:form id="employeeForm">
@@ -50,7 +51,10 @@
                                 </p:commandButton>
                             </p:panel>
                         </p:dataGrid>
-                        <p:media value="/resources/evaluate.mp3" width="200" height="20" player="windows" style="display: none"></p:media>
+                        <!--<p:media value="/resources/evaluate.mp3" width="200" height="20" player="windows" style="display: none"></p:media>-->
+                        <div style="display:none">
+                            <video controls="" autoplay="true" name="media"><source src="../../resources/evaluate.mp3" type="audio/mpeg"  style="display: none"/></video>
+                       </div>
                     </h:form>
                     <ui:include src="evaluatedetail.xhtml"/>
                 </p:layoutUnit>

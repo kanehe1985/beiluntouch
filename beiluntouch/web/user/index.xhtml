@@ -7,19 +7,22 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
         <title>#{msgs.welcome}</title>
+        <h:outputScript library="js" name="common.js"/>
     </h:head>
     <h:body>
         <h:form>
+           
+            
             
             <div style="text-align:center;font-size: 40px;margin-top: 300px;">
                 <p:graphicImage value="/resources/logo.jpg"/><br/>
-                北仑地税管理人员评价系统</div>
+                北仑地方税务局工作人员评价系统</div>
             <div style="text-align:center;margin-top: 200px;">
-                <p:button  style="width:300px;height: 160px;font-size: 30px" outcome="evaluate" value="我要评价" rendered="#{evaluateBean.merge}">
+                <p:button  style="width:380px;height: 220px;font-size: 30px" outcome="evaluate" value="我要评价" rendered="#{evaluateBean.merge}">
                     <f:param name="tag" value="#{evaluateBean.tag}"/>
                 </p:button>
                 <ui:repeat value="#{evaluateBean.departments}" var="department" rendered="#{!evaluateBean.merge}">
-                    <p:button  style="width:300px;height: 160px;font-size: 30px" outcome="evaluate" value="#{department.name}">
+                    <p:button  style="width:380px;height: 220px;font-size: 30px" outcome="evaluate" value="#{department.name}">
                         <f:param name="depid" value="#{department.id}"/>
                         <f:param name="tag" value="#{evaluateBean.tag}"/>
                     </p:button>

@@ -13,3 +13,20 @@ and open the template in the editor.
     top: 600px;
     position: fixed;
 }
+
+#detailDlg_title{
+    margin-left: 280px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.ui-dialog-titlebar-close{
+    zoom: 200%;
+}
+
+.ui-radiobutton {
+    display: block;
+    zoom: 200%;
+    font-size: 35px;
+}
+

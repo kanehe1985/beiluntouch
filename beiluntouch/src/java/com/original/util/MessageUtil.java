@@ -20,16 +20,16 @@ import java.util.logging.Logger;
  * @author Administrator
  */
 public class MessageUtil {
-    public static void Send(String serverUrl,String applicationID,String password ,String telno,String messageText)
+    public static void Send(String serverUrl,String applicationID,String password ,String[] telno,String messageText)
           {
                   try
                   {
                         // 短信
 //                          Sms sms = new Sms("http://192.168.0.4:8080/openmasservice");
                         Sms sms = new Sms(serverUrl);
-                        String[] destinationAddresses = new String[]{telno};
+                        String[] destinationAddresses = telno;
                         String message=messageText;
-                        String extendCode = "12366"; //自定义扩展代码（模块）
+                        String extendCode = "8"; //自定义扩展代码（模块）
                         String ApplicationID= applicationID;
                         String Password = password;
                         //发送短信

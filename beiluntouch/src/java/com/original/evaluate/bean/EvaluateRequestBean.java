@@ -34,6 +34,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
@@ -44,9 +45,9 @@ import javax.naming.NamingException;
  *
  * @author dxx
  */
-@Named(value = "evaluateBean")
-@SessionScoped
-public class EvaluateBean implements Serializable {
+@Named(value = "evaluateRequestBean")
+@RequestScoped
+public class EvaluateRequestBean implements Serializable{
 
     private EmployeeJpaController employeeJpaController;
     private AppraisallevelJpaController appraisallevelJpaController;
@@ -73,13 +74,13 @@ public class EvaluateBean implements Serializable {
     private String reason;
     private String contact;
     private String depID;
-    private String record;
     private Date createDate;
     private Boolean merge;
     private String tag;
     private Boolean reasonRequired=false;
-       
-    public EvaluateBean(){
+    
+
+    public EvaluateRequestBean(){
         
     }
     
@@ -308,21 +309,8 @@ public class EvaluateBean implements Serializable {
         reasonValue=null;
         appraiser=null;
         contact=null;
-        record=null;
-        
-        this.selectedEmployee = employee;       
-        
+        this.selectedEmployee = employee;
     }
-
-    public String getRecord() {
-        return record;
-    }
-
-    public void setRecord(String record) {
-        this.record = record;
-    }
-    
-    
 
     public String getCategoryCondition() {
         return categoryCondition;
@@ -433,7 +421,6 @@ public class EvaluateBean implements Serializable {
             appraisal.setContent(reason);
             appraisal.setContact(contact);
             appraisal.setEmployee(selectedEmployee);
-            appraisal.setRecord(record);
             getAppraisalJpaController().create(appraisal);
             
             if(level.getIsalert()){
@@ -482,7 +469,6 @@ public class EvaluateBean implements Serializable {
         appraiser = null;
         contact = null;
         createDate = null;
-        record=null;
     }
 
     public void onSelectReason(AjaxBehaviorEvent e) {

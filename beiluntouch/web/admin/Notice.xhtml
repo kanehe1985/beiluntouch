@@ -61,12 +61,12 @@
                             </p:selectOneMenu>
                             <p:outputLabel value="组别" />
                             <p:selectOneMenu value="#{noticeBean.editCategoryID}">
-                                <f:selectItem itemLabel="请选择" itemValue="" />
+                                <f:selectItem itemLabel="请选择" itemValue="-1" />
                                 <f:selectItems value="#{noticeBean.categorys}" var="category" itemLabel="#{category.name}" itemValue="#{category.id}" />
                             </p:selectOneMenu>
                             <p:outputLabel value="短信接收人" />
                             <p:selectOneMenu value="#{noticeBean.editEmployeeID}" filter="true" filterMatchMode="startsWith" panelStyle="width:180px">
-                                <f:selectItem itemLabel="请选择" itemValue="" />
+                                <f:selectItem itemLabel="请选择" itemValue="-1" />
                                 <f:selectItems value="#{noticeBean.employees}" var="employee" itemLabel="#{employee.name}" itemValue="#{employee.id}" />
                             </p:selectOneMenu>
                         </p:panelGrid>
@@ -82,10 +82,12 @@
                         <p:panelGrid columns="2">
                             <p:outputLabel value="部门名称" />                            
                             <p:selectOneMenu value="#{noticeBean.editDepartmentID}">
+                                <f:selectItem itemLabel="请选择" itemValue="-1" />
                                 <f:selectItems value="#{noticeBean.departments}" var="department" itemLabel="#{department.name}" itemValue="#{department.id}" />
                             </p:selectOneMenu>
                             <p:outputLabel value="组别" />
                             <p:selectOneMenu value="#{noticeBean.editCategoryID}">
+                                <f:selectItem itemLabel="请选择" itemValue="-1" />
                                 <f:selectItems value="#{noticeBean.categorys}" var="category" itemLabel="#{category.name}" itemValue="#{category.id}" />
                             </p:selectOneMenu>
                             <p:outputLabel value="短信接收人" />
