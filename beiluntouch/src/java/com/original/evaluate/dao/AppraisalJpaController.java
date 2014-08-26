@@ -13,6 +13,7 @@ import com.original.evaluate.entity.Appraisallevel;
 import com.original.evaluate.entity.Employee;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -200,7 +201,10 @@ public class AppraisalJpaController implements Serializable {
             }            
             
             if(endDate != null){
-                Predicate pEndDate = cb.lessThanOrEqualTo(createdate, endDate);
+                Calendar rightNow = Calendar.getInstance();
+                rightNow.setTime(endDate);
+                rightNow.add(Calendar.DAY_OF_YEAR, 1);
+                Predicate pEndDate = cb.lessThanOrEqualTo(createdate, rightNow.getTime());
                 plist.add(pEndDate);
             }
             

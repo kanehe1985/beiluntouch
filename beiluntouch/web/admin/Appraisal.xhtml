@@ -68,7 +68,8 @@
                     
                     <p:column headerText="评价日期">          
                         <h:outputText value="#{appraisal.createdate}" >
-                            <f:convertDateTime pattern="yyyy-MM-dd" />
+                            <!--<f:convertDateTime pattern="yyyy-MM-dd" />-->
+                            <f:convertDateTime pattern="yyyy-MM-dd" timeZone="GMT+8" locale="cn" />
                         </h:outputText>
                     </p:column>
                     
