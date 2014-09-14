@@ -8,7 +8,7 @@
 
     <ui:composition>
         <p:dialog id="detailDlg" widgetVar="detail" modal="true" resizable="false" appendTo="@(body)"
-                  header="#{msgs.evaluateStaff}" onShow="VirtualKeyboard.toggle('detailForm:reasonArea','softkey');VirtualKeyboard.switchLayout('CN Chinese Simpl. Pinyin');$('#copyrights').text('拼音输入法');" onHide="VirtualKeyboard.toggle(null,'softkey');">
+                  header="#{msgs.evaluateStaff}" onShow="VirtualKeyboard.toggle('detailForm:reasonArea','softkey');VirtualKeyboard.switchLayout('CN Chinese Simpl. Pinyin');$('#copyrights').text('拼音输入法');" onHide="VirtualKeyboard.toggle(null,'softkey');stopRecording(document.getElementById('btnStop'));">
             <h:form id="detailForm">
                 <!--<p:growl showDetail="true" showSummary="true" autoUpdate="true" />-->
                 <h:panelGrid columns="2" cellpadding="10"  style="margin-left: 120px;">
@@ -35,7 +35,7 @@
                     <button id="btnStop" onclick="stopRecording(this);" disabled="true">停止</button>
                     <span id="lblSaved" style="font-size:16px; font-weight: bold; color: red;display: none">录音已保存!</span>
                     <p:inputTextarea widgetVar="txtRecord"  style="display: none" value="#{evaluateBean.record}"/>
-                    <audio id="audioPlayer" style="display: none" controls="false" src=""/>
+                    <audio id="audioPlayer" style="display:none" controls="false" src=""/>
                 <h:panelGrid columns="4">                    
                     <p:outputLabel value="评  价  人" />
                     <p:inputText style="width: 240px" value="#{evaluateBean.appraiser}" maxlength="20" widgetVar="txtAppraiser" onfocus="VirtualKeyboard.attachInput(this);" />
