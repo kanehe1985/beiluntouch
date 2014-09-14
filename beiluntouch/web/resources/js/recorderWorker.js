@@ -84,15 +84,17 @@ function mergeBuffers(recBuffers, recLength){
 
 function interleave(inputL){
   var compression = 44100 / 11025;
-  var length = inputL.length;
+  var length = inputL.length/compression ;//+ inputR.length;
   var result = new Float32Array(length);
-
+ 
   var index = 0,
     inputIndex = 0;
-
+ 
   while (index < length){
-    result[index++] = inputL[inputIndex];
-    inputIndex += compression;
+    result[index] = inputL[inputIndex];
+    //result[index++] = inputR[inputIndex];
+    inputIndex+=compression;
+    index++
 //    result[index++] = inputR[inputIndex];
 //    inputIndex++;
   }
@@ -122,11 +124,11 @@ function writeString(view, offset, string){
 }
 
 function encodeWAV(samples) {
-    var dataLength = samples.length * 2;
+    var dataLength = samples.length;
     var buffer = new ArrayBuffer(44 + dataLength);
     var view = new DataView(buffer);
 
-    var sampleRateTmp = 11025 ;
+    var sampleRateTmp = 11025;
     var sampleBits = 8;
     var channelCount = 1;
     var offset = 0;
@@ -157,8 +159,7 @@ function encodeWAV(samples) {
     /* 采样数据总数,即数据总大小-44 */
     view.setUint32(offset, dataLength, true); offset += 4;
     /* 采样数据 */
-//    floatTo16BitPCM(view, 44, samples);
-    floatTo8BitPCM(view, offset, samples);
+    floatTo8BitPCM(view, 44, samples);
 
     return view;
 }

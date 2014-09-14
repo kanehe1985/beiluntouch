@@ -31,13 +31,19 @@ function __log(e, data) {
 
   function startRecording(button) {
       
-    document.getElementById('lblSaved').style.display="none";
+//    document.getElementById('lblSaved').style.display="none";
+    document.getElementById('lblSaved').style.display="inline";
+    document.getElementById('lblSaved').innerText="正在录音中，按停止按钮结束录音！";
+    
     recorder && recorder.record();
     button.disabled = true;
     button.nextElementSibling.disabled = false;
 //    __log('Recording...');
+    var d=new Date(); 
+    beginTime=d.getTime();
+    sreckon = setInterval(reckonByTime,1000);
   }
-
+  
   function stopRecording(button) {
     recorder && recorder.stop();
     button.disabled = true;
@@ -47,8 +53,20 @@ function __log(e, data) {
     // create WAV download link using audio data blob
     createDownloadLink();
     
+    clearInterval(sreckon);
     recorder.clear();
     localMediaStream.stop();
+  }
+  
+  var sreckon;
+  var beginTime;
+  function reckonByTime(){
+      var d=new Date(); 
+      endTime=d.getTime();
+      count = (endTime-beginTime)/1000
+      if(count>60){
+          document.getElementById('btnStop').click();
+      }
   }
   
   var base64ToBlobSync = function(base64) {
@@ -81,7 +99,7 @@ function __log(e, data) {
         player.controls=true;
         player.src=url;
         document.getElementById('lblSaved').style.display="inline";
-        document.getElementById('detailForm:reasonArea').value="请听录音。";        
+        document.getElementById('lblSaved').innerText="录音已保存!"      
         
 //        player.style.display="block";
         
