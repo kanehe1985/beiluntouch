@@ -7,23 +7,30 @@
       xmlns:p="http://primefaces.org/ui">
 
     <ui:composition>
-        <p:dialog id="detailDlg" widgetVar="detail" modal="true" resizable="false" appendTo="@(body)"
+        <p:dialog id="detailDlg" widgetVar="detail" modal="true" resizable="false" appendTo="@(body)" closable="false"
                   header="#{msgs.evaluateStaff}" onShow="VirtualKeyboard.toggle('detailForm:reasonArea','softkey');VirtualKeyboard.switchLayout('CN Chinese Simpl. Pinyin');$('#copyrights').text('拼音输入法');" onHide="VirtualKeyboard.toggle(null,'softkey');stopRecording(document.getElementById('btnStop'));">
             <h:form id="detailForm">
                 <!--<p:growl showDetail="true" showSummary="true" autoUpdate="true" />-->
                 <h:panelGrid columns="2" cellpadding="10"  style="margin-left: 120px;">
                     <p:graphicImage name="/images/#{evaluateBean.selectedEmployee.picture}" 
                                     width="198" height="255" style="zoom: 120%;" /> 
-                    <p:selectOneRadio id="grid"  style="margin-left: 30px;" value="#{evaluateBean.appraisalValue}" layout="grid" columns="1">  
-                        <f:selectItems value="#{evaluateBean.appraisalItems}"/>
-                        <p:ajax listener="#{evaluateBean.onSelectLevel}" update="reasonArea"/>
+                    <p:selectOneRadio id="grid"  style="margin-left: 30px;" value="#{evaluateBean.appraisalValue}" layout="grid" columns="1">
+                        <f:selectItems value="#{evaluateBean.appraisalItems}" />
+                        <p:ajax listener="#{evaluateBean.onSelectLevel}" update="selReason"/>
                     </p:selectOneRadio>
                     <p:outputLabel value="#{evaluateBean.selectedEmployee.name}" style="margin-left: 60px;font-size: 25px;font-weight: bold;"/>
                 </h:panelGrid>
-                <br />
+                <div style="float: right">
+                    <span id="lblSaved" style="font-size:16px; font-weight: bold; color: red;display: none">录音已保存!</span>
+                    <button id="btnRecord" onclick="init();return false;">录音</button>
+                    <button id="btnStop" onclick="stopRecording(this);" disabled="true">停止</button>
+                    <p:inputTextarea widgetVar="txtRecord"  style="display: none" value="#{evaluateBean.record}"/>
+                    <audio id="audioPlayer" style="display:none" controls="false" src=""/>
+                </div>
+                    <br />
                 #{msgs.reason}
                 <br />
-                <p:selectOneMenu value="#{evaluateBean.reasonValue}" style="width: 650px">
+                <p:selectOneMenu id="selReason" value="#{evaluateBean.reasonValue}" style="width: 650px">
                         <f:selectItem itemLabel="请选择常用原因" itemValue=""/>
                         <f:selectItems value="#{evaluateBean.reasonItems}" />
                         <p:ajax listener="#{evaluateBean.onSelectReason}" update="reasonArea" />
@@ -31,19 +38,15 @@
                 <br />
                 <p:inputTextarea wrap="soft" requiredMessage="此评价等级必须输入原因！" required="#{evaluateBean.reasonRequired}" id="reasonArea" maxlength="2000" rows="5" cols="78" value="#{evaluateBean.reason}"  widgetVar="txtReason" onfocus="VirtualKeyboard.attachInput(this);"/>
                 <p:message for="reasonArea" />
-                    <button id="btnRecord" onclick="init();return false;">录音</button>
-                    <button id="btnStop" onclick="stopRecording(this);" disabled="true">停止</button>
-                    <span id="lblSaved" style="font-size:16px; font-weight: bold; color: red;display: none">录音已保存!</span>
-                    <p:inputTextarea widgetVar="txtRecord"  style="display: none" value="#{evaluateBean.record}"/>
-                    <audio id="audioPlayer" style="display:none" controls="false" src=""/>
+                    
                 <h:panelGrid columns="4">                    
                     <p:outputLabel value="评  价  人" />
                     <p:inputText style="width: 240px" value="#{evaluateBean.appraiser}" maxlength="20" widgetVar="txtAppraiser" onfocus="VirtualKeyboard.attachInput(this);" />
                     <p:outputLabel value="联系电话" />
-                    <p:inputText style="width: 240px" value="#{evaluateBean.contact}" maxlength="100" widgetVar="txtContact" onfocus="VirtualKeyboard.attachInput(this);" />
+                    <p:inputText style="width: 240px;" value="#{evaluateBean.contact}" maxlength="100" widgetVar="txtContact" onfocus="VirtualKeyboard.attachInput(this);" />
                 </h:panelGrid>
                 <p:commandButton value="#{msgs.submit}" actionListener="#{evaluateBean.save}" style="font-size: 20px" />
-                <p:button value="关闭" onclick="PF('detail').hide();return false;" style="font-size: 20px"/>
+                <p:button value="关闭" onclick="if(window.confirm('是否退出评价？')){PF('detail').hide();}return false;" style="font-size: 20px"/>
                 <p:button style="float: right" widgetVar="btnInput" id="btnInput" value="中英切换" onclick="if($('#kb_langselector').val()=='CN Chinese Simpl. Pinyin'){VirtualKeyboard.switchLayout('US US');$('#copyrights').text('英文输入法');}else{VirtualKeyboard.switchLayout('CN Chinese Simpl. Pinyin');this.text='中文';$('#copyrights').text('拼音输入法');}return false;"/>
                 <div id="softkey"></div>
             </h:form>

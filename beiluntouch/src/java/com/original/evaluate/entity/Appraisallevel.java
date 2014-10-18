@@ -36,6 +36,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Appraisallevel.findByName", query = "SELECT a FROM Appraisallevel a WHERE a.name = :name"),
     @NamedQuery(name = "Appraisallevel.findByIsalert", query = "SELECT a FROM Appraisallevel a WHERE a.isalert = :isalert")})
 public class Appraisallevel implements Serializable {
+    @OneToMany(mappedBy = "appraisallevel")
+    private Collection<Reason> reasonCollection;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -113,6 +115,15 @@ public class Appraisallevel implements Serializable {
     @Override
     public String toString() {
         return "com.original.evaluate.entity.Appraisallevel[ id=" + id + " ]";
+    }
+
+    @XmlTransient
+    public Collection<Reason> getReasonCollection() {
+        return reasonCollection;
+    }
+
+    public void setReasonCollection(Collection<Reason> reasonCollection) {
+        this.reasonCollection = reasonCollection;
     }
     
 }

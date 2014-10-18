@@ -11,13 +11,15 @@
         <ui:define name="center">
             <h:form id="ReasonListForm">
                 <p:dataTable id="reasons" var="reason" value="#{reasonBean.reasons}" rowKey="#{reason.id}"
-                             selection="#{reasonBean.selectedReasons}">
+                             selection="#{reasonBean.selectedReasons}" sortBy="appraisallevel.id">
 
                     <f:facet name="header">
                         快捷回复
                     </f:facet>
                     <p:column selectionMode="multiple" style="width:4%; text-align: center"/>
-
+                    <p:column headerText="等级名称">
+                        #{reason.appraisallevel.name}
+                    </p:column>
                     <p:column headerText="回复内容">
                         #{reason.content}
                     </p:column>
@@ -25,6 +27,7 @@
                     <p:column headerText="操作">
                         <p:commandButton value="编辑" icon="ui-icon-pencil" oncomplete="PF('ReasonEditDialog').show();" update=":ReasonEditForm">
                             <f:setPropertyActionListener value="#{reason}" target="#{reasonBean.editReason}"/>
+                            <f:setPropertyActionListener value="#{reason.appraisallevel.id}" target="#{reasonBean.editAppraisallevelID}"/>
                         </p:commandButton>
                     </p:column>
                     <f:facet name="footer">                        
@@ -44,6 +47,11 @@
                 <h:form id="ReasonCreateForm">
                     <h:panelGroup id="display">
                         <p:panelGrid columns="2">
+                                <p:outputLabel value="等级名称" />                            
+                                <p:selectOneMenu value="#{reasonBean.editAppraisallevelID}">
+                                    <f:selectItem itemLabel="请选择" itemValue="-1" />
+                                    <f:selectItems value="#{reasonBean.appraisallevels}" var="appraisallevel" itemLabel="#{appraisallevel.name}" itemValue="#{appraisallevel.id}" />
+                                </p:selectOneMenu>
                                 <p:outputLabel value="回复内容" for="content" />
                                 <p:inputText id="content" value="#{reasonBean.editReason.content}" title="content" />
                             </p:panelGrid>
@@ -57,6 +65,11 @@
                 <h:form id="ReasonEditForm">
                     <h:panelGroup id="display">
                         <p:panelGrid columns="2">
+                            <p:outputLabel value="等级名称" />                            
+                            <p:selectOneMenu value="#{reasonBean.editAppraisallevelID}">
+                                <f:selectItem itemLabel="请选择" itemValue="-1" />
+                                <f:selectItems value="#{reasonBean.appraisallevels}" var="appraisallevel" itemLabel="#{appraisallevel.name}" itemValue="#{appraisallevel.id}" />
+                            </p:selectOneMenu>
                             <p:outputLabel value="回复内容" for="content" />
                             <p:inputText id="content" value="#{reasonBean.editReason.content}" title="content" />
                         </p:panelGrid>

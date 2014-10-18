@@ -6,7 +6,9 @@
 
 package com.original.evaluate.bean;
 
+import com.original.evaluate.bo.AppraisallevelBO;
 import com.original.evaluate.bo.ReasonBO;
+import com.original.evaluate.entity.Appraisallevel;
 import com.original.evaluate.entity.Reason;
 import java.io.Serializable;
 import java.util.List;
@@ -23,10 +25,13 @@ import javax.naming.NamingException;
 public class ReasonBean implements Serializable {
     
     private ReasonBO reasonBO;
+    private AppraisallevelBO appraisallevelBO;
     
     private List<Reason> reasons;
     private List<Reason> selectedReasons = null;
     private Reason editReason;
+    private int editAppraisallevelID;
+    private List<Appraisallevel> appraisallevels;
 
     public List<Reason> getSelectedReasons() {
         return selectedReasons;
@@ -44,6 +49,14 @@ public class ReasonBean implements Serializable {
         this.editReason = editReason;
     }
 
+    public int getEditAppraisallevelID() {
+        return editAppraisallevelID;
+    }
+
+    public void setEditAppraisallevelID(int editAppraisallevelID) {
+        this.editAppraisallevelID = editAppraisallevelID;
+    }
+    
     public ReasonBO getReasonBO() {
         return reasonBO;
     }
@@ -51,10 +64,22 @@ public class ReasonBean implements Serializable {
     public void setReasonBO(ReasonBO reasonBO) {
         this.reasonBO = reasonBO;
     }
+
+    public List<Appraisallevel> getAppraisallevels() {
+        return appraisallevels;
+    }
+
+    public void setAppraisallevels(List<Appraisallevel> appraisallevels) {
+        this.appraisallevels = appraisallevels;
+    }
     
     public ReasonBean() throws NamingException {
         reasonBO = new ReasonBO();
+        appraisallevelBO = new AppraisallevelBO();
+        
+        editReason = new Reason();
         reasons = reasonBO.getAllReasonList();
+        appraisallevels = appraisallevelBO.getAllAppraisallevelList();
     }
 
     public List<Reason> getReasons() {
@@ -66,11 +91,13 @@ public class ReasonBean implements Serializable {
     }
     
     public void update() throws Exception{
+        editReason.setAppraisallevel(appraisallevelBO.getAppraisallevelById(editAppraisallevelID));
         reasonBO.save(editReason);        
         reasons = reasonBO.getAllReasonList();
     }
     
     public void create() throws Exception{
+        editReason.setAppraisallevel(appraisallevelBO.getAppraisallevelById(editAppraisallevelID));
         reasonBO.create(editReason);        
         reasons = reasonBO.getAllReasonList();
     }
@@ -84,5 +111,6 @@ public class ReasonBean implements Serializable {
     
     public void prepareCreate() {
         editReason = new Reason();
+        editAppraisallevelID = -1;
     }
 }

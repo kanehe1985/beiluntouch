@@ -13,6 +13,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -31,6 +33,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Reason.findById", query = "SELECT r FROM Reason r WHERE r.id = :id"),
     @NamedQuery(name = "Reason.findByContent", query = "SELECT r FROM Reason r WHERE r.content = :content")})
 public class Reason implements Serializable {
+    @JoinColumn(name = "appraisallevel", referencedColumnName = "id")
+    @ManyToOne
+    private Appraisallevel appraisallevel;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -87,6 +92,14 @@ public class Reason implements Serializable {
     @Override
     public String toString() {
         return "com.original.evaluate.entity.Reason[ id=" + id + " ]";
+    }
+
+    public Appraisallevel getAppraisallevel() {
+        return appraisallevel;
+    }
+
+    public void setAppraisallevel(Appraisallevel appraisallevel) {
+        this.appraisallevel = appraisallevel;
     }
     
 }

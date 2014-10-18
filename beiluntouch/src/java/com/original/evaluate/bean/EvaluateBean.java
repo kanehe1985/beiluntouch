@@ -77,6 +77,7 @@ public class EvaluateBean implements Serializable {
     private Date createDate;
     private Boolean merge;
     private String tag;
+    private String systemName;
     private Boolean reasonRequired=false;
        
     public EvaluateBean(){
@@ -90,6 +91,9 @@ public class EvaluateBean implements Serializable {
         }
         if(merge==true)
             param+="&m=true";
+        if(systemName !=null){
+            param+="&name="+systemName;
+        }
         return param;
     }
 
@@ -105,6 +109,12 @@ public class EvaluateBean implements Serializable {
 //        return employeeList;
 //        return tempList;
 //    }
+    
+    public void goBack() throws IOException{
+        categoryCondition=null;
+        roomCondition=null;
+        FacesContext.getCurrentInstance().getExternalContext().redirect(getBackUrl());
+    }
     
     public List<Employee> getEmployeeList(){
 //        int depID = Integer.parseInt(this.getRequestParameter("depid"));
@@ -126,6 +136,14 @@ public class EvaluateBean implements Serializable {
         String m = this.getRequestParameter("m");
         merge = m!=null && "true".equals(m);        
         return merge;
+    }
+    
+    public String getSystemName(){
+        String n = this.getRequestParameter("name");
+        if(n!=null){
+            systemName = n;
+        }
+        return systemName;
     }
     
     private EmployeeJpaController getEmployeeJpaController() {
@@ -196,13 +214,15 @@ public class EvaluateBean implements Serializable {
     }
 
     public LinkedHashMap<String, Integer> getReasonItems() {
-        if (reasonItems == null) {
+//        if (reasonItems == null) {
             reasonItems = new LinkedHashMap<>();
             List<Reason> reasonList = getReasonJpaController().findReasonEntities();
             for (Reason reason : reasonList) {
-                reasonItems.put(reason.getContent(), reason.getId());
+                if(appraisalValue == reason.getAppraisallevel().getId()){
+                    reasonItems.put(reason.getContent(), reason.getId());
+                }
             }
-        }
+//        }
         return reasonItems;
     }
 
@@ -266,7 +286,10 @@ public class EvaluateBean implements Serializable {
         
         for(Employee employee : employees){
             String employeeRoomNo = employee.getRomno();
-            if(employeeRoomNo != null && employeeRoomNo.length()>0 && !roomItems.containsValue(employeeRoomNo)){
+            String employeeCategory = employee.getCategory().getId().toString();
+            if(employeeRoomNo != null && employeeRoomNo.length()>0 && 
+                    !roomItems.containsValue(employeeRoomNo) &&
+                    (categoryCondition==null || categoryCondition=="" || employeeCategory.equals(categoryCondition))){
                 roomItems.put(employeeRoomNo, employeeRoomNo);
             }
         }
@@ -303,7 +326,9 @@ public class EvaluateBean implements Serializable {
     }
 
     public void setSelectedEmployee(Employee employee) {
-        appraisalValue=null;
+        List<Appraisallevel> levelList = getAppraisallevelJpaController().findAppraisallevelEntities();
+        
+        appraisalValue=levelList.get(0).getId();
         reason=null;
         reasonValue=null;
         appraiser=null;

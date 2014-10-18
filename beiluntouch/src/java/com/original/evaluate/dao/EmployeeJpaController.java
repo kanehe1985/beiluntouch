@@ -27,6 +27,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -396,7 +397,12 @@ public class EmployeeJpaController implements Serializable {
             Predicate[] pArray = new Predicate[pAll.size()];
             pArray = pAll.toArray(pArray);
             
-            cq.where(pArray).orderBy(em.getCriteriaBuilder().asc(root.get("orderid")));
+            List<Order> orders = new ArrayList<>();
+            orders.add(em.getCriteriaBuilder().asc(root.get("department")));
+            orders.add(em.getCriteriaBuilder().asc(root.get("orderid")));
+            cq.where(pArray).orderBy(orders);
+            
+//            cq.where(pArray).orderBy(em.getCriteriaBuilder().asc(root.get("department orderid")));
             Query q = em.createQuery(cq);
             return q.getResultList();
         } finally {
@@ -442,7 +448,12 @@ public class EmployeeJpaController implements Serializable {
             Predicate[] pArray = new Predicate[pAll.size()];
             pArray = pAll.toArray(pArray);
             
-            cq.where(pArray).orderBy(em.getCriteriaBuilder().asc(employeeRoot.get("orderid")));
+            List<Order> orders = new ArrayList<>();
+            orders.add(em.getCriteriaBuilder().asc(employeeRoot.get("department")));
+            orders.add(em.getCriteriaBuilder().asc(employeeRoot.get("orderid")));
+            cq.where(pArray).orderBy(orders);
+            
+//            cq.where(pArray).orderBy(em.getCriteriaBuilder().asc(employeeRoot.get("department orderid")));
             Query q = em.createQuery(cq);
             return q.getResultList();
         } finally {

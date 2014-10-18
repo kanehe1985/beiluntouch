@@ -30,3 +30,14 @@ and open the template in the editor.
     font-size: 35px;
 }
 
+#btnRecord{
+    width: 100px;
+    height: 40px;
+    font-size: 20px
+}
+
+#btnStop{
+    width: 100px;
+    height: 40px;
+    font-size: 20px;
+}

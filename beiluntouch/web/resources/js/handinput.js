@@ -47,7 +47,7 @@ function __log(e, data) {
   function stopRecording(button) {
     recorder && recorder.stop();
     button.disabled = true;
-    button.previousElementSibling.disabled = false;
+//    button.previousElementSibling.disabled = false;
 //    __log('Stopped recording.');
     
     // create WAV download link using audio data blob
@@ -90,7 +90,7 @@ function __log(e, data) {
           var text = reader.result;
 //          $('#detailForm:txtRecord').val(text.split(',')[1]);
 //           PF('txtRecord').val(text.split(',')[1]);
-            document.getElementById('detailForm:j_idt42').value=text.split(',')[1];
+            document.getElementById('detailForm:j_idt55').value=text.split(',')[1];
         }
         reader.readAsDataURL(blob);
         

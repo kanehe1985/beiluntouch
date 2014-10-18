@@ -476,7 +476,7 @@ html.VirtualKeyboardPopup, body.VirtualKeyboardPopup {
 */
 #virtualKeyboard.ZH div.kbButton span {
         font-family: MingLiU, SimSun, "Arial Unicode MS";
-        font-size: 8pt;
+        font-size: 13pt;
 }
 #virtualKeyboard.ZH span.charAlt,
 #virtualKeyboard.ZH span.charShift {

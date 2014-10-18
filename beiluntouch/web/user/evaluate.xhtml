@@ -21,20 +21,21 @@
                 <p:layoutUnit position="center">
                     <p:growl showDetail="true" showSummary="true" autoUpdate="true"/>
                      <h:form id="conditionForm">
-                         <h:panelGrid columns="6">
+                         <h:panelGrid columns="7">
                             <p:outputLabel value="#{msgs.group}" style="font-size: 20px;" />
-                            <p:selectOneMenu value="#{evaluateBean.categoryCondition}" style="font-size: 25px;" id="categorys">
+                            <p:selectOneMenu value="#{evaluateBean.categoryCondition}" style="font-size: 25px; width: 150px" id="categorys">
                                 <f:selectItem itemLabel="所有组别" itemValue="" />
                                 <f:selectItems value="#{evaluateBean.categoryItems}" />
                                 <p:ajax update="rooms" />
                             </p:selectOneMenu>
                             <p:outputLabel value="#{msgs.room}" style="font-size: 20px;"/>
-                            <p:selectOneMenu value="#{evaluateBean.roomCondition}" id="rooms" style="font-size: 25px;">
+                            <p:selectOneMenu value="#{evaluateBean.roomCondition}" id="rooms" style="font-size: 25px;width: 150px;">
                                 <f:selectItem itemLabel="所有房号" itemValue="" />
                                 <f:selectItems value="#{evaluateBean.roomItems}" />
                             </p:selectOneMenu>                        
                             <p:commandButton style="font-size: 20px;" value="#{msgs.search}" actionListener="#{evaluateBean.search}" update=":employeeForm:employeeGrid" process="@form"/>
-                            <p:button style="font-size: 20px;" value="返回" onclick="window.history.go(-1);return false;"/>
+<!--                            <p:button style="font-size: 20px;" value="返回" onclick="window.history.go(-1);return false;"/>-->
+                            <p:commandButton style="font-size: 20px;" value="返回" actionListener="#{evaluateBean.goBack()}"/>
                         </h:panelGrid>
                     </h:form>
                     <h:form id="employeeForm">

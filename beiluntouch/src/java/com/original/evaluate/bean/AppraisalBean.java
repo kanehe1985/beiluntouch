@@ -8,8 +8,12 @@ package com.original.evaluate.bean;
 
 import com.original.evaluate.bo.AppraisalBO;
 import com.original.evaluate.bo.AppraisallevelBO;
+import com.original.evaluate.bo.CategoryBO;
+import com.original.evaluate.bo.DepartmentBO;
 import com.original.evaluate.entity.Appraisal;
 import com.original.evaluate.entity.Appraisallevel;
+import com.original.evaluate.entity.Category;
+import com.original.evaluate.entity.Department;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +32,8 @@ public class AppraisalBean implements Serializable {
     
     private AppraisalBO appraisalBO;
     private AppraisallevelBO appraisallevelBO;
+    private DepartmentBO departmentBO;
+    private CategoryBO categoryBO;
     
     private List<Appraisal> appraisals;
     private List<Appraisal> selectedAppraisals = null;
@@ -36,6 +42,8 @@ public class AppraisalBean implements Serializable {
     private Date beginDate;
     private Date endDate;
     private SelectItem[] appraisallevelOptions;
+    private SelectItem[] departmentOptions;
+    private SelectItem[] categoryOptions;
 
     public Date getBeginDate() {
         return beginDate;
@@ -88,9 +96,14 @@ public class AppraisalBean implements Serializable {
     public AppraisalBean() throws NamingException {
         appraisalBO = new AppraisalBO();
         appraisallevelBO = new AppraisallevelBO();
+        departmentBO = new DepartmentBO();
+        categoryBO = new CategoryBO();
         appraisals = appraisalBO.getAllAppraisalList();
         
         appraisallevelOptions = this.createFilterOptions(appraisallevelBO.getAllAppraisallevelList());
+        departmentOptions = this.createDepartmentFilterOptions(departmentBO.getAllDepartmentList());
+        categoryOptions = this.createCategoryFilterOptions(categoryBO.getAllCategoryList());
+        
     }
 
     public List<Appraisal> getAppraisals() {
@@ -104,9 +117,21 @@ public class AppraisalBean implements Serializable {
     public void search(){
         this.appraisals = appraisalBO.getAppraisalListByDuration(beginDate, endDate);
     }
+    
+    private List<Appraisal> groupList(List<Appraisal> appraisals){
+        foreach(Appraisal)
+    }
 
     public SelectItem[] getAppraisallevelOptions() {
         return appraisallevelOptions;
+    }
+
+    public SelectItem[] getDepartmentOptions() {
+        return departmentOptions;
+    }
+
+    public SelectItem[] getCategoryOptions() {
+        return categoryOptions;
     }
     
     private SelectItem[] createFilterOptions(List<Appraisallevel> appraisallevels)  { 
@@ -121,4 +146,31 @@ public class AppraisalBean implements Serializable {
         }  
         return options;  
     }  
+    
+    private SelectItem[] createDepartmentFilterOptions(List<Department> departments)  { 
+        int i = 0;
+        SelectItem[] options = new SelectItem[departments.size() + 1];
+        options[0] = new SelectItem("", "请选择");
+        
+        for(Department department:departments){
+            department.getName();
+            options[i + 1] = new SelectItem(department.getName(), department.getName());
+            i++;
+        }  
+        return options;  
+    }
+    
+    private SelectItem[] createCategoryFilterOptions(List<Category> categorys)  { 
+        int i = 0;
+        SelectItem[] options = new SelectItem[categorys.size() + 1];
+        options[0] = new SelectItem("", "请选择");
+        
+        for(Category category:categorys){
+            category.getName();
+            options[i + 1] = new SelectItem(category.getName(), category.getName());
+            i++;
+        }  
+        return options;  
+    }
+    
 }
