@@ -18,9 +18,11 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.inject.Named;
 import javax.naming.NamingException;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -36,14 +38,19 @@ public class AppraisalBean implements Serializable {
     private CategoryBO categoryBO;
     
     private List<Appraisal> appraisals;
+    private List summary;
     private List<Appraisal> selectedAppraisals = null;
     private List<Appraisal> filteredAppraisals;
+    List<Appraisallevel> appraisallevels;
     private Appraisal editAppraisal;    
     private Date beginDate;
     private Date endDate;
+    private Date beginSummaryDate;
+    private Date endSummaryDate;
     private SelectItem[] appraisallevelOptions;
     private SelectItem[] departmentOptions;
     private SelectItem[] categoryOptions;
+    private String role;
 
     public Date getBeginDate() {
         return beginDate;
@@ -59,6 +66,22 @@ public class AppraisalBean implements Serializable {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public Date getBeginSummaryDate() {
+        return beginSummaryDate;
+    }
+
+    public void setBeginSummaryDate(Date beginSummaryDate) {
+        this.beginSummaryDate = beginSummaryDate;
+    }
+
+    public Date getEndSummaryDate() {
+        return endSummaryDate;
+    }
+
+    public void setEndSummaryDate(Date endSummaryDate) {
+        this.endSummaryDate = endSummaryDate;
     }
 
     public List<Appraisal> getFilteredAppraisals() {
@@ -98,11 +121,19 @@ public class AppraisalBean implements Serializable {
         appraisallevelBO = new AppraisallevelBO();
         departmentBO = new DepartmentBO();
         categoryBO = new CategoryBO();
-        appraisals = appraisalBO.getAllAppraisalList();
         
-        appraisallevelOptions = this.createFilterOptions(appraisallevelBO.getAllAppraisallevelList());
+        HttpSession session = (HttpSession)FacesContext.getCurrentInstance().getExternalContext().getSession(true);
+        this.role = session.getAttribute("Role").toString();
+        
+        appraisals = appraisalBO.getAllAppraisalList(role);
+        
+        
+        appraisallevels = appraisallevelBO.getAllAppraisallevelList();
+        appraisallevelOptions = this.createFilterOptions(appraisallevels);
         departmentOptions = this.createDepartmentFilterOptions(departmentBO.getAllDepartmentList());
         categoryOptions = this.createCategoryFilterOptions(categoryBO.getAllCategoryList());
+        
+        summary = appraisalBO.getResultList(appraisallevels,role);
         
     }
 
@@ -115,11 +146,8 @@ public class AppraisalBean implements Serializable {
     }
     
     public void search(){
+        
         this.appraisals = appraisalBO.getAppraisalListByDuration(beginDate, endDate);
-    }
-    
-    private List<Appraisal> groupList(List<Appraisal> appraisals){
-        foreach(Appraisal)
     }
 
     public SelectItem[] getAppraisallevelOptions() {
@@ -171,6 +199,18 @@ public class AppraisalBean implements Serializable {
             i++;
         }  
         return options;  
+    }
+    
+    public void searchSummary(){
+        this.summary=appraisalBO.getResultList(appraisallevels,beginSummaryDate,endSummaryDate,role);
+    }
+
+    public List getSummary() {
+        return summary;
+    }
+
+    public void setSummary(List summary) {
+        this.summary = summary;
     }
     
 }

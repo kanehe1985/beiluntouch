@@ -9,7 +9,6 @@ package com.original.evaluate.entity;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -24,7 +23,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author kanehe
+ * @author Kane
  */
 @Entity
 @Table(name = "department")
@@ -35,8 +34,6 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Department.findByName", query = "SELECT d FROM Department d WHERE d.name = :name"),
     @NamedQuery(name = "Department.findByTag", query = "SELECT d FROM Department d WHERE d.tag = :tag")})
 public class Department implements Serializable {
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "department")
-    private Collection<Room> roomCollection;
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -49,9 +46,13 @@ public class Department implements Serializable {
     @Size(max = 255)
     @Column(name = "tag")
     private String tag;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "department")
+    @OneToMany(mappedBy = "department")
+    private Collection<Adminuser> adminuserCollection;
+    @OneToMany(mappedBy = "department")
     private Collection<Employee> employeeCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "department")
+    @OneToMany(mappedBy = "department")
+    private Collection<Room> roomCollection;
+    @OneToMany(mappedBy = "department")
     private Collection<Notice> noticeCollection;
 
     public Department() {
@@ -86,12 +87,30 @@ public class Department implements Serializable {
     }
 
     @XmlTransient
+    public Collection<Adminuser> getAdminuserCollection() {
+        return adminuserCollection;
+    }
+
+    public void setAdminuserCollection(Collection<Adminuser> adminuserCollection) {
+        this.adminuserCollection = adminuserCollection;
+    }
+
+    @XmlTransient
     public Collection<Employee> getEmployeeCollection() {
         return employeeCollection;
     }
 
     public void setEmployeeCollection(Collection<Employee> employeeCollection) {
         this.employeeCollection = employeeCollection;
+    }
+
+    @XmlTransient
+    public Collection<Room> getRoomCollection() {
+        return roomCollection;
+    }
+
+    public void setRoomCollection(Collection<Room> roomCollection) {
+        this.roomCollection = roomCollection;
     }
 
     @XmlTransient
@@ -126,15 +145,6 @@ public class Department implements Serializable {
     @Override
     public String toString() {
         return "com.original.evaluate.entity.Department[ id=" + id + " ]";
-    }
-
-    @XmlTransient
-    public Collection<Room> getRoomCollection() {
-        return roomCollection;
-    }
-
-    public void setRoomCollection(Collection<Room> roomCollection) {
-        this.roomCollection = roomCollection;
     }
     
 }

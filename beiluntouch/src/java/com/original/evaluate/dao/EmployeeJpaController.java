@@ -398,7 +398,7 @@ public class EmployeeJpaController implements Serializable {
             pArray = pAll.toArray(pArray);
             
             List<Order> orders = new ArrayList<>();
-            orders.add(em.getCriteriaBuilder().asc(root.get("department")));
+            orders.add(em.getCriteriaBuilder().asc(root.get("deporderid")));
             orders.add(em.getCriteriaBuilder().asc(root.get("orderid")));
             cq.where(pArray).orderBy(orders);
             
@@ -449,7 +449,7 @@ public class EmployeeJpaController implements Serializable {
             pArray = pAll.toArray(pArray);
             
             List<Order> orders = new ArrayList<>();
-            orders.add(em.getCriteriaBuilder().asc(employeeRoot.get("department")));
+            orders.add(em.getCriteriaBuilder().asc(employeeRoot.get("deporderid")));
             orders.add(em.getCriteriaBuilder().asc(employeeRoot.get("orderid")));
             cq.where(pArray).orderBy(orders);
             

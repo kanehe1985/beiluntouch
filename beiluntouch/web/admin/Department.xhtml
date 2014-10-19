@@ -43,7 +43,7 @@
                             <p:outputLabel value="处所" for="name" />
                             <p:outputLabel id="name" value="#{departmentBean.editDepartment.name}" />
                             <p:outputLabel value="设备名称" for="tag" />
-                            <p:inputText id="tag" value="#{departmentBean.editDepartment.tag}" title="用户标识" />
+                            <p:inputText id="tag" value="#{departmentBean.editDepartment.tag}" title="设备名称" />
                         </p:panelGrid>
                         <p:commandButton actionListener="#{departmentBean.update}" value="保存" update=":DepartmentListForm:departments" oncomplete="PF('DepartmentEditDialog').hide();"/>
                         <p:commandButton value="取消" onclick="DepartmentEditDialog.hide()"/>

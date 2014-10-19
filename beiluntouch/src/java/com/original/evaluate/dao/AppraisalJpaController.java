@@ -184,7 +184,7 @@ public class AppraisalJpaController implements Serializable {
 
     public List<Appraisal> findAppraisalEntities(int maxResults, int firstResult) {
         return findAppraisalEntities(false, maxResults, firstResult);
-    }   
+    }
             
     public List<Appraisal> findAppraisalEntitiesByDuration(Date beginDate, Date endDate) {
         EntityManager em = getEntityManager();
@@ -243,6 +243,12 @@ public class AppraisalJpaController implements Serializable {
         } finally {
             em.close();
         }
+    }
+    
+    public List exeSQL(String sql){
+        EntityManager em = getEntityManager();
+        Query query = em.createNativeQuery(sql);
+        return query.getResultList();
     }
 
     public int getAppraisalCount() {
