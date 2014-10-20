@@ -26,22 +26,25 @@
                     <h:form>
                         <p:menu>
                             <p:submenu label="数据统计">
-                                <p:menuitem value="评价数据" outcome="Appraisal" />
                                 <p:menuitem value="评价统计" outcome="Statistics" />
+                                <p:menuitem value="评价数据" outcome="Appraisal" />
                             </p:submenu>
-                            <p:submenu label="人员与设备">                    
+                            <p:submenu label="人员与设备" rendered="#{appraisalBean.adminRole}">                    
                                     <p:menuitem value="管理员" outcome="AdminUser" />
                                     <p:menuitem value="人员管理" outcome="Employee" />
                                     <p:menuitem value="设备绑定" outcome="Department" />
                                     <p:menuitem value="房间管理" outcome="Room" rendered="false" />
                                 </p:submenu>
-                                <p:submenu label="评价管理">
+                                <p:submenu label="评价管理" rendered="#{appraisalBean.adminRole}">
                                     <p:menuitem value="快捷回复" outcome="Reason" />
                                     <p:menuitem value="评价等级" outcome="Appraisallevel"/>
                                     <p:menuitem value="短信通知" outcome="Notice" />
                                 </p:submenu>
-                                <p:submenu label="设置">
+                                <p:submenu label="设置" rendered="#{appraisalBean.adminRole}">
                                     <p:menuitem value="系统设置" outcome="Setting" />
+                                </p:submenu>
+                                <p:submenu label="用户">
+                                    <p:menuitem value="退出" action="#{appraisalBean.logout()}" />
                                 </p:submenu>
                         </p:menu>
                     </h:form>

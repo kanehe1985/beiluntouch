@@ -4,12 +4,13 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <ui:composition template="./template.xhtml">
 
         <ui:define name="center">
-            <h:form id="AppraisalListForm">
+            <h:form id="AppraisalListForm" style="font-size: 12px;">
                 <p:dataTable id="appraisals" var="appraisal" value="#{appraisalBean.appraisals}" 
                              rowKey="#{appraisal.id}" 
                              filteredValue="#{appraisalBean.filteredAppraisals}" 
@@ -30,25 +31,32 @@
                         </p:outputPanel>
                     </f:facet>
                     
-                    <!--<p:column headerText="处所" filterBy="employee.department.name" filterMatchMode="contains">-->
-                    <p:column headerText="处所" filterOptions="#{appraisalBean.departmentOptions}" filterBy="employee.department.name" filterMatchMode="exact">
-                        #{appraisal.employee.department.name}
-                    </p:column>
+                    <!--<p:column headerText="处所" filterValue="局长室" filterBy="employee.department.name"  filterMatchMode="contains">-->
+                    <c:if test="${appraisalBean.role.length() gt 0}">
+                        <p:column headerText="处所" width="60">
+                            #{appraisal.employee.department.name}
+                        </p:column>
+                    </c:if>
+                    <c:if test="${appraisalBean.role.length() lt 1}">
+                        <p:column width="60" headerText="处所" filterOptions="#{appraisalBean.departmentOptions}" filterBy="employee.department.name" filterMatchMode="exact">
+                            #{appraisal.employee.department.name}
+                        </p:column>
+                    </c:if>
                     
-                    <p:column headerText="房号" filterBy="employee.romno" filterMatchMode="contains">
+                    <p:column width="45" headerText="房号" filterBy="employee.romno" filterMatchMode="contains">
                         #{appraisal.employee.romno}
                     </p:column>
                     
                     <!--<p:column headerText="组别" filterBy="employee.category.name" filterMatchMode="contains">-->
-                    <p:column headerText="组别" filterOptions="#{appraisalBean.categoryOptions}" filterBy="employee.category.name" filterMatchMode="exact">
+                    <p:column width="100" headerText="组别" filterOptions="#{appraisalBean.categoryOptions}"  filterBy="employee.category.name" filterMatchMode="exact">
                         #{appraisal.employee.category.name}
                     </p:column>
                     
-                    <p:column headerText="人员名" filterBy="employee.name" filterMatchMode="contains">
+                    <p:column headerText="人员名" width="50" filterBy="employee.name" filterMatchMode="contains">
                         #{appraisal.employee.name}
                     </p:column>
                     
-                    <p:column headerText="评价等级" filterOptions="#{appraisalBean.appraisallevelOptions}" filterBy="appraisallevel.name" filterMatchMode="exact">
+                    <p:column headerText="评价等级" width="60" filterOptions="#{appraisalBean.appraisallevelOptions}" filterBy="appraisallevel.name" filterMatchMode="exact">
                         #{appraisal.appraisallevel.name}
                     </p:column> 
 
@@ -57,19 +65,19 @@
                         <p:tooltip id="toolTipFade" for="lblContent" value="#{appraisal.content}" />
                     </p:column>
                     
-                     <p:column headerText="评价录音">
+                    <p:column headerText="录音" width="45">
                          <p:button value="播放" disabled="#{appraisal.record.length() lt 1}" onclick="playRecord('#{appraisal.record}');return false;"/>
                     </p:column>
                     
-                    <p:column headerText="评价人">
+                    <p:column headerText="评价人" width="45">
                         #{appraisal.appraiser}
                     </p:column>
                                         
-                    <p:column headerText="联系方式">
+                    <p:column headerText="联系方式" width="60">
                         #{appraisal.contact}
                     </p:column>
                     
-                    <p:column headerText="评价日期">          
+                    <p:column width="70" headerText="评价日期">          
                         <h:outputText value="#{appraisal.createdate}" >
                             <!--<f:convertDateTime pattern="yyyy-MM-dd" />-->
                             <f:convertDateTime pattern="yyyy-MM-dd" timeZone="GMT+8" locale="cn" />

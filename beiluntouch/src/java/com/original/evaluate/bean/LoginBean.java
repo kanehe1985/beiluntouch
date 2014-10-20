@@ -30,7 +30,7 @@ public class LoginBean implements Serializable {
     private SettingJpaController settingJpaController = null;
     private AdminuserJpaController adminuserJpaController = null;
     private String role="";
-    private Boolean adminRole=false;
+    private String adminRole="false";
 
     private SettingJpaController getSettingJpaController() {
         if (settingJpaController == null) {
@@ -72,27 +72,37 @@ public class LoginBean implements Serializable {
         session.setAttribute("Role", role);
     }
 
-    public Boolean isAdminRole() {
+    public String getAdminRole() {
         return adminRole;
     }
 
-    public void setAdminRole(Boolean adminRole) {
-        this.adminRole = adminRole;
+    public void setAdminRole(String adminRole) {
+        HttpSession session = (HttpSession)FacesContext.getCurrentInstance().getExternalContext().getSession(true);
+        session.setAttribute("AdminRole", adminRole);
     }
-    
+
+
     public String login() {
+        FacesContext fc = FacesContext.getCurrentInstance();
+        HttpSession session1 = (HttpSession) fc.getExternalContext().getSession(false);
+        session1.invalidate();
         if (username.equals("admin") && getSettingJpaController().findSettingEntities().get(0).getAdminpassword().equals(password)) {
-            adminRole=true;
+            setAdminRole("true");
             setRole("");
-            return "Appraisal.xhtml";  //跳转至页面
+            return "Statistics.xhtml";  //跳转至页面
         }else{
             List<Adminuser> findAdminuserEntities = getAdminuserJpaController().findAdminuserEntities();
             for(Adminuser adminuser : findAdminuserEntities){
                 if(adminuser.getName().equals(username) && adminuser.getPassword().equals(password)){
-                    adminRole=false;
-                    Integer roleValue=adminuser.getDepartment().getId();
-                    setRole(roleValue==null?"":roleValue.toString());
-                    return "Appraisal.xhtml";
+                    setAdminRole("false");
+                    if(adminuser.getDepartment()==null){
+                        setRole("");
+                    }else{
+                        setRole(adminuser.getDepartment().getId().toString());
+                    }
+//                    Integer roleValue=adminuser.getDepartment().getId();
+//                    setRole(roleValue==null?"":roleValue.toString());
+                    return "Statistics.xhtml";
                 }
             }
         }

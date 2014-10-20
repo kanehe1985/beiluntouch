@@ -36,7 +36,7 @@ public class AppraisalBO {
         }
     }
 
-    public List<Appraisal> getAllAppraisalList(String role) throws NamingException {
+    public List<Appraisal> getAllAppraisalList() throws NamingException {
         return appraisalJpaController.findAppraisalEntities();
     }
     
@@ -63,7 +63,7 @@ public class AppraisalBO {
         String tableCols="";
         for(Appraisallevel al : appraisallevels){
             String tableName="t"+tabIndex;
-            sql2+=String.format(template2, al.getId(),tableName,role==""?"":" and employee.department="+role);
+            sql2+=String.format(template2, al.getId(),tableName,role.equals("")?"":" and employee.department="+role);
             if(beginDate!=null || endDate!=null)
                 sql2+=String.format(" and createdate between '%1$s' and '%2$s'",beginDate==null?"1900-1-1":DateFormat.getDateInstance().format(beginDate),endDate==null?"9999-12-31":DateFormat.getDateInstance().format(endDate));
             sql2+=String.format(template3, tableName);
@@ -74,7 +74,7 @@ public class AppraisalBO {
         }
         sql1 = String.format(template1, tableCols);
         
-        return appraisalJpaController.exeSQL(sql1+sql2+sql3.substring(0, sql3.length()-4));
+        return appraisalJpaController.exeSQL(sql1+sql2+sql3.substring(0, sql3.length()-4)+" ORDER BY employee.deporderid,employee.orderid");
     }
     
     public Appraisal getAppraisalById(Integer id) {
